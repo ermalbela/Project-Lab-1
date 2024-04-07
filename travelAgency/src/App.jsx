@@ -1,16 +1,13 @@
 import React from 'react';
-import Header from '../src/Layout/Header';
 import Routers from './Route';
 
 function App() {
 
 
   return (
-    <>
+    <div className='App'>
       <Routers />
-      <h1>Hello</h1>
-      <Header />
-    </>
+    </div>
   )
 }
 

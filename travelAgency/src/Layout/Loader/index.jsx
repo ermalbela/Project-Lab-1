@@ -1,30 +1,30 @@
 import { Fragment, useState, useEffect } from 'react';
-
+import React from 'react';
 
 const Loader = () => {
 
-    const [show, setShow] = useState(true);
+  const [show, setShow] = useState(true);
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setShow(false);
-        }, 1000);
+  useEffect(() => {
+       const timeout = setTimeout(() => {
+          setShow(false);
+      }, 1500);
 
-        return () => {
-            clearTimeout(timeout);
-        };
+      return () => {
+        clearTimeout(timeout);
+      };
 
-    }, [show]);
+  }, [show]);
 
-    return (
-        <Fragment>
-            <div className={`loader-wrapper ${show ? '' : 'loderhide'}`}>
-                <div className="theme-loader">
-                    <div className="loader-p"></div>
-                </div>
-            </div>
-        </Fragment>
-    );
+  return (
+    <Fragment>
+      <div className={`loader-wrapper ${show ? '' : 'loader-hide'}`}>
+        <div className="theme-loader">
+            <div className="loader-p"></div>
+        </div>
+      </div>
+    </Fragment>
+  );
 };
 
 export default Loader;

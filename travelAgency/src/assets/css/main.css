@@ -1,0 +1,26 @@
+body{
+  margin: 0;
+  padding: 0;
+  background-color: #327D81!important;
+}
+
+.navbar{
+  background-color: transparent!important;
+  box-shadow: 0px 1px 20px 0px rgb(224 224 234 / 20%);
+}
+
+.navbar .container > * {
+  color: white;
+}
+
+.nav-link{
+  color: white!important;
+  display: flex!important;
+  align-items: center;
+}
+
+.btn{
+  background-color: #13294B!important;
+  outline: none!important;
+  border: #13294B!important;
+}
