@@ -10,10 +10,8 @@ const AppLayout = () => {
       <>
         <Loader />
         <Header />
-        <div className={`page-wrapper `} id='pageWrapper'>
-            <div className='page-body'>
-              <Outlet />
-            </div>
+        <div className='page-wrapper'>
+          <Outlet />
         </div> 
       </>
     );  

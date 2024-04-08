@@ -4,7 +4,7 @@ import {Navbar, Nav, NavLink, Container, NavbarBrand, NavbarToggle, NavbarCollap
 const Header = () => {
 
   return(
-    <Navbar variant="pills" expand="lg" fixed="top" className="navbar">
+    <Navbar variant="pills" expand="lg" fixed="top" className="navbar mb-5">
       <Container>
         <NavbarBrand>Travel Agency</NavbarBrand>
         <NavbarToggle aria-controls="basic-navbar-nav" />
@@ -13,7 +13,9 @@ const Header = () => {
             <NavLink to="/" className="nav-link-md">Home</NavLink>
             <NavLink to="/">Link</NavLink>
             <NavLink to="/">Travel</NavLink>
-            <NavLink to="/" className="ms-5"><Button>Log in</Button></NavLink>
+            <NavLink to="/" className="ms-5">
+              <Button>Log in</Button>
+            </NavLink>
           </Nav>
         </NavbarCollapse>
       </Container>

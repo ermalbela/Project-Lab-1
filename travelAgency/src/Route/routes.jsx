@@ -4,7 +4,7 @@ import React from "react";
 
 
 export const routes = [
-  {path: `/`, Component: <Dashboard />},
-  {path: `/header`, Component: <Header />}
+  {path: `/header`, Component: <Header />},
+  {path: `/`, Component: <Dashboard />}
 
 ]
