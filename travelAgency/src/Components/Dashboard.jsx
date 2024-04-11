@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {Row, Col, FormControl} from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from 'react';
+import {Row, Col, DropdownButton, DropdownItem, Button} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from './MySelect';
 import {components} from 'react-select';
@@ -11,7 +11,7 @@ const Dashboard = () => {
 
   const [fromCountry, setFromCountry] = useState('');
   const [toCountry, setToCountry] = useState('');
-  const [passengerVal, setPassengerVal] = useState('');
+  const [passengerCounts, setPassengerCounts] = useState({adult: 0, child: 0, infant: 0});
 
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
@@ -51,9 +51,6 @@ const Dashboard = () => {
         ...styles,
         backgroundColor: isSelected ? '#13294B' : isFocused ? '#cee6e2' : '#F4F6EF',
         color: !isSelected ? '#000' : isSelected || isFocused ? '#F4F6EF' : '',
-        // ':hover': {
-        //   color: '#030303'
-        // }
         borderRadius: '5px'
       }
     },
@@ -69,7 +66,7 @@ const Dashboard = () => {
       ...provided,
       backgroundColor: '#F4F6EF'
     }),
-    control: (provided, state) => ({
+    control: (provided) => ({
       ...provided,
       borderColor: 'hsl(0, 0%, 80%);',
       boxShadow: 'none',
@@ -78,6 +75,32 @@ const Dashboard = () => {
         boxShadow: 'none'
       }
     }),
+  }
+
+
+  const toggleDropdown = () => {
+    setShowDropdown(prevState => !prevState);
+  };
+
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleItemClick = (type, action, e) => {
+    e.stopPropagation();
+    if(action === 'increment'){
+      setPassengerCounts(prevCounts => ({
+        ...prevCounts,
+        [type]: prevCounts[type] + 1
+      }))
+    } else{
+      setPassengerCounts(prevCounts => ({
+        ...prevCounts,
+        [type]: prevCounts[type] - 1
+      }))
+    }
+  };
+
+  const handleMenuClick = e => {
+    e.stopPropagation();
   }
 
 
@@ -136,12 +159,19 @@ const Dashboard = () => {
           placeholderText='Select Date...'
         />
       </Col>
-      <Col>
-        <FormControl 
-          value={passengerVal} 
-          onChange={(e) => setPassengerVal(e.target.value)} 
-          placeholder='Passengers'
-        />
+      <Col sm={2}>
+        <DropdownButton title="Passengers" show={showDropdown} onClick={toggleDropdown}>
+          {Object.keys(passengerCounts).map(type => (
+            <DropdownItem key={type} onClick={e => handleMenuClick(e)}>
+              <Button size="sm" variant="outline-success" className="rounded-circle" onClick={e => handleItemClick(type, 'increment', e)}>+</Button>
+              {type.charAt(0).toUpperCase() + type.slice(1) + ":" + passengerCounts[type]}
+              <Button size="sm" variant="outline-danger" className="rounded-circle" disabled={passengerCounts[type] <= 0} onClick={e => handleItemClick(type, 'decrement', e)}>-</Button>
+            </DropdownItem>
+          ))}
+        </DropdownButton>
+      </Col>
+      <Col sm={1}>
+        <Button style={{height: '39px'}}>Search</Button>
       </Col>
     </Row>
   )

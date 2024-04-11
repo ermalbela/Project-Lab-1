@@ -19,7 +19,7 @@ body{
   align-items: center;
 }
 
-.btn{
+.btn-primary{
   background-color: #13294B!important;
   outline: none!important;
   border: #13294B!important;
@@ -63,4 +63,34 @@ body{
 .form-control:focus{
   border-color: hsl(0, 0%, 80%);;
   box-shadow: none,
+}
+
+.dropdown-toggle{
+  height: 39px!important;
+}
+
+.dropdown-menu{
+  transform: translate3d(0px, 44.8px, 0px)!important;
+  background-color: #F4F6EF!important;
+}
+
+.dropdown-item {
+  display: flex!important;
+  align-items: center;
+  background-color: #F4F6EF!important;
+  justify-content: space-around;
+}
+
+.dropdown-item:active {
+  color: black!important;
+  text-decoration: none;
+  background-color: #F4F6EF!important;
+}
+
+.rounded-circle{
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: grid!important;
+  place-content: center;
 }
