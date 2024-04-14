@@ -5,7 +5,7 @@ body{
 }
 
 .navbar{
-  background-color: transparent!important;
+  background-color: #327D81!important;
   box-shadow: 0px 1px 20px 0px rgb(224 224 234 / 20%);
 }
 
@@ -17,6 +17,7 @@ body{
   color: white!important;
   display: flex!important;
   align-items: center;
+  text-decoration: none;
 }
 
 .btn-primary{
@@ -93,4 +94,59 @@ body{
   height: 20px;
   display: grid!important;
   place-content: center;
+}
+
+.timeline-container{
+  margin: 0 auto 0 50px;
+  border-left: 3px solid #818181;
+  padding-left: 20px;
+}
+
+.timeline-container .event{
+  box-shadow: 1px 5px 8px -2px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  margin: 20px 0;
+  position: relative;
+  background-color: #f8f8f8!important;
+  border-radius: 7px;
+}
+
+.timeline-container .event::before{
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 1px solid #000;
+  position: absolute;
+  left: -28px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background-color: #24695c;
+}
+
+.timeline-container .event .event-date{
+  position: absolute;
+  left: -130px;
+  transform: translateY(-50%);
+  font-size: 13px;
+}
+
+.timeline-container p{
+  margin-top: 15px!important;
+  color: #000!important;
+}
+
+.timeline-content{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.customized-text{
+  color: #F4F6EF!important;
+}
+
+.plane-icon{
+  width: 40px;
+  height: 40px;
+  margin-right: 1.5rem;
 }

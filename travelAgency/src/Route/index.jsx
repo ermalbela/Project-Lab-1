@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
 import Loader from '../Layout/Loader';
 import LayoutRoutes from '../Layout/LayoutRoutes';
 import React from "react";
-import Header from '../Layout/Header';
 
 const Routers = () => {
 
