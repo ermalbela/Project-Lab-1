@@ -2,8 +2,10 @@ import React from "react";
 import {Navbar, Nav, NavLink, Container, NavbarBrand, NavbarToggle, NavbarCollapse, Button, NavItem} from 'react-bootstrap';
 import { routes } from "../Route/routes";
 import { Link } from "react-router-dom";
+import { SignInButton, UserButton, useAuth } from "@clerk/clerk-react";
 
 const Header = () => {
+  const {userId} = useAuth()
 
   return(
     <Navbar variant="pills" expand="lg" fixed="top" className="navbar mb-5">
@@ -20,11 +22,16 @@ const Header = () => {
                 <Link className="nav-link" to={path}>{name}</Link>
               </NavLink>
             ))}
-              <Link className="nav-link" to='/'>
+              {/* <Link className="nav-link" to='/sign-in'>
                 <NavLink as='button' className="ms-5 btn btn-primary">
                   Log in
                 </NavLink>
-              </Link>
+              </Link> */}
+              {!userId ? (
+                <SignInButton className="ms-5 btn btn-primary" mode='modal' redirectUrl="/" />
+              ) : (
+                <UserButton afterSignOutUrl="/" />
+              )} 
           </Nav>
         </NavbarCollapse>
       </Container>
