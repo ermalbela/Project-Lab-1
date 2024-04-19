@@ -178,3 +178,7 @@ body > * {
   background-color: #F4F6EF!important;
   cursor: pointer;
 }
+
+.timeline-content > * {
+  color: #000;
+}
