@@ -4,6 +4,10 @@ body{
   background-color: #327D81!important;
 }
 
+body > * {
+  color: #fff;
+}
+
 .navbar{
   background-color: #327D81!important;
   box-shadow: 0px 1px 20px 0px rgb(224 224 234 / 20%);
@@ -68,6 +72,7 @@ body{
 
 .dropdown-toggle{
   height: 39px!important;
+  width: 135px;
 }
 
 .dropdown-menu{
@@ -149,4 +154,27 @@ body{
   width: 40px;
   height: 40px;
   margin-right: 1.5rem;
+}
+
+.top-button{
+  width: 135px;
+}
+
+#dropdown-basic-button{
+  width: 135px;
+}
+
+.offers{
+  margin-top: 6rem;
+}
+
+.offers h2 {
+  margin-bottom: 1rem;
+}
+
+.offer-card{
+  box-shadow: 3px 5px 13px 2px rgb(224 224 234 / 20%);
+  border: none!important;
+  background-color: #F4F6EF!important;
+  cursor: pointer;
 }

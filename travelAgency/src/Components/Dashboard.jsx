@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {Row, Col, DropdownButton, DropdownItem, Button} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from './MySelect';
 import {components} from 'react-select';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-
+import travel from '../assets/images/travel.webp';
+import axios from 'axios';
+import OfferCard from '../CommonElements/OfferCard';
 
 const Dashboard = () => {
 
@@ -15,7 +17,58 @@ const Dashboard = () => {
 
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
+  const [dropdownVal, setDropdownVal] = useState('Traveling with');
 
+  const initialValues = [ // How the data should look like for Offers
+    {
+      originCountry : {
+        value: 'Albania', 
+        label: 'Albania'
+      },
+      destinationCountry: {
+        value: 'Italy', 
+        label: 'Italy'
+      },
+      text: '49.99$',
+      img: travel
+    },
+    {
+      originCountry : {
+        value: 'Albania', 
+        label: 'Albania'
+      },
+      destinationCountry: {
+        value: 'Italy', 
+        label: 'Italy'
+      },
+      text: '49.99$',
+      img: travel
+    },
+    {
+      originCountry : {
+        value: 'Albania', 
+        label: 'Albania'
+      },
+      destinationCountry: {
+        value: 'Italy', 
+        label: 'Italy'
+      },
+      text: '49.99$',
+      img: travel
+    },
+    {
+      originCountry : {
+        value: 'Albania', 
+        label: 'Albania'
+      },
+      destinationCountry: {
+        value: 'Italy', 
+        label: 'Italy'
+      },
+      text: '49.99$',
+      img: travel
+    }
+  ]
 
   const Option = props => {
     return (
@@ -32,7 +85,7 @@ const Dashboard = () => {
     );
   };
 
-  const customStyles = {
+  const customStyles = { // Customizing react-select styles 
     valueContainer: (provided) => ({
       ...provided,
       whiteSpace: "nowrap",
@@ -104,76 +157,103 @@ const Dashboard = () => {
   }
 
 
-  const countriesWithLabels = countries.map(country => {
+  const countriesWithLabels = countries.map(country => { //Updating the data so we can use React-Select properly
     return { value: country, label: country };
   });
 
   return (
-    <Row className="justify-content-center">
+    <>
+    <Row className='justify-content-between'>
       <Col>
-        <MySelect
-          options={countriesWithLabels || []}
-          styles={customStyles}
-          closeMenuOnSelect={true}
-          hideSelectedOptions={false}
-          components={{ Option }}
-          onChange={(selected) => {
-            setFromCountry(selected);
-          }}
-          value={fromCountry}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          maxMenuHeight={"200px"}
-          placeholder="From..."
-          isClearable
-        />
-      </Col>
-      <Col>
-        <MySelect
-          options={countriesWithLabels || []}
-          styles={customStyles}
-          closeMenuOnSelect={true}
-          hideSelectedOptions={false}
-          components={{ Option }}
-          onChange={(selected) => {
-            setToCountry(selected);
-          }}
-          value={toCountry}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          maxMenuHeight={"200px"}
-          placeholder="To..."
-          isClearable
-        />
-      </Col>
-      <Col>
-        <DatePicker
-          className="form-control digits"
-          selectsRange={true}
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(update) => {
-            setDateRange(update);
-          }}
-          isClearable={true} 
-          placeholderText='Select Date...'
-        />
-      </Col>
-      <Col sm={2}>
-        <DropdownButton title="Passengers" show={showDropdown} onClick={toggleDropdown}>
-          {Object.keys(passengerCounts).map(type => (
-            <DropdownItem key={type} onClick={e => handleMenuClick(e)}>
-              <Button size="sm" variant="outline-success" className="rounded-circle" onClick={e => handleItemClick(type, 'increment', e)}>+</Button>
-              {type.charAt(0).toUpperCase() + type.slice(1) + ":" + passengerCounts[type]}
-              <Button size="sm" variant="outline-danger" className="rounded-circle" disabled={passengerCounts[type] <= 0} onClick={e => handleItemClick(type, 'decrement', e)}>-</Button>
-            </DropdownItem>
-          ))}
+        <DropdownButton id="dropdown-basic-button" className="mb-4 top-button" title={dropdownVal}>
+          {['Bus', 'Airplane'].map((item, idx) => <DropdownItem key={idx} onClick={() => setDropdownVal(item)}>{item}</DropdownItem>)}
         </DropdownButton>
-      </Col>
-      <Col sm={1}>
-        <Button style={{height: '39px'}}>Search</Button>
-      </Col>
+    </Col>
+    <Col className='d-flex justify-content-end'>
+      <Button style={{height: '39px'}} className='top-button'>Search</Button>
+    </Col>
     </Row>
+      <Row className="justify-content-center">
+        <Col>
+          <MySelect
+            options={countriesWithLabels || []}
+            styles={customStyles}
+            closeMenuOnSelect={true}
+            hideSelectedOptions={false}
+            components={{ Option }}
+            onChange={(selected) => {
+              setFromCountry(selected);
+              console.log(selected);
+            }}
+            value={fromCountry}
+            className="react-select-container"
+            classNamePrefix="react-select"
+            maxMenuHeight={"200px"}
+            placeholder="From..."
+            isClearable
+          />
+        </Col>
+        <Col>
+          <MySelect
+            options={countriesWithLabels || []}
+            styles={customStyles}
+            closeMenuOnSelect={true}
+            hideSelectedOptions={false}
+            components={{ Option }}
+            onChange={(selected) => {
+              setToCountry(selected);
+            }}
+            value={toCountry}
+            className="react-select-container"
+            classNamePrefix="react-select"
+            maxMenuHeight={"200px"}
+            placeholder="To..."
+            isClearable
+          />
+        </Col>
+        <Col>
+          <DatePicker
+            className="form-control digits"
+            selectsRange={true}
+            startDate={startDate}
+            endDate={endDate}
+            onChange={(update) => {
+              setDateRange(update);
+            }}
+            isClearable={true} 
+            placeholderText='Select Date...'
+          />
+        </Col>
+        <Col sm={1} className='d-flex justify-content-end'>
+          <DropdownButton title="Passengers" show={showDropdown} onClick={toggleDropdown}>
+            {Object.keys(passengerCounts).map(type => (
+              <DropdownItem key={type} onClick={e => handleMenuClick(e)}>
+                <Button size="sm" variant="outline-success" className="rounded-circle" onClick={e => handleItemClick(type, 'increment', e)}>+</Button>
+                {type.charAt(0).toUpperCase() + type.slice(1) + ":" + passengerCounts[type]}
+                <Button size="sm" variant="outline-danger" className="rounded-circle" disabled={passengerCounts[type] <= 0} onClick={e => handleItemClick(type, 'decrement', e)}>-</Button>
+              </DropdownItem>
+            ))}
+          </DropdownButton>
+        </Col>
+      </Row>
+      
+      <div className='offers' style={{margin: '6rem 0 1rem 0'}}>
+        <h2>
+          Cheap Flight Offers
+        </h2>
+        <Row className="g-4">
+          {initialValues.map((itemProps, idx) => ( //Mapping over offers then returning Cards from OfferCard Component
+            <Col key={idx} onClick={() => {
+              setFromCountry(itemProps.originCountry);
+              setToCountry(itemProps.destinationCountry);
+              setDateRange(['04/26/2024', '05/02/2024']);
+            }}>
+              <OfferCard props={itemProps}/>
+            </Col>
+            ))}
+        </Row>
+      </div>
+    </>
   )
 }
 
