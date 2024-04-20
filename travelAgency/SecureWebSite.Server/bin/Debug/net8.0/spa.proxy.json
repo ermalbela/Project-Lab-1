@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:5173",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "C:\\Users\\ermal\\Desktop\\Project-Lab-1\\travelAgency\\SecureWebSite.Server\\..\\securewebsite.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}

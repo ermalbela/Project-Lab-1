@@ -4,6 +4,7 @@ import App from './App.jsx';
 import '../src/assets/css/main.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/assets/css/loader.css';
+import '../src/assets/css/login.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
