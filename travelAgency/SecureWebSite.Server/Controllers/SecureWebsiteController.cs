@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SecureWebSite.Server.Models;
 using System.Security.Claims;
 
@@ -103,6 +105,21 @@ namespace SecureWebSite.Server.Controllers
 						}
 
 						return Ok(new { userInfo = userInfo });
+				}
+
+				[HttpGet("users")]
+				public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+				{
+					try
+					{
+					// Retrieve all users from the database
+						var users = await userManager.Users.Select(u => new { userName = u.UserName, email = u.Email}).ToListAsync();
+						return Ok(users);
+					}
+					catch (Exception ex)
+					{
+						return BadRequest(new { message = "Something went wrong while fetching users. " + ex.Message });
+					}
 				}
 
 				[HttpGet("xhtlekd")]

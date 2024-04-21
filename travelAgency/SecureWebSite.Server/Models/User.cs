@@ -6,7 +6,7 @@ namespace SecureWebSite.Server.Models
 {
 		public class User : IdentityUser
 		{
-
+			
 				[MaxLength(50)]
 				public string Name { get; set; }
 
@@ -20,5 +20,11 @@ namespace SecureWebSite.Server.Models
 				public DateTime LastLogin { get; set; } = DateTime.Now;
 
 				public bool IsAdmin { get; set; } = false;
-		}
+
+				// Foreign key for Flight
+				public int? FlightId { get; set; } // Nullable
+												  
+				public Flight? Flight { get; set; } // Navigation property for Flight
+
+    }
 }

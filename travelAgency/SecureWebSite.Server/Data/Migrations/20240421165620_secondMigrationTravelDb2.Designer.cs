@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SecureWebSite.Server.Data;
 
@@ -11,9 +12,11 @@ using SecureWebSite.Server.Data;
 namespace SecureWebSite.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240421165620_secondMigrationTravelDb2")]
+    partial class secondMigrationTravelDb2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,8 +166,18 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlightId"));
 
+                    b.Property<int>("Adults")
+                        .HasColumnType("int");
+
                     b.Property<TimeOnly>("Arrival")
                         .HasColumnType("time");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Children")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("Departure")
                         .HasColumnType("time");
@@ -173,11 +186,17 @@ namespace SecureWebSite.Server.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Infant")
+                        .HasColumnType("int");
+
                     b.Property<string>("OriginCountry")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Reservation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Returning")
                         .HasColumnType("datetime2");
 
                     b.Property<float>("TicketPrice")
@@ -332,10 +351,15 @@ namespace SecureWebSite.Server.Data.Migrations
             modelBuilder.Entity("SecureWebSite.Server.Models.User", b =>
                 {
                     b.HasOne("SecureWebSite.Server.Models.Flight", "Flight")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("FlightId");
 
                     b.Navigation("Flight");
+                });
+
+            modelBuilder.Entity("SecureWebSite.Server.Models.Flight", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

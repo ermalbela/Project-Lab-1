@@ -1,7 +1,7 @@
 import { Fragment, useContext, useState } from 'react';
 import {Button, Row, Col, Container, Form, FormGroup, InputGroup, FormLabel, FormControl, Card} from 'react-bootstrap';
 import { patterns } from '../Validation';
-import { loginUser } from '../Endpoint';
+import { getUsers, loginUser } from '../Endpoint';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import emailIcon from '../assets/images/email.png';
@@ -38,7 +38,6 @@ const Login = () => {
   const handleClick = async () => {
     setErrors(validate(user));
     if(patterns.userName.test(user.userName) && patterns.password.test(user.password)){
-      console.log('user -> '  + user);
       try{
         axios.post(loginUser, {Email: user.email, Password: user.password, Remember: checked})
         .then(() => {

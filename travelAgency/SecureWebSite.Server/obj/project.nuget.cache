@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "WH2KlGnHkyISy3ZU9oK7DWtmtoxx/ZT09jcUplbWl1EJcc17w908Hvdgte2EFiDVoAHAn3hdx5vTh4dCiGi26g==",
+  "dgSpecHash": "a5SNm1aRCjYFOikKZbYhMTk+RZFREZ06UDR3kZnl0/sZS7ce9qw5ugdSOeFinwf3TGtxY6E21mBacSfVOGKAoA==",
   "success": true,
   "projectFilePath": "C:\\Users\\ermal\\Desktop\\Project-Lab-1\\travelAgency\\SecureWebSite.Server\\SecureWebSite.Server.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\ermal\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\ermal\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\ermal\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
     "C:\\Users\\ermal\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
