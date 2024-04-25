@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from './MySelect';
@@ -9,9 +9,11 @@ import travel from '../assets/images/travel.webp';
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, getFlights } from '../Endpoint';
+import { createFlights, filteredFlights } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import FlightContext from '../_helper/FlightContext';
 
 const Dashboard = () => {
 
@@ -31,7 +33,10 @@ const Dashboard = () => {
   }
   const [flight, setFlight] = useState(flightInitial);
 
-  
+  const history = useNavigate();
+
+  const {data, setData} = useContext(FlightContext);
+
   const handleChange = (e) => {
     const {name, value} = e.target;
     setFlight({...flight, [name]: value})
@@ -236,58 +241,62 @@ const Dashboard = () => {
         // Children: passengerCounts['child'],
         // Infant: passengerCounts['infant']
       }
-    axios.post(filteredFlights, finalVals)
-      .then(res => console.log(res.data));
+      axios.post(filteredFlights, finalVals)
+        .then(res => {
+          console.log(res.data)
+          setData(res.data?.filtered_flights?.result);
+          history('/flights');
+        });
     }
   }
 
   const addRandom = async () => {
     //Countries you wanna add in Origin Country and Destination Country
-    const countries = ['Brazil', 'Turkey', 'Greece', 'Italy', 'Germany', 'France', 'Japan', 'Mexico', 'Russia', 'Australia', 'United Kingdom', 'Kosovo', 'Albania'];
+    const countries = ['Turkey', 'Greece', 'Italy', 'Germany', 'United Kingdom', 'Kosovo', 'Albania'];
 
-      const originCountry = countries[Math.floor(Math.random() * countries.length)];
-      let destinationCountry;
-      
-      do {
-        destinationCountry = countries[Math.floor(Math.random() * countries.length)];
-      } while (destinationCountry === originCountry);
-      
-      // Generate random hour and minute for Departure time
-      const departureHour = Math.floor(Math.random() * 4) + 20;
-      const departureMinute = Math.floor(Math.random() * 4) * 15;
-      
-      // Generate random hour for Arrival time, making sure it's 2 hours after Departure time
-      const arrivalHour = (departureHour + 2) % 24;
-      
-      // Generate random minute for Arrival time, making sure it's in intervals of 15
-      const arrivalMinute = Math.floor(Math.random() * 4) * 15;
+    const originCountry = countries[Math.floor(Math.random() * countries.length)];
+    let destinationCountry;
+    
+    do {
+      destinationCountry = countries[Math.floor(Math.random() * countries.length)];
+    } while (destinationCountry === originCountry);
+    
+    // Generate random hour and minute for Departure time
+    const departureHour = Math.floor(Math.random() * 4) + 20;
+    const departureMinute = Math.floor(Math.random() * 4) * 15;
+    
+    // Generate random hour for Arrival time, making sure it's 2 hours after Departure time
+    const arrivalHour = (departureHour + 2) % 24;
+    
+    // Generate random minute for Arrival time, making sure it's in intervals of 15
+    const arrivalMinute = Math.floor(Math.random() * 4) * 15;
 
-      const departureTime = new Date();
-      departureTime.setHours(departureHour);
-      departureTime.setMinutes(departureMinute);
+    const departureTime = new Date();
+    departureTime.setHours(departureHour);
+    departureTime.setMinutes(departureMinute);
 
-      const arrivalTime = new Date();
-      arrivalTime.setHours(arrivalHour);
-      arrivalTime.setMinutes(arrivalMinute);
-      
-      const flight = {
-        OriginCountry: originCountry,
-        DestinationCountry: destinationCountry,
-        Reservation: new Date(),
-        TicketsLeft: Math.floor(Math.random() * 60) + 60,
-        Departure: departureTime.toLocaleTimeString('en-US', { hour12: false }),
-        Arrival: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
-        TicketPrice: (Math.random() * 600 + 60).toFixed(2)
-      };
-      
-      axios.post(createFlights, flight)
-        .then(res => {
-          console.log(res)
-          Swal.fire('Flight Added Successfully', '', 'success');
-          setCreateFlight(false);
-          setFlight(flightInitial);
-        })
-        .catch(err => console.error(err));
+    const arrivalTime = new Date();
+    arrivalTime.setHours(arrivalHour);
+    arrivalTime.setMinutes(arrivalMinute);
+    
+    const flight = {
+      OriginCountry: originCountry,
+      DestinationCountry: destinationCountry,
+      Reservation: new Date(),
+      TicketsLeft: Math.floor(Math.random() * 60) + 60,
+      Departure: departureTime.toLocaleTimeString('en-US', { hour12: false }),
+      Arrival: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
+      TicketPrice: (Math.random() * 600 + 60).toFixed(2)
+    };
+    
+    axios.post(createFlights, flight)
+      .then(res => {
+        console.log(res)
+        Swal.fire('Flight Added Successfully', '', 'success');
+        setCreateFlight(false);
+        setFlight(flightInitial);
+      })
+      .catch(err => console.error(err));
   }
 
   return (

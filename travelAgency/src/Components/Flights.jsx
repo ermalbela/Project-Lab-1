@@ -1,31 +1,39 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import planeIcon from '../assets/images/plane-icon.png';
 import axios from 'axios';
 import { getFlights } from '../Endpoint';
 import Swal from 'sweetalert2';
 import Loader from '../Layout/Loader';
+import FlightContext from '../_helper/FlightContext';
 
 const Flights = () => {
 
-  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  // const [data, setData] = useState([]);
+  const {data, setData} = useContext(FlightContext);
 
   // ===============================FETCHING THE DATA HERE===============================//
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(getFlights);
-        console.log(response);
-        setData(response.data);
-        setIsLoading(false);
-      } catch (err) {
-        console.log(err);
-      }
-    }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(getFlights);
+  //       console.log(response);
+  //       setData(response.data);
+  //       setIsLoading(false);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
+
+  useEffect(() => {
+    if(data !== '' || data !== undefined){
+      setIsLoading(false);
+    }
+  }, [data, setData]);
 
 
   return isLoading ? (
@@ -38,6 +46,7 @@ const Flights = () => {
 
           {/* ===============================MAPPING OVER THE DATA HERE=============================== */}
           {data.map((flight, idx) => {
+            console.log(flight)
             const date = new Date(flight.reservation);
             const options = { month: 'long', day: 'numeric', year: 'numeric' };
             const formattedDate = date.toLocaleDateString('en-US', options);
