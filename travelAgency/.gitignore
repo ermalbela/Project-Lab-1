@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .vs/
+
 /logs/
 /temp/
 SecureWebSite.Server/bin
@@ -19,7 +20,6 @@ SecureWebSite.Server/obj
 /SecureWebSite.Server/bin
 /SecureWebSite.Server/obj
 /appsettings.json/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
