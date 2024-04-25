@@ -1,31 +1,48 @@
-import React, { useEffect, useState } from 'react'
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import React, { useContext, useEffect, useState } from 'react'
+import { Container, Row, Col, Button, Modal, Card } from 'react-bootstrap';
 import planeIcon from '../assets/images/plane-icon.png';
 import axios from 'axios';
 import { getFlights } from '../Endpoint';
 import Swal from 'sweetalert2';
 import Loader from '../Layout/Loader';
+import FlightContext from '../_helper/FlightContext';
+import checkCircle from '../assets/images/check-circle.png';
+import minusCircle from '../assets/images/minus-circle.png';
 
 const Flights = () => {
 
-  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const {data, setData} = useContext(FlightContext);
+  const [show, setShow] = useState(false);
+  const [selectedFlight, setSelectedFlight] = useState(null);
 
-  // ===============================FETCHING THE DATA HERE===============================//
+  // ===============================FETCH THE WHOLE FLIGHTS HERE===============================//
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(getFlights);
+  //       console.log(response);
+  //       setData(response.data);
+  //       setIsLoading(false);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
+
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(getFlights);
-        console.log(response);
-        setData(response.data);
-        setIsLoading(false);
-      } catch (err) {
-        console.log(err);
-      }
+    if(data !== '' || data !== undefined){
+      setIsLoading(false);
     }
+  }, [data, setData]);
 
-    fetchData();
-  }, []);
+  const handleClick = flight => {
+    console.log(flight);
+    setShow(true);
+    setSelectedFlight(flight);
+  }
 
 
   return isLoading ? (
@@ -71,7 +88,7 @@ const Flights = () => {
                       {/* ===============================TICKET FUNCTIONALITY BUTTON=============================== */}
                       <Col className="d-flex justify-content-end align-items-center">
                         <h5 style={{marginBottom: '0px'}}>{flight.ticketPrice.toFixed(2)}$ &nbsp;</h5>
-                        <Button>View Prices</Button>
+                        <Button onClick={() => handleClick(flight)}>View Prices</Button>
                       </Col>
                     </Row>
                   </div>
@@ -79,6 +96,142 @@ const Flights = () => {
               </div>
             )
           })}
+          {selectedFlight && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
+            <Modal.Header className='custom-modal-header'>
+              <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className='row'>
+              <Col>
+                <Card style={{height: '100%'}}>
+                  <Card.Header>
+                    <p className='custom-price'>{selectedFlight.ticketPrice}$</p> Standard Category 
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Text className='flight-category-title'>
+                      Baggage
+                    </Card.Text>
+                    <Card.Text className='d-flex align-items-center flight-category-text first-text'>
+                      <img src={checkCircle} className="category-icons"/>7kgs Cabin Baggage
+                    </Card.Text>
+                    <Card.Text className='d-flex align-items-center flight-category-text'>
+                      <img src={checkCircle} className="category-icons"/>15kgs Check-in Baggage
+                    </Card.Text>
+
+                    <Card.Text className='flight-category-title'>
+                      Flexibility
+                    </Card.Text>
+                    <Card.Text className='flight-category-text'>
+                      <img src={minusCircle} className="category-icons"/>Cancellation fee starts at 50$ (up to 3 hours before departure)
+                    </Card.Text>
+
+                    <Card.Text className='flight-category-title'>
+                      Seats, Meals & More
+                    </Card.Text>
+                    <Card.Text className='flight-category-text first-text'>
+                      <img src={minusCircle} className="category-icons"/>Chargeable Seats
+                    </Card.Text>
+                    <Card.Text className='flight-category-text'>
+                      <img src={minusCircle} className="category-icons"/>Chargeable Meals
+                    </Card.Text>
+                    <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
+                      <Button variant="primary">Purchase</Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+                <Card style={{height: '100%'}}>
+                  <Card.Header>
+                    <p className='custom-price'>{(selectedFlight.ticketPrice * 2 / 1.5).toFixed(2)}$</p> Standard+ Category 
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Text className='flight-category-title'>
+                      Baggage
+                    </Card.Text>
+                    <Card.Text className='d-flex align-items-center flight-category-text first-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/>7kgs Cabin Baggage
+                    </Card.Text>
+                    <Card.Text className='d-flex align-items-center flight-category-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/>20kgs Check-in Baggage
+                    </Card.Text>
+
+                    <Card.Text className='flight-category-title'>
+                      Flexibility
+                    </Card.Text>
+                    <Card.Text className='flight-category-text'>
+                      <img src={minusCircle} style={{width: '17px'}}/>Cancellation fee starts at 50$ (up to 3 hours before departure)
+                    </Card.Text>
+
+                    <Card.Text className='flight-category-title'>
+                      Seats, Meals & More
+                    </Card.Text>
+                    <Card.Text className='flight-category-text first-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Seats
+                    </Card.Text>
+                    <Card.Text className='flight-category-text'>
+                      <img src={minusCircle} style={{width: '17px'}}/>Chargeable Meals
+                    </Card.Text>
+                    <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
+                      <Button variant="primary">Purchase</Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+                <Card>
+                  <Card.Header className='vip-header'>
+                    <p className='custom-price'>{selectedFlight.ticketPrice * 2}$</p> VIP Category
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Text className='flight-category-title'>
+                      Baggage
+                    </Card.Text>
+                    <Card.Text className='d-flex align-items-center flight-category-text first-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/>7kgs Cabin Baggage
+                    </Card.Text>
+                    <Card.Text className='d-flex align-items-center flight-category-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/>25kgs Check-in Baggage
+                    </Card.Text>
+
+                    <Card.Text className='flight-category-title'>
+                      Flexibility
+                    </Card.Text>
+                    <Card.Text className='flight-category-text'>
+                      <img src={minusCircle} style={{width: '17px'}}/>Lower Cancellation fee 20$ (up to 3 hours before departure)
+                    </Card.Text>
+
+                    <Card.Text className='flight-category-title'>
+                      Seats, Meals & More
+                    </Card.Text>
+                    <Card.Text className='flight-category-text first-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Seats
+                    </Card.Text>
+                    <Card.Text className='flight-category-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Complimentary</span> Meals
+                    </Card.Text>
+
+                    <Card.Text className='flight-category-title'>
+                      Exclusive Benefits
+                    </Card.Text>
+                    <Card.Text className='flight-category-text first-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Express Check-in
+                    </Card.Text>
+                    <Card.Text className='flight-category-text first-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Priority Boarding
+                    </Card.Text>
+                    <Card.Text className='flight-category-text'>
+                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Delayed & lost Baggage Protection Service
+                    </Card.Text>
+                    <div className="d-flex fullWidth justify-content-end align-items-end">
+                      <Button variant="primary">Purchase</Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Modal.Body>
+            <Modal.Footer className='custom-modal-footer'></Modal.Footer>
+          </Modal>
+          }
         </Col>
       </Row>
     </Container>

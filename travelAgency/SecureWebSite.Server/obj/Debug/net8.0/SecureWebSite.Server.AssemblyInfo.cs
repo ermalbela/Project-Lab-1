@@ -16,6 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+92c5a4524f6581f5021064e4b52483fe6772e209")]
 =======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b604c84c57987cd9073c48086e6042dac74bd2d7")]
@@ -23,6 +24,9 @@ using System.Reflection;
 =======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25b30b03c5c58b6d648e32f7bb684d3324830dad")]
 >>>>>>> 7f1d478affaaf17a19f43fbb868012cc40c7d0a7
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7f1d478affaaf17a19f43fbb868012cc40c7d0a7")]
+>>>>>>> 0b9ab4dcc9953c1b5589bc6fa063c01ab6a168a8
 [assembly: System.Reflection.AssemblyProductAttribute("SecureWebSite.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SecureWebSite.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -71,12 +71,12 @@ namespace SecureWebSite.Server.Controllers
 
                 if(!string.IsNullOrEmpty(_flight.OriginCountry) && !string.IsNullOrEmpty(_flight.DestinationCountry))
                 {
-                    query = query.Where(f => f.DestinationCountry == _flight.DestinationCountry && f.OriginCountry == _flight.OriginCountry && f.Reservation == _flight.Reservation);
+                    query = query.Where(f => f.DestinationCountry == _flight.DestinationCountry && f.OriginCountry == _flight.OriginCountry);
                 }
 
                 var filtered_flights = query.ToListAsync();
 
-                return Ok(new { filtered_flights = filtered_flights });
+                return Ok(new { filtered_flights });
 
             }
             catch (Exception ex)
