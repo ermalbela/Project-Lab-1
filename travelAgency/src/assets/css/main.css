@@ -210,3 +210,8 @@ body > * {
 .fullWidth{
   width: 100%!important;
 }
+
+.navbar-brand:focus, .navbar-brand:hover{
+  color: white!important;
+  cursor: pointer;
+}
