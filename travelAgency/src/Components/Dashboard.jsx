@@ -376,12 +376,7 @@ const Dashboard = () => {
       </Col>
     </Row>
 
-    <Modal
-      size="lg"
-      show={createFlight}
-      onHide={() => setCreateFlight(false)}
-      aria-labelledby="example-modal-sizes-title-lg"
-    >
+    <Modal size="lg" show={createFlight} onHide={() => setCreateFlight(false)} aria-labelledby="example-modal-sizes-title-lg">
       <Modal.Header>
         <Modal.Title id="example-modal-sizes-title-lg">
           Create Flight
