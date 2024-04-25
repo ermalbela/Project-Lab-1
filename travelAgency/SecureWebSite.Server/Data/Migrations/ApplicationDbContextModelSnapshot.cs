@@ -173,9 +173,6 @@ namespace SecureWebSite.Server.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FlightTicketId")
-                        .HasColumnType("int");
-
                     b.Property<string>("OriginCountry")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -191,8 +188,6 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasKey("FlightId");
 
-                    b.HasIndex("FlightTicketId");
-
                     b.ToTable("Flights");
                 });
 
@@ -207,6 +202,9 @@ namespace SecureWebSite.Server.Data.Migrations
                     b.Property<int>("Adults")
                         .HasColumnType("int");
 
+                    b.Property<TimeOnly>("Arrival")
+                        .HasColumnType("time");
+
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -214,11 +212,31 @@ namespace SecureWebSite.Server.Data.Migrations
                     b.Property<int>("Children")
                         .HasColumnType("int");
 
+                    b.Property<TimeOnly>("Departure")
+                        .HasColumnType("time");
+
+                    b.Property<string>("DestinationCountry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Infant")
                         .HasColumnType("int");
 
+                    b.Property<string>("OriginCountry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Reservation")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("Returning")
                         .HasColumnType("datetime2");
+
+                    b.Property<float>("TicketPrice")
+                        .HasColumnType("real");
+
+                    b.Property<int>("TicketsLeft")
+                        .HasColumnType("int");
 
                     b.HasKey("FlightTicketId");
 
@@ -382,13 +400,6 @@ namespace SecureWebSite.Server.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SecureWebSite.Server.Models.Flight", b =>
-                {
-                    b.HasOne("SecureWebSite.Server.Models.FlightTicket", null)
-                        .WithMany("Flights")
-                        .HasForeignKey("FlightTicketId");
-                });
-
             modelBuilder.Entity("SecureWebSite.Server.Models.UserTicket", b =>
                 {
                     b.HasOne("SecureWebSite.Server.Models.FlightTicket", "FlightTicket")
@@ -410,8 +421,6 @@ namespace SecureWebSite.Server.Data.Migrations
 
             modelBuilder.Entity("SecureWebSite.Server.Models.FlightTicket", b =>
                 {
-                    b.Navigation("Flights");
-
                     b.Navigation("UserTickets");
                 });
 
