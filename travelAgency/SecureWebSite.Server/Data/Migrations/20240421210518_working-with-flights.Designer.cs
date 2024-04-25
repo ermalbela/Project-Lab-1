@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SecureWebSite.Server.Data;
 
@@ -11,9 +12,11 @@ using SecureWebSite.Server.Data;
 namespace SecureWebSite.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240421210518_working-with-flights")]
+    partial class workingwithflights
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,58 +194,6 @@ namespace SecureWebSite.Server.Data.Migrations
                     b.ToTable("Flights");
                 });
 
-            modelBuilder.Entity("SecureWebSite.Server.Models.FlightTicket", b =>
-                {
-                    b.Property<int>("FlightTicketId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlightTicketId"));
-
-                    b.Property<int>("Adults")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("Arrival")
-                        .HasColumnType("time");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Children")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("Departure")
-                        .HasColumnType("time");
-
-                    b.Property<string>("DestinationCountry")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Infant")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OriginCountry")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Reservation")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Returning")
-                        .HasColumnType("datetime2");
-
-                    b.Property<float>("TicketPrice")
-                        .HasColumnType("real");
-
-                    b.Property<int>("TicketsLeft")
-                        .HasColumnType("int");
-
-                    b.HasKey("FlightTicketId");
-
-                    b.ToTable("FlightTickets");
-                });
-
             modelBuilder.Entity("SecureWebSite.Server.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -264,6 +215,9 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("FlightId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
@@ -314,6 +268,8 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FlightId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -323,30 +279,6 @@ namespace SecureWebSite.Server.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("SecureWebSite.Server.Models.UserTicket", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("FlightId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FlightTicketId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlightTicketId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserTickets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -400,33 +332,13 @@ namespace SecureWebSite.Server.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SecureWebSite.Server.Models.UserTicket", b =>
-                {
-                    b.HasOne("SecureWebSite.Server.Models.FlightTicket", "FlightTicket")
-                        .WithMany("UserTickets")
-                        .HasForeignKey("FlightTicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SecureWebSite.Server.Models.User", "User")
-                        .WithMany("UserTickets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FlightTicket");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SecureWebSite.Server.Models.FlightTicket", b =>
-                {
-                    b.Navigation("UserTickets");
-                });
-
             modelBuilder.Entity("SecureWebSite.Server.Models.User", b =>
                 {
-                    b.Navigation("UserTickets");
+                    b.HasOne("SecureWebSite.Server.Models.Flight", "Flight")
+                        .WithMany()
+                        .HasForeignKey("FlightId");
+
+                    b.Navigation("Flight");
                 });
 #pragma warning restore 612, 618
         }

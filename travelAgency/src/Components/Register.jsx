@@ -60,17 +60,17 @@ const Register = () => {
           })
           history('/login');
       })
-      .catch((res) => {
-        Swal.fire({
-          title: 'Something went wrong...',
-          html: `<div> ${res?.response?.data?.errors.map(item => (
-            item.code + ' -> ' + item.description + '<br />'
-          ))}  </div>`,
-          icon: 'error'
-        });
-      })}
+      // .catch((res) => {
+      //   Swal.fire({
+      //     title: 'Something went wrong...',
+      //     // html: `<div> ${res?.response?.data?.errors.map(item => (
+      //     //   item.code + ' -> ' + item.description + '<br />'
+      //     // ))}  </div>`,
+      //     icon: 'error'
+      //   });
+      // })
+    }
       catch (err) {
-        
         if(!err.response){  
           setErrors({globalError: 'Error, No Server Response!'})
         } else if (err.response?.status === 400) {
