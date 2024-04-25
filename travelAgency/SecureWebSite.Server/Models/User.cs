@@ -21,10 +21,7 @@ namespace SecureWebSite.Server.Models
 
 				public bool IsAdmin { get; set; } = false;
 
-				// Foreign key for Flight
-				public int? FlightId { get; set; } // Nullable
-												  
-				public Flight? Flight { get; set; } // Navigation property for Flight
+		        public ICollection<UserTicket> UserTickets { get; set; }
 
     }
 }

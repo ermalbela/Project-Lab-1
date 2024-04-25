@@ -126,7 +126,7 @@ body > * {
   left: -28px;
   border-radius: 50%;
   transform: translateY(-50%);
-  background-color: #24695c;
+  background-color: #13294B;
 }
 
 .timeline-container .event .event-date{
@@ -154,7 +154,7 @@ body > * {
 .plane-icon{
   width: 40px;
   height: 40px;
-  margin-right: 1.5rem;
+  margin-right: 0.5rem;
 }
 
 .top-button{
@@ -205,4 +205,8 @@ body > * {
 
 .modal-datepicker{
   height: 50px;
+}
+
+.fullWidth{
+  width: 100%!important;
 }

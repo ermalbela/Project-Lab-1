@@ -10,12 +10,13 @@ import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
 import { createFlights } from '../Endpoint';
+import moment from 'moment/moment';
 
 const Dashboard = () => {
 
   const [fromCountry, setFromCountry] = useState('');
   const [toCountry, setToCountry] = useState('');
-  const [passengerCounts, setPassengerCounts] = useState({adult: 0, child: 0, infant: 0});
+  const [passengerCounts, setPassengerCounts] = useState({adult: 1, child: 0, infant: 0});
   const [errors, setErrors] = useState({});
   const [createFlight, setCreateFlight] = useState(false);
   const [flight, setFlight] = useState({
@@ -28,6 +29,7 @@ const Dashboard = () => {
     date: ''
   })
 
+  
   const handleChange = (e) => {
     const {name, value} = e.target;
     setFlight({...flight, [name]: value})
@@ -148,6 +150,24 @@ const Dashboard = () => {
     }),
   }
 
+  const handleItemClick = (type, action, e) => {
+    e.stopPropagation();
+    if(action === 'increment'){
+      setPassengerCounts(prevCounts => ({
+        ...prevCounts,
+        [type]: prevCounts[type] + 1
+      }))
+    } else{
+      setPassengerCounts(prevCounts => ({
+        ...prevCounts,
+        [type]: prevCounts[type] - 1
+      }))
+    }
+  };
+
+  const handleMenuClick = e => {
+    e.stopPropagation();
+  }
 
   const toggleDropdown = () => {
     setShowDropdown(prevState => !prevState);
@@ -175,12 +195,25 @@ const Dashboard = () => {
     return errors;
   }
 
+  const finalVals = {
+    Reservation: moment(dateRange[0]).format('yyyy-MM-DD'),
+    // Returning: moment(dateRange[1]).format('yyyy-MM-DD'),
+    OriginCountry: fromCountry['value'],
+    DestinationCountry: toCountry['value'],
+    // Adults: passengerCounts['adult'],
+    // Children: passengerCounts['child'],
+    // Infant: passengerCounts['infant']
+  }
+
+  
   
   const depDate = new Date(flight.departure);
   const timeDeparture = depDate.toLocaleTimeString([], {hour12: false});
   const arrDate = new Date(flight.arrival);
   const timeArrival = arrDate.toLocaleTimeString([], { hour12: false });
 
+
+  // =============================POSTING DATA TO BACKEND============================= // 
   const handleClick = () => {
     setErrors(validate(flight));
       try{
@@ -189,14 +222,15 @@ const Dashboard = () => {
       } catch(err) {
         console.log(err);
       }
-
   }
 
   const countriesWithLabels = countries.map(country => { //Updating the data so we can use React-Select properly
     return { value: country, label: country };
   });
 
-  console.log(timeDeparture);
+  const handleSearch = () => {
+    console.log(finalVals);
+  }
 
   return (
     <>
@@ -208,7 +242,7 @@ const Dashboard = () => {
     </Col>
     <Col className='d-flex justify-content-between'>
       <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Flight</Button>
-      <Button style={{height: '39px'}} className='top-button'>Search</Button>
+      <Button style={{height: '39px'}} className='top-button' onClick={handleSearch}>Search</Button>
     </Col>
     </Row>
     <Row className="justify-content-center">
@@ -251,6 +285,7 @@ const Dashboard = () => {
       </Col>
       <Col>
         <DatePicker
+          dateFormat="yyyy/MM/dd"
           className="form-control digits"
           selectsRange={true}
           startDate={startDate}

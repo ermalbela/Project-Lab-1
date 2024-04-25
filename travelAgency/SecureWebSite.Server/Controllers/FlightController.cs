@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureWebSite.Server.Data;
@@ -54,12 +55,42 @@ namespace SecureWebSite.Server.Controllers
             }
         }
 
+        [HttpPost("filtered_flights")]
+        public async Task<ActionResult<IEnumerable<Flight>>> FilteredFlights(Flight flight)
+        {
+            try
+            {
+                Flight _flight = new Flight()
+                {
+                    OriginCountry = flight.OriginCountry,
+                    DestinationCountry = flight.DestinationCountry,
+                    Reservation = flight.Reservation,
+                };
+
+                IQueryable<Flight> query = _context.Flights;
+
+                if(!string.IsNullOrEmpty(_flight.OriginCountry) && !string.IsNullOrEmpty(_flight.DestinationCountry))
+                {
+                    query = query.Where(f => f.DestinationCountry == _flight.DestinationCountry && f.OriginCountry == _flight.OriginCountry && f.Reservation == _flight.Reservation);
+                }
+
+                var filtered_flights = query.ToListAsync();
+
+                return Ok(new { filtered_flights = filtered_flights });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Something went wrong while filtering flights. " + ex.Message });
+            }
+        }
+
+        [HttpGet("get_flights")]
         public async Task<ActionResult<IEnumerable<Flight>>> GetFlights()
         {
             try
             {
-                //var flights = await context.Flights.ToListAsync();
-                var flights = new Flight();
+                var flights = await _context.Flights.ToListAsync();
 
                 return Ok(flights);
 

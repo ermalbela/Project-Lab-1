@@ -15,6 +15,6 @@
         public TimeOnly Departure { get; set; } = new TimeOnly(); //Default TimeOnly() is 00:00:00
         public TimeOnly Arrival { get; set; } = new TimeOnly();
         public float TicketPrice { get; set; } = 0.0f;
-        public ICollection<User> Users { get; set; }
+        public ICollection<UserTicket> UserTickets { get; set; }
     }
 }
