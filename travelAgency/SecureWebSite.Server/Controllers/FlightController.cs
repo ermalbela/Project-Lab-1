@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureWebSite.Server.Data;
+using SecureWebSite.Server.Data.Migrations;
 using SecureWebSite.Server.Models;
 
 namespace SecureWebSite.Server.Controllers
@@ -100,8 +101,96 @@ namespace SecureWebSite.Server.Controllers
 
             }
         }
-        
-        
+
+
+        [HttpPost("test_number")]
+        public IActionResult TestNumber([FromBody] List<int> _num)
+        {
+            Console.WriteLine("NUMBER --------------> " + _num[0]);
+            
+            return Ok( new { num = _num[0], _num });
+        }
+
+        public class PurchaseFlightRequest
+        {
+            public List<int> FlightId { get; set; }
+            public User User { get; set; }
+            public int Adults { get; set; }
+            public int Children { get; set; }
+            public int Infant { get; set; }
+            public string Category { get; set; }
+            public DateTime Reservation { get; set; }
+        }
+
+
+        [HttpPost("purchase_flight")]
+        public async Task<ActionResult> PurchaseFlight(PurchaseFlightRequest request)
+        {
+            int _flightId = request.FlightId[0];
+            try
+            {
+
+                var existingUserTicket = await _context.FlightTickets.FirstOrDefaultAsync(ut => ut.UserId == request.User.Id);
+
+                if (existingUserTicket != null)
+                {
+                    return BadRequest("User has already purchased a ticket.");
+                }
+
+                // Get the flight
+                var flight = await _context.Flights.FindAsync(_flightId);
+
+                if (flight == null)
+                {
+                    return NotFound(flight);
+                }
+
+                // Check if there are available tickets
+                if (flight.TicketsLeft <= 0)
+                {
+                    return BadRequest("No more tickets left for this flight.");
+                }
+
+                if (request.Adults <= 0)
+                {
+                    return BadRequest("There Should Be An Adult In The Flight.");
+                }
+
+                // Decrease ticketsLeft count
+                int totalTicketsSold = request.Adults + request.Children + request.Infant;
+                flight.TicketsLeft -= totalTicketsSold;
+
+
+                // Create a new UserTicket
+                var _flightTicket = new FlightTicket
+                {
+                    User = await _context.Users.FindAsync(request.User.Id),
+                    Flight = flight,
+                    FlightId = _flightId,
+                    Adults = request.Adults,
+                    Category = request.Category,
+                    Infant = request.Infant,
+                    Children = request.Children,
+                    Reservation = request.Reservation,
+                    UserId = request.User.Id
+                };
+
+
+                // Add UserTicket to database
+                _context.FlightTickets.Add(_flightTicket);
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Flight ticket purchased successfully.", _flightTicket });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+
+        }
+
 
     }
 }

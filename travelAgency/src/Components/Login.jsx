@@ -40,8 +40,11 @@ const Login = () => {
     if(patterns.userName.test(user.userName) && patterns.password.test(user.password)){
       try{
         axios.post(loginUser, {Email: user.email, Password: user.password, Remember: checked})
-        .then(() => {
-          localStorage.setItem('user', JSON.stringify(user.email));
+        .then(res => {
+          // localStorage.setItem('user', JSON.stringify(user.email));
+          console.log(res.data.updateResult);
+          localStorage.setItem('name', JSON.stringify(res.data.updateResult.name))
+          localStorage.setItem('userId', JSON.stringify(res.data.updateResult.id))
           const Toast = Swal.mixin({
             toast: true,
             position: "top-end",
