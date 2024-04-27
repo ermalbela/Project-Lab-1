@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Container, Row, Col, Button, Modal, Card } from 'react-bootstrap';
+import { Container, Row, Col, Button, Modal, Card, DropdownButton, DropdownItem } from 'react-bootstrap';
 import planeIcon from '../assets/images/plane-icon.png';
 import axios from 'axios';
-import { getFlights } from '../Endpoint';
+import { getFlights, purchaseFlight, testNum } from '../Endpoint';
 import Swal from 'sweetalert2';
 import Loader from '../Layout/Loader';
 import FlightContext from '../_helper/FlightContext';
@@ -15,6 +15,7 @@ const Flights = () => {
   const {data, setData} = useContext(FlightContext);
   const [show, setShow] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [passengerCounts, setPassengerCounts] = useState({adult: 1, child: 0, infant: 0});
 
   // ===============================FETCH THE WHOLE FLIGHTS HERE===============================//
   // useEffect(() => {
@@ -44,6 +45,62 @@ const Flights = () => {
     setSelectedFlight(flight);
   }
 
+  const handlePurchase = (flightId, category, reservation) => {
+    const Name = JSON.parse(localStorage.getItem('name'));
+    const Id = JSON.parse(localStorage.getItem('userId'));
+    const validNum = [flightId];
+    const passengerCountsArr = Object.values(passengerCounts);
+    console.log(passengerCountsArr);
+
+    axios.post(purchaseFlight, {FlightId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation})
+      .then(res => {
+        Swal.fire(res.data.message, '', 'success');
+        console.log(res)
+      })
+      .catch(err => {
+        Swal.fire(err.response.data, '', 'error');
+      })
+    
+  }
+
+  
+  const handleItemClick = (type, action, e) => {
+    e.stopPropagation();
+    if(action === 'increment'){
+      setPassengerCounts(prevCounts => ({
+        ...prevCounts,
+        [type]: prevCounts[type] + 1
+      }))
+    } else{
+      setPassengerCounts(prevCounts => ({
+        ...prevCounts,
+        [type]: prevCounts[type] - 1
+      }))
+    }
+  };
+
+  const handleMenuClick = e => {
+    e.stopPropagation();
+  }
+
+  const toggleDropdown = () => {
+    setShowDropdown(prevState => !prevState);
+  };
+
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const totalPrice = () => {
+    const adultPrice = selectedFlight.ticketPrice;
+    const childPrice = selectedFlight.ticketPrice * 0.75; // 75% of adult price
+    const infantPrice = selectedFlight.ticketPrice * 0.5; // 50% of adult price
+
+    const totalAdultPrice = passengerCounts.adult * adultPrice;
+    const totalChildPrice = passengerCounts.child * childPrice;
+    const totalInfantPrice = passengerCounts.infant * infantPrice;
+
+    return totalAdultPrice + totalChildPrice + totalInfantPrice;
+};
+
 
   return isLoading ? (
     <Loader />
@@ -51,8 +108,18 @@ const Flights = () => {
     <Container>
       <Row>
         <Col md={12}>
-          <h2 className='customized-text'>Flights</h2>
-
+          <div className="d-flex justify-content-between mb-5">
+            <h2 className='customized-text'>Flights</h2>
+            <DropdownButton title="Passengers" show={showDropdown} onClick={toggleDropdown}>
+              {Object.keys(passengerCounts).map(type => (
+                <DropdownItem key={type} onClick={e => handleMenuClick(e)}>
+                  <Button size="sm" variant="outline-success" className="rounded-circle" onClick={e => handleItemClick(type, 'increment', e)}>+</Button>
+                  {type.charAt(0).toUpperCase() + type.slice(1) + ":" + passengerCounts[type]}
+                  <Button size="sm" variant="outline-danger" className="rounded-circle" disabled={passengerCounts[type] <= 0} onClick={e => handleItemClick(type, 'decrement', e)}>-</Button>
+                </DropdownItem>
+              ))}
+            </DropdownButton>
+          </div>
           {/* ===============================MAPPING OVER THE DATA HERE=============================== */}
           {data.map((flight, idx) => {
             const date = new Date(flight.reservation);
@@ -74,7 +141,7 @@ const Flights = () => {
                           <h6 className='text-muted'>Flight ID: {flight.flightId}</h6>
                         </div>
                       </Col>
-                      <Col xs={6} className='d-flex align-items-center justify-content-center'>
+                      <Col xs={4} className='d-flex align-items-center justify-content-center'>
                         <div className='d-flex align-items-center flex-column justify-content-center' style={{width: '45%'}}>
                           <h5 className="text-center fullWidth">{flight.originCountry} &nbsp;</h5>
                           <h6 className="text-center">{flight.departure.slice(0, 5)} &nbsp;</h6>
@@ -87,7 +154,7 @@ const Flights = () => {
                       </Col>
                       {/* ===============================TICKET FUNCTIONALITY BUTTON=============================== */}
                       <Col className="d-flex justify-content-end align-items-center">
-                        <h5 style={{marginBottom: '0px'}}>{flight.ticketPrice.toFixed(2)}$ &nbsp;</h5>
+                        <h5 style={{marginBottom: '0px'}}>{flight.ticketPrice.toFixed(2)}$<span style={{fontSize: '14px'}}>(per adult)</span> &nbsp;</h5>
                         <Button onClick={() => handleClick(flight)}>View Prices</Button>
                       </Col>
                     </Row>
@@ -97,14 +164,15 @@ const Flights = () => {
             )
           })}
           {selectedFlight && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
-            <Modal.Header className='custom-modal-header'>
+            <Modal.Header className='custom-modal-header justify-content-between'>
               <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
+              <h5>Price calculated for: (adults: {passengerCounts['adult']} children: {passengerCounts['child']} infant: {passengerCounts['infant']})</h5>
             </Modal.Header>
             <Modal.Body className='row'>
               <Col>
                 <Card style={{height: '100%'}}>
                   <Card.Header>
-                    <p className='custom-price'>{selectedFlight.ticketPrice}$</p> Standard Category 
+                    <p className='custom-price'>{totalPrice().toFixed(2)}$</p> Standard Category 
                   </Card.Header>
                   <Card.Body>
                     <Card.Text className='flight-category-title'>
@@ -134,7 +202,7 @@ const Flights = () => {
                       <img src={minusCircle} className="category-icons"/>Chargeable Meals
                     </Card.Text>
                     <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
-                      <Button variant="primary">Purchase</Button>
+                      <Button variant="primary" onClick={() => handlePurchase(selectedFlight.flightId, 'Standard', selectedFlight.reservation)}>Purchase</Button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -142,7 +210,7 @@ const Flights = () => {
               <Col>
                 <Card style={{height: '100%'}}>
                   <Card.Header>
-                    <p className='custom-price'>{(selectedFlight.ticketPrice * 2 / 1.5).toFixed(2)}$</p> Standard+ Category 
+                    <p className='custom-price'>{totalPrice().toFixed(2) * 1.5}$</p> Standard+ Category 
                   </Card.Header>
                   <Card.Body>
                     <Card.Text className='flight-category-title'>
@@ -172,7 +240,7 @@ const Flights = () => {
                       <img src={minusCircle} style={{width: '17px'}}/>Chargeable Meals
                     </Card.Text>
                     <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
-                      <Button variant="primary">Purchase</Button>
+                      <Button variant="primary" onClick={() => handlePurchase(selectedFlight.flightId, 'Standard+', selectedFlight.reservation)}>Purchase</Button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -180,7 +248,7 @@ const Flights = () => {
               <Col>
                 <Card>
                   <Card.Header className='vip-header'>
-                    <p className='custom-price'>{selectedFlight.ticketPrice * 2}$</p> VIP Category
+                    <p className='custom-price'>{totalPrice().toFixed() * 2}$</p> VIP Category
                   </Card.Header>
                   <Card.Body>
                     <Card.Text className='flight-category-title'>
@@ -223,7 +291,7 @@ const Flights = () => {
                       <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Delayed & lost Baggage Protection Service
                     </Card.Text>
                     <div className="d-flex fullWidth justify-content-end align-items-end">
-                      <Button variant="primary">Purchase</Button>
+                      <Button variant="primary" onClick={() => handlePurchase(selectedFlight.flightId, 'VIP', selectedFlight.reservation)}>Purchase</Button>
                     </div>
                   </Card.Body>
                 </Card>

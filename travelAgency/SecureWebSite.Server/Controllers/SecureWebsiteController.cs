@@ -64,6 +64,8 @@ namespace SecureWebSite.Server.Controllers
 
 										user_.LastLogin = DateTime.Now;
 										var updateResult = await userManager.UpdateAsync(user_);
+
+										return Ok(new {updateResult = user_ });
 								} else {
 										return BadRequest(new {message = "Please check your credentials and try again. " });
 								}
@@ -73,7 +75,7 @@ namespace SecureWebSite.Server.Controllers
 								return BadRequest(new {message = "Something went wrong, please try again. " + ex.Message });
 						}
 
-						return Ok(new { message = "Login Successful." });
+						//return Ok(new { message = "Login Successful."});
 				}
 
 				[HttpGet("logout"), Authorize]

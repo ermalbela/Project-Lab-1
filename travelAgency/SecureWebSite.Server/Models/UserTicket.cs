@@ -6,6 +6,6 @@
         public User User { get; set; }
 
         public int FlightId { get; set; }
-        public FlightTicket FlightTicket { get; set; }
+        //public FlightTicket FlightTicket { get; set; }
     }
 }

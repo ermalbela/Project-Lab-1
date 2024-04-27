@@ -19,7 +19,6 @@ const Dashboard = () => {
 
   const [fromCountry, setFromCountry] = useState('');
   const [toCountry, setToCountry] = useState('');
-  const [passengerCounts, setPassengerCounts] = useState({adult: 1, child: 0, infant: 0});
   const [errors, setErrors] = useState({});
   const [createFlight, setCreateFlight] = useState(false);
   const flightInitial = {
@@ -157,31 +156,6 @@ const Dashboard = () => {
     }),
   }
 
-  const handleItemClick = (type, action, e) => {
-    e.stopPropagation();
-    if(action === 'increment'){
-      setPassengerCounts(prevCounts => ({
-        ...prevCounts,
-        [type]: prevCounts[type] + 1
-      }))
-    } else{
-      setPassengerCounts(prevCounts => ({
-        ...prevCounts,
-        [type]: prevCounts[type] - 1
-      }))
-    }
-  };
-
-  const handleMenuClick = e => {
-    e.stopPropagation();
-  }
-
-  const toggleDropdown = () => {
-    setShowDropdown(prevState => !prevState);
-  };
-
-  const [showDropdown, setShowDropdown] = useState(false);
-
   const validate = (vals) => {
     const errors = {};
     if(!patterns.name.test(vals.originCountry)){
@@ -252,7 +226,7 @@ const Dashboard = () => {
 
   const addRandom = async () => {
     //Countries you wanna add in Origin Country and Destination Country
-    const countries = ['Turkey', 'Greece', 'Italy', 'Germany', 'United Kingdom', 'Kosovo', 'Albania'];
+    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
 
     const originCountry = countries[Math.floor(Math.random() * countries.length)];
     let destinationCountry;
@@ -306,11 +280,10 @@ const Dashboard = () => {
         <DropdownButton id="dropdown-basic-button" className="mb-4 top-button" title={dropdownVal}>
           {['Bus', 'Airplane'].map((item, idx) => <DropdownItem key={idx} onClick={() => setDropdownVal(item)}>{item}</DropdownItem>)}
         </DropdownButton>
-    </Col>
-    <Col className='d-flex justify-content-between'>
-      <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Flight</Button>
-      <Button style={{height: '39px'}} className='top-button' onClick={handleSearch}>Search</Button>
-    </Col>
+      </Col>
+      <Col className='d-flex justify-content-end'>
+        <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Flight</Button>
+      </Col>
     </Row>
     <Row className="justify-content-center">
       <Col>
@@ -363,16 +336,8 @@ const Dashboard = () => {
           placeholderText='Select Date...'
         />
       </Col>
-      <Col sm={1} className='d-flex justify-content-end'>
-        <DropdownButton title="Passengers" show={showDropdown} onClick={toggleDropdown}>
-          {Object.keys(passengerCounts).map(type => (
-            <DropdownItem key={type} onClick={e => handleMenuClick(e)}>
-              <Button size="sm" variant="outline-success" className="rounded-circle" onClick={e => handleItemClick(type, 'increment', e)}>+</Button>
-              {type.charAt(0).toUpperCase() + type.slice(1) + ":" + passengerCounts[type]}
-              <Button size="sm" variant="outline-danger" className="rounded-circle" disabled={passengerCounts[type] <= 0} onClick={e => handleItemClick(type, 'decrement', e)}>-</Button>
-            </DropdownItem>
-          ))}
-        </DropdownButton>
+      <Col sm={2} className='d-flex justify-content-end'>
+        <Button style={{height: '39px'}} className='top-button' onClick={handleSearch}>Search</Button>
       </Col>
     </Row>
 

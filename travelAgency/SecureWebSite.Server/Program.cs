@@ -24,13 +24,15 @@ namespace SecureWebSite.Server
 								options.SignIn.RequireConfirmedAccount = true;
 								options.Password.RequiredLength = 6;
 								options.Password.RequiredUniqueChars = 0;
+								options.Password.RequireNonAlphanumeric = false;
+								options.Password.RequireLowercase = false;
+								options.Password.RequireUppercase = false;
 
 								options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 								options.Lockout.AllowedForNewUsers = true;
+							
 
-								// User settings.
-								options.User.AllowedUserNameCharacters =
-								"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+								// User settings
 								options.User.RequireUniqueEmail = true;
 
 						}).AddEntityFrameworkStores<ApplicationDbContext>();

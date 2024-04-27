@@ -6,3 +6,5 @@ export const getUsers = userApi + 'users';
 export const createFlights = flightsApi + 'create_flight';
 export const getFlights = flightsApi + 'get_flights';
 export const filteredFlights = flightsApi + 'filtered_flights';
+export const purchaseFlight = flightsApi + 'purchase_flight';
+export const testNum = flightsApi + 'test_number';

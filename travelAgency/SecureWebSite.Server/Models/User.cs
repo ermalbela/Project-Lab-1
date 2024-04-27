@@ -21,7 +21,5 @@ namespace SecureWebSite.Server.Models
 
 				public bool IsAdmin { get; set; } = false;
 
-		        public ICollection<UserTicket> UserTickets { get; set; }
-
     }
 }

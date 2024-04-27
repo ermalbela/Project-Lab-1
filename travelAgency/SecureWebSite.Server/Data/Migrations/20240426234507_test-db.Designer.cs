@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SecureWebSite.Server.Data;
 
@@ -11,9 +12,11 @@ using SecureWebSite.Server.Data;
 namespace SecureWebSite.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240426234507_test-db")]
+    partial class testdb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -225,13 +228,9 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FlightTicketId");
-
-                    b.HasIndex("FlightId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("FlightTickets");
                 });
@@ -318,6 +317,30 @@ namespace SecureWebSite.Server.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("SecureWebSite.Server.Models.UserTicket", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("FlightId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FlightTicketId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlightTicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserTicket");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -376,13 +399,11 @@ namespace SecureWebSite.Server.Data.Migrations
                         .HasForeignKey("FlightTicketId");
                 });
 
-            modelBuilder.Entity("SecureWebSite.Server.Models.FlightTicket", b =>
+            modelBuilder.Entity("SecureWebSite.Server.Models.UserTicket", b =>
                 {
-                    b.HasOne("SecureWebSite.Server.Models.Flight", "Flight")
-                        .WithMany()
-                        .HasForeignKey("FlightId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("SecureWebSite.Server.Models.FlightTicket", null)
+                        .WithMany("UserTickets")
+                        .HasForeignKey("FlightTicketId");
 
                     b.HasOne("SecureWebSite.Server.Models.User", "User")
                         .WithMany()
@@ -390,14 +411,14 @@ namespace SecureWebSite.Server.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Flight");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.FlightTicket", b =>
                 {
                     b.Navigation("Flights");
+
+                    b.Navigation("UserTickets");
                 });
 #pragma warning restore 612, 618
         }
