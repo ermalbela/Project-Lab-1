@@ -280,4 +280,4 @@ C:\Users\ermal\Desktop\Project-Lab-1\travelAgency\SecureWebSite.Server\obj\Debug
 C:\Users\ermal\Desktop\Project-Lab-1\travelAgency\SecureWebSite.Server\obj\Debug\net8.0\SecureWebSite.Server.pdb
 C:\Users\ermal\Desktop\Project-Lab-1\travelAgency\SecureWebSite.Server\obj\Debug\net8.0\SecureWebSite.Server.genruntimeconfig.cache
 C:\Users\ermal\Desktop\Project-Lab-1\travelAgency\SecureWebSite.Server\obj\Debug\net8.0\ref\SecureWebSite.Server.dll
-C:\Users\ermal\Desktop\Project-Lab-1\travelAgency\SecureWebSite.Server\bin\Debug\net8.0\AutoMapper.dll
+C:\Users\ermal\Desktop\Project-Lab-1\travelAgency\SecureWebSite.Server\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

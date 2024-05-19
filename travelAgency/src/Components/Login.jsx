@@ -42,9 +42,10 @@ const Login = () => {
         axios.post(loginUser, {Email: user.email, Password: user.password, Remember: checked})
         .then(res => {
           // localStorage.setItem('user', JSON.stringify(user.email));
-          console.log(res.data.updateResult);
-          localStorage.setItem('name', JSON.stringify(res.data.updateResult.name))
-          localStorage.setItem('userId', JSON.stringify(res.data.updateResult.id))
+          console.log(res.data);
+          localStorage.setItem('name', JSON.stringify(res.data.updateResult.name));
+          localStorage.setItem('userId', JSON.stringify(res.data.updateResult.id));
+          localStorage.setItem('token', JSON.stringify(res.data.tokenString));
           const Toast = Swal.mixin({
             toast: true,
             position: "top-end",

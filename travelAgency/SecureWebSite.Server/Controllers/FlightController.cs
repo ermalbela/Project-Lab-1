@@ -11,6 +11,8 @@ namespace SecureWebSite.Server.Controllers
     
     [Route("api/flights")]
     [ApiController]
+    [Authorize]
+
     public class FlightController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
