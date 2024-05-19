@@ -8,7 +8,7 @@ const Header = () => {
   return(
     <Navbar variant="pills" expand="lg" fixed="top" className="navbar mb-5">
       <Container>
-        <NavbarBrand>Travel Agency</NavbarBrand>
+        <NavbarBrand><Link className="nav-link" to='/'>Travel Agency</Link></NavbarBrand>
         <NavbarToggle aria-controls="basic-navbar-nav" />
         <NavbarCollapse id="basic-navbar-nav">
           <Nav className="ms-auto justify-content-center align-items-center">

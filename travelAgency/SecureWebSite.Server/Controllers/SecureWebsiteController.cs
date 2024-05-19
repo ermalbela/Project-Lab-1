@@ -1,20 +1,23 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SecureWebSite.Server.Models;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace SecureWebSite.Server.Controllers
 {
 		[Route("api/securewebsite")]
 		[ApiController]
-		public class SecureWebsiteController(SignInManager<User> sm, UserManager<User> um) : ControllerBase
+		public class SecureWebsiteController(SignInManager<User> sm, UserManager<User> um, IConfiguration config) : ControllerBase
 		{
 				private readonly SignInManager<User> signInManager = sm;
 				private readonly UserManager<User> userManager = um;
+				private readonly IConfiguration _config = config;
 
 				[HttpPost("register")]
 				public async Task<ActionResult> RegisterUser(User user)
@@ -65,7 +68,24 @@ namespace SecureWebSite.Server.Controllers
 										user_.LastLogin = DateTime.Now;
 										var updateResult = await userManager.UpdateAsync(user_);
 
-										return Ok(new {updateResult = user_ });
+										var claims = new List<Claim>
+										{
+											new Claim(ClaimTypes.Email,user_.UserName),
+											new Claim(ClaimTypes.Role,"Admin")
+										};
+										var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("Jwt:Key").Value));
+
+										var signInCred = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+										var securityToken = new JwtSecurityToken(
+											claims: claims,
+											expires: DateTime.Now.AddMinutes(60),
+											issuer: _config.GetSection("Jwt:Issuer").Value,
+											audience: _config.GetSection("Jwt:Audience").Value,
+											signingCredentials: signInCred
+										);
+										var tokenString = new JwtSecurityTokenHandler().WriteToken(securityToken);
+										return Ok(new {updateResult = user_, tokenString });
 								} else {
 										return BadRequest(new {message = "Please check your credentials and try again. " });
 								}

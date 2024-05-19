@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Container, Row, Col, Button, Modal, Card, DropdownButton, DropdownItem } from 'react-bootstrap';
 import planeIcon from '../assets/images/plane-icon.png';
 import axios from 'axios';
-import { getFlights, purchaseFlight, testNum } from '../Endpoint';
+import { getFlights, purchaseFlight } from '../Endpoint';
 import Swal from 'sweetalert2';
 import Loader from '../Layout/Loader';
 import FlightContext from '../_helper/FlightContext';
@@ -52,7 +52,11 @@ const Flights = () => {
     const passengerCountsArr = Object.values(passengerCounts);
     console.log(passengerCountsArr);
 
-    axios.post(purchaseFlight, {FlightId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation})
+    axios.post(purchaseFlight, {FlightId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation}, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
       .then(res => {
         Swal.fire(res.data.message, '', 'success');
         console.log(res)

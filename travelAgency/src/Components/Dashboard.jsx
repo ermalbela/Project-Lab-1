@@ -187,7 +187,11 @@ const Dashboard = () => {
     setErrors(validate(flight));
     if(flight.originCountry !== '' && flight.destinationCountry !== '' && flight.date !== '' && flight.tickets !== '' && flight.departure !== '' && flight.arrival !== '' && flight.ticketPrice !== ''){
       try{
-        axios.post(createFlights, {OriginCountry: flight.originCountry, DestinationCountry: flight.destinationCountry, Reservation: flight.date, TicketsLeft: flight.tickets, Departure: timeDeparture, Arrival: timeArrival, TicketPrice: flight.ticketPrice})
+        axios.post(createFlights, {OriginCountry: flight.originCountry, DestinationCountry: flight.destinationCountry, Reservation: flight.date, TicketsLeft: flight.tickets, Departure: timeDeparture, Arrival: timeArrival, TicketPrice: flight.ticketPrice}, {
+          headers: {
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+          }
+        })
           .then(res => {
             console.log(res)
             Swal.fire('Flight Added Successfully', '', 'success');
@@ -215,12 +219,26 @@ const Dashboard = () => {
         // Children: passengerCounts['child'],
         // Infant: passengerCounts['infant']
       }
-      axios.post(filteredFlights, finalVals)
+      axios.post(filteredFlights, finalVals, {
+        headers: {
+          'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+        }
+      })
         .then(res => {
           console.log(res.data)
           setData(res.data?.filtered_flights?.result);
           history('/flights');
-        });
+        })
+        .catch(err => {
+          if(!err.response){
+            Swal.fire('Error, No Server Response!', '', 'error');
+            setErrors({globalError: 'Error, No Server Response!'})
+          } else if (err.response?.status === 401) {
+            Swal.fire('Unauthorized!!!', '', 'error');
+          } else{
+            Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+          }
+        })
     }
   }
 
@@ -263,7 +281,11 @@ const Dashboard = () => {
       TicketPrice: (Math.random() * 600 + 60).toFixed(2)
     };
     
-    axios.post(createFlights, flight)
+    axios.post(createFlights, flight, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
       .then(res => {
         console.log(res)
         Swal.fire('Flight Added Successfully', '', 'success');
@@ -332,7 +354,6 @@ const Dashboard = () => {
           onChange={(update) => {
             setDateRange(update);
           }}
-          isClearable={true} 
           placeholderText='Select Date...'
         />
       </Col>
