@@ -8,15 +8,19 @@ import Loader from '../Layout/Loader';
 import FlightContext from '../_helper/FlightContext';
 import checkCircle from '../assets/images/check-circle.png';
 import minusCircle from '../assets/images/minus-circle.png';
+import useQuicksort from '../_helper/useQuicksort';
+import AuthContext from '../_helper/AuthContext';
 
 const Flights = () => {
 
+  const {role} = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
   const {data, setData} = useContext(FlightContext);
   const [show, setShow] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [passengerCounts, setPassengerCounts] = useState({adult: 1, child: 0, infant: 0});
 
+  console.log(role);
   // ===============================FETCH THE WHOLE FLIGHTS HERE===============================//
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -45,6 +49,11 @@ const Flights = () => {
     setSelectedFlight(flight);
   }
 
+  const [sortKey, setSortKey] = useState('reservation');
+
+  const sortedFlights = useQuicksort(data, sortKey);
+  
+
   const handlePurchase = (flightId, category, reservation) => {
     const Name = JSON.parse(localStorage.getItem('name'));
     const Id = JSON.parse(localStorage.getItem('userId'));
@@ -62,7 +71,14 @@ const Flights = () => {
         console.log(res)
       })
       .catch(err => {
-        Swal.fire(err.response.data, '', 'error');
+        if(!err.response){
+          Swal.fire('Error, No Server Response!', '', 'error');
+          setErrors({globalError: 'Error, No Server Response!'})
+        } else if (err.response?.status === 401) {
+          Swal.fire('Unauthorized!!!', '', 'error');
+        } else{
+          Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+        }
       })
     
   }
@@ -86,6 +102,10 @@ const Flights = () => {
   const handleMenuClick = e => {
     e.stopPropagation();
   }
+
+  const handleSelect = (key) => {
+    setSortKey(key);
+};
 
   const toggleDropdown = () => {
     setShowDropdown(prevState => !prevState);
@@ -114,6 +134,18 @@ const Flights = () => {
         <Col md={12}>
           <div className="d-flex justify-content-between mb-5">
             <h2 className='customized-text'>Flights</h2>
+            <div className="sort-dropdown">
+              <span>Sorted By:</span>
+                <DropdownButton
+                    id='dropdown-basic-button'
+                    title={`${sortKey === 'reservation' ? 'Reservation' : sortKey === 'ticketPrice' ? 'Price' : 'Tickets Left'}`}
+                    onSelect={handleSelect}
+                >
+                    <DropdownItem eventKey="reservation">Reservation</DropdownItem>
+                    <DropdownItem eventKey="ticketPrice">Price</DropdownItem>
+                    <DropdownItem eventKey="ticketsLeft">Tickets Left</DropdownItem>
+                </DropdownButton>
+            </div>
             <DropdownButton title="Passengers" show={showDropdown} onClick={toggleDropdown}>
               {Object.keys(passengerCounts).map(type => (
                 <DropdownItem key={type} onClick={e => handleMenuClick(e)}>
@@ -125,7 +157,7 @@ const Flights = () => {
             </DropdownButton>
           </div>
           {/* ===============================MAPPING OVER THE DATA HERE=============================== */}
-          {data.map((flight, idx) => {
+          {sortedFlights.map((flight, idx) => {
             const date = new Date(flight.reservation);
             const options = { month: 'long', day: 'numeric', year: 'numeric' };
             const formattedDate = date.toLocaleDateString('en-US', options);
@@ -138,7 +170,7 @@ const Flights = () => {
                   <div className="event-date customized-text">{formattedDate}</div>
                   <div className="timeline-content d-flex justify-content-between">
                     <Row className="d-flex align-items-center justify-content-between fullWidth">
-                      <Col className='d-flex'>
+                      <Col className='d-flex align-items-center'>
                         <img src={planeIcon} className='plane-icon'/>
                         <div className='d-flex align-items-center flex-column'>
                           <h5>AirSafe</h5>
@@ -159,7 +191,10 @@ const Flights = () => {
                       {/* ===============================TICKET FUNCTIONALITY BUTTON=============================== */}
                       <Col className="d-flex justify-content-end align-items-center">
                         <h5 style={{marginBottom: '0px'}}>{flight.ticketPrice.toFixed(2)}$<span style={{fontSize: '14px'}}>(per adult)</span> &nbsp;</h5>
-                        <Button onClick={() => handleClick(flight)}>View Prices</Button>
+                        <div className='d-flex flex-column align-items-center justify-content-center'>
+                          <h6 className='text-muted'>({flight.ticketsLeft} Tickets Left)</h6>
+                          <Button onClick={() => handleClick(flight)}>View Prices</Button>
+                        </div>
                       </Col>
                     </Row>
                   </div>
@@ -168,7 +203,7 @@ const Flights = () => {
             )
           })}
           {selectedFlight && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
-            <Modal.Header className='custom-modal-header justify-content-between'>
+            <Modal.Header className='custom-modal-header justify-content-between align-items-center'>
               <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
               <h5>Price calculated for: (adults: {passengerCounts['adult']} children: {passengerCounts['child']} infant: {passengerCounts['infant']})</h5>
             </Modal.Header>

@@ -14,8 +14,11 @@ import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import FlightContext from '../_helper/FlightContext';
+import AuthContext from '../_helper/AuthContext';
 
 const Dashboard = () => {
+
+  const {role} = useContext(AuthContext);
 
   const [fromCountry, setFromCountry] = useState('');
   const [toCountry, setToCountry] = useState('');
@@ -197,6 +200,16 @@ const Dashboard = () => {
             Swal.fire('Flight Added Successfully', '', 'success');
             setCreateFlight(false);
             setFlight(flightInitial)
+          })
+          .catch(err => {
+            if(!err.response){
+              Swal.fire('Error, No Server Response!', '', 'error');
+              setErrors({globalError: 'Error, No Server Response!'})
+            } else if (err.response?.status === 401) {
+              Swal.fire('Unauthorized!!!', '', 'error');
+            } else{
+              Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+            }
           });
       } catch(err) {
         console.log(err);
@@ -292,7 +305,16 @@ const Dashboard = () => {
         setCreateFlight(false);
         setFlight(flightInitial);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        if(!err.response){
+          Swal.fire('Error, No Server Response!', '', 'error');
+          setErrors({globalError: 'Error, No Server Response!'})
+        } else if (err.response?.status === 401) {
+          Swal.fire('Unauthorized!!!', '', 'error');
+        } else{
+          Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+        }
+      })
   }
 
   return (
@@ -304,7 +326,7 @@ const Dashboard = () => {
         </DropdownButton>
       </Col>
       <Col className='d-flex justify-content-end'>
-        <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Flight</Button>
+        {role === 'Admin' ? <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Flight</Button> : ''}
       </Col>
     </Row>
     <Row className="justify-content-center">

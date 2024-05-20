@@ -29,7 +29,7 @@ namespace SecureWebSite.Server.Controllers
 						    User user_ = new User(){
 										Name = user.Name,
 										Email = user.Email,
-										UserName = user.UserName,
+										UserName = user.UserName
 								};
 
 								result = await userManager.CreateAsync(user_, user.PasswordHash);
@@ -71,7 +71,7 @@ namespace SecureWebSite.Server.Controllers
 										var claims = new List<Claim>
 										{
 											new Claim(ClaimTypes.Email,user_.UserName),
-											new Claim(ClaimTypes.Role,"Admin")
+											new Claim(ClaimTypes.Role,user_.IsAdmin ? "Admin" : "User")
 										};
 										var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("Jwt:Key").Value));
 
@@ -85,7 +85,16 @@ namespace SecureWebSite.Server.Controllers
 											signingCredentials: signInCred
 										);
 										var tokenString = new JwtSecurityTokenHandler().WriteToken(securityToken);
-										return Ok(new {updateResult = user_, tokenString });
+
+										HttpContext.Response.Cookies.Append("token", tokenString, new CookieOptions
+										{
+											HttpOnly = true,
+											Secure = true,
+											SameSite = SameSiteMode.Strict,
+											Expires = DateTime.Now.AddMinutes(60)
+										});
+										
+										return Ok(new {updateResult = user_, tokenString});
 								} else {
 										return BadRequest(new {message = "Please check your credentials and try again. " });
 								}
@@ -95,10 +104,9 @@ namespace SecureWebSite.Server.Controllers
 								return BadRequest(new {message = "Something went wrong, please try again. " + ex.Message });
 						}
 
-						//return Ok(new { message = "Login Successful."});
 				}
 
-				[HttpGet("logout"), Authorize]
+				[HttpGet("logout")]
 				public async Task<ActionResult> LogoutUser(){
 						
 						try {
@@ -108,14 +116,6 @@ namespace SecureWebSite.Server.Controllers
 						}
 
 						return Ok(new { message = "You are free to go!" });
-				}
-
-				[HttpGet("admin"), Authorize]
-				public ActionResult AdminPage(){
-						string[] partners = { "Raja", "Bill Gates", "Elon Musk", "Taylor Swift", "Jeff Bezoss",
-										"Mark Zuckerberg", "Joe Biden", "Putin"};
-
-						return Ok(new { trustedPartners = partners });
 				}
 
 				[HttpGet("home/{email}"), Authorize]
@@ -144,26 +144,42 @@ namespace SecureWebSite.Server.Controllers
 					}
 				}
 
-				[HttpGet("xhtlekd")]
-				public async Task<ActionResult> CheckUser()
+				[HttpGet("user-role")]
+				public ActionResult GetUserRole()
 				{
-						User currentuser = new();
+					var token = Request.Cookies["token"];
+					if (string.IsNullOrEmpty(token))
+					{
+						return Unauthorized();
+					}
 
-						try {
-								var user_ = HttpContext.User;
-								var principals = new ClaimsPrincipal(user_);
-								var result = signInManager.IsSignedIn(principals);
-								if (result){
-										currentuser = await signInManager.UserManager.GetUserAsync(principals);
-								} else {
-										return Forbid();
-								}
-						} catch (Exception ex) {
-			         return BadRequest(new {message = "Something went wrong please try again. " + ex.Message });
+					var tokenHandler = new JwtSecurityTokenHandler();
+					var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+
+					try
+					{
+						var claimsPrincipal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+						{
+							ValidateIssuer = true,
+							ValidateAudience = true,
+							ValidIssuer = _config["Jwt:Issuer"],
+							ValidAudience = _config["Jwt:Audience"],
+							IssuerSigningKey = securityKey
+						}, out var validatedToken);
+
+						var roleClaim = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role);
+						if (roleClaim == null)
+						{
+							return Unauthorized();
 						}
 
-						return Ok(new {message = "Logged in", user = currentuser});
+						return Ok(new { role = roleClaim.Value });
+					}
+					catch (Exception)
+					{
+						return Unauthorized();
+					}
 				}
 
-		}
+    }
 }

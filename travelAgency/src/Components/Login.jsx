@@ -1,12 +1,13 @@
 import { Fragment, useContext, useState } from 'react';
 import {Button, Row, Col, Container, Form, FormGroup, InputGroup, FormLabel, FormControl, Card} from 'react-bootstrap';
 import { patterns } from '../Validation';
-import { getUsers, loginUser } from '../Endpoint';
+import { getRole, loginUser } from '../Endpoint';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import emailIcon from '../assets/images/email.png';
 import passwordIcon from '../assets/images/lock.png';
 import Swal from 'sweetalert2';
+import AuthContext from '../_helper/AuthContext';
 
 const Login = () => {
   const initialValues = {
@@ -34,6 +35,18 @@ const Login = () => {
     }
     return errors;
   }
+  const {role, setRole} = useContext(AuthContext);
+
+  async function fetchUserRole() {
+    console.log(role);
+      try {
+          const response = await axios.get(getRole, { withCredentials: true });
+          setRole(response.data.role);
+          console.log(response.data)
+      } catch (error) {
+          console.error('Error fetching user role:', error);
+      }
+    }
 
   const handleClick = async () => {
     setErrors(validate(user));
@@ -41,11 +54,12 @@ const Login = () => {
       try{
         axios.post(loginUser, {Email: user.email, Password: user.password, Remember: checked})
         .then(res => {
-          // localStorage.setItem('user', JSON.stringify(user.email));
+          fetchUserRole();
           console.log(res.data);
           localStorage.setItem('name', JSON.stringify(res.data.updateResult.name));
           localStorage.setItem('userId', JSON.stringify(res.data.updateResult.id));
           localStorage.setItem('token', JSON.stringify(res.data.tokenString));
+
           const Toast = Swal.mixin({
             toast: true,
             position: "top-end",
