@@ -1,10 +1,14 @@
-import { Suspense } from 'react';
-import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
+import { Suspense, useContext, useEffect } from 'react';
+import { BrowserRouter, Route, Routes, Outlet, Navigate } from 'react-router-dom';
 import Loader from '../Layout/Loader';
 import LayoutRoutes from '../Layout/LayoutRoutes';
 import React from "react";
 import Login from '../Components/Login';
 import Register from '../Components/Register';
+import AuthContext from '../_helper/AuthContext';
+import { getRole } from '../Endpoint';
+import axios from 'axios';
+import PrivateRoute from './PrivateRoute';
 
 const Routers = () => {
 
@@ -12,7 +16,7 @@ const Routers = () => {
       <BrowserRouter>
         <Suspense fallback={<Loader />}>
           <Routes>
-            <Route path='*' element={<Outlet />}>
+            <Route path='*' element={<PrivateRoute />}>
               <Route path={`*`} element={<LayoutRoutes />}/>
             </Route>
             <Route path={`/login`} element={<Login />}/>

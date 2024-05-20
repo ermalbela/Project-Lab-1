@@ -273,3 +273,13 @@ body > * {
 .card-header{
   border-bottom: 1px solid #F4F6EF!important;
 }
+
+.sort-dropdown{
+  display: flex;
+  align-items: center;
+}
+
+.sort-dropdown span{
+  margin-right: 5px;
+  font-size: 18px;
+}
