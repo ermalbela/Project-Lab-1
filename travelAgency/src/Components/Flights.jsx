@@ -20,7 +20,6 @@ const Flights = () => {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [passengerCounts, setPassengerCounts] = useState({adult: 1, child: 0, infant: 0});
 
-  console.log(role);
   // ===============================FETCH THE WHOLE FLIGHTS HERE===============================//
   // useEffect(() => {
   //   const fetchData = async () => {

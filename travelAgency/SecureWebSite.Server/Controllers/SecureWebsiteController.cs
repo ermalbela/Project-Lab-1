@@ -126,7 +126,7 @@ namespace SecureWebSite.Server.Controllers
 								return BadRequest(new { message = "Something went wrong, please try again." });
 						}
 
-						return Ok(new { userInfo = userInfo });
+						return Ok(new { userInfo });
 				}
 
 				[HttpGet("users")]

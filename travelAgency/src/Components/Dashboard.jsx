@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel} from 'react-bootstrap';
+import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from './MySelect';
 import {components} from 'react-select';
@@ -474,22 +474,22 @@ const Dashboard = () => {
         </Form>
       </Modal.Body>
     </Modal>
-      <div className='offers' style={{margin: '6rem 0 1rem 0'}}>
-        <h2>
-          Cheap Flight Offers
-        </h2>
-        <Row className="g-4">
-          {initialValues.map((itemProps, idx) => ( //Mapping over offers then returning Cards from OfferCard Component
-            <Col key={idx} onClick={() => {
-              setFromCountry(itemProps.originCountry);
-              setToCountry(itemProps.destinationCountry);
-              setDateRange(['04/26/2024', '05/02/2024']);
-            }}>
-              <OfferCard props={itemProps}/>
-            </Col>
-            ))}
-        </Row>
-      </div>
+    <div className='offers' style={{margin: '6rem 0 1rem 0'}}>
+      <h2>
+        Cheap Flight Offers
+      </h2>
+      <Row className="g-4">
+        {initialValues.map((itemProps, idx) => ( //Mapping over offers then returning Cards from OfferCard Component
+          <Col key={idx} onClick={() => {
+            setFromCountry(itemProps.originCountry);
+            setToCountry(itemProps.destinationCountry);
+            setDateRange(['04/26/2024', '05/02/2024']);
+          }}>
+            <OfferCard props={itemProps}/>
+          </Col>
+          ))}
+      </Row>
+    </div>
     </>
   )
 }
