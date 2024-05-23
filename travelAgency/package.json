@@ -10,14 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@clerk/clerk-react": "^4.30.10",
+=======
+    "axios": "^1.6.8",
+>>>>>>> 698a96ff1a44a7e8521bfbf79ba2a056b5f0025c
     "bootstrap": "^5.3.3",
+    "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
     "react-datepicker": "^6.6.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
-    "react-select": "^5.8.0"
+    "react-select": "^5.8.0",
+    "sweetalert2": "^11.10.8"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

@@ -11,8 +11,19 @@ node_modules
 dist
 dist-ssr
 *.local
+<<<<<<< HEAD
 .env
+=======
+.vs/
+>>>>>>> 698a96ff1a44a7e8521bfbf79ba2a056b5f0025c
 
+/logs/
+/temp/
+SecureWebSite.Server/bin
+SecureWebSite.Server/obj
+/SecureWebSite.Server/bin
+/SecureWebSite.Server/obj
+/appsettings.json/
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
