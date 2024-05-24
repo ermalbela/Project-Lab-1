@@ -15,11 +15,10 @@ dist-ssr
 
 /logs/
 /temp/
-SecureWebSite.Server/bin
-SecureWebSite.Server/obj
-/SecureWebSite.Server/bin
-/SecureWebSite.Server/obj
-/appsettings.json/
+/backend/bin
+/backend/obj
+/backend/appsettings.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
