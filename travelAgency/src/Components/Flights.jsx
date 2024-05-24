@@ -20,7 +20,6 @@ const Flights = () => {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [passengerCounts, setPassengerCounts] = useState({adult: 1, child: 0, infant: 0});
 
-  console.log(role);
   // ===============================FETCH THE WHOLE FLIGHTS HERE===============================//
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -249,7 +248,7 @@ const Flights = () => {
               <Col>
                 <Card style={{height: '100%'}}>
                   <Card.Header>
-                    <p className='custom-price'>{totalPrice().toFixed(2) * 1.5}$</p> Standard+ Category 
+                    <p className='custom-price'>{(totalPrice() * 1.5).toFixed(2)}$</p> Standard+ Category 
                   </Card.Header>
                   <Card.Body>
                     <Card.Text className='flight-category-title'>
@@ -287,7 +286,7 @@ const Flights = () => {
               <Col>
                 <Card>
                   <Card.Header className='vip-header'>
-                    <p className='custom-price'>{totalPrice().toFixed() * 2}$</p> VIP Category
+                    <p className='custom-price'>{(totalPrice() * 2).toFixed(2)}$</p> VIP Category
                   </Card.Header>
                   <Card.Body>
                     <Card.Text className='flight-category-title'>
