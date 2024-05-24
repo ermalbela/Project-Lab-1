@@ -1,6 +1,11 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\assets",
+    "\\src\\Components",
+    "\\src\\Layout"
   ],
+  "SelectedNode": "\\src\\Components\\Dashboard.jsx",
   "PreviewInSolutionExplorer": false
 }
