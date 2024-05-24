@@ -255,6 +255,8 @@ const Dashboard = () => {
     }
   }
 
+
+  //=========================ADD RANDOM FLIGHT============================
   const addRandom = async () => {
     //Countries you wanna add in Origin Country and Destination Country
     const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
