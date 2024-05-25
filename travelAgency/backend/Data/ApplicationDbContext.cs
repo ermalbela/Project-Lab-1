@@ -8,7 +8,10 @@ namespace SecureWebSite.Server.Data
 		{
 			public DbSet<Flight> Flights { get; set; }
 			public DbSet<FlightTicket> FlightTickets { get; set; }
-			//public DbSet<UserTicket> UserTickets { get; set; }
-			public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        //public DbSet<UserTicket> UserTickets { get; set; }
+			public DbSet<Bus> Buses { get; set; }
+        //public DbSet<BusTickets> BusTickets { get; set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 		}
 }

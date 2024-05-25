@@ -26,10 +26,12 @@ namespace SecureWebSite.Server.Controllers
 						IdentityResult result = new ();
 
 						try {
-						    User user_ = new User(){
-										Name = user.Name,
-										Email = user.Email,
-										UserName = user.UserName
+								User user_ = new User()
+								{
+									Name = user.Name,
+									Email = user.Email,
+									UserName = user.UserName,
+									IsAdmin = true
 								};
 
 								result = await userManager.CreateAsync(user_, user.PasswordHash);
