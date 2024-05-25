@@ -18,8 +18,6 @@ const Header = () => {
   const handleLogout = async () => {
     try {
         const response = await axios.get(logoutUser, { withCredentials: true });
-            // Clear any client-side state related to user session
-            // For example, remove tokens from localStorage if you use them
             localStorage.removeItem('name');
             localStorage.removeItem('userId');
             localStorage.removeItem('token');
