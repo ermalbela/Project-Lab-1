@@ -1,5 +1,6 @@
 {
   "Version": 1,
+<<<<<<< HEAD
   "WorkspaceRootPath": "C:\\Users\\HP\\Documents\\GitHub\\Project-Lab-1\\",
   "Documents": [
     {
@@ -7,6 +8,10 @@
       "RelativeMoniker": "D:0:0:{0B3D49F4-19D5-4F19-9304-99D2EC7B59D8}|travelAgency\\backend\\SecureWebSite.Server.csproj|solutionrelative:travelagency\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
+=======
+  "WorkspaceRootPath": "C:\\Users\\User\\Desktop\\Lab1\\Project-Lab-1\\",
+  "Documents": [],
+>>>>>>> df49240f30198cddb35d3d76fd244591fe89b47a
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -14,6 +19,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< HEAD
           "SelectedChildIndex": 0,
           "Children": [
             {
@@ -28,6 +34,13 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-26T21:46:06.657Z",
               "EditorCaption": ""
+=======
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+>>>>>>> df49240f30198cddb35d3d76fd244591fe89b47a
             }
           ]
         }

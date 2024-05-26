@@ -8,6 +8,7 @@ namespace SecureWebSite.Server.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FlightId { get; set; }
+        public string Name { get; set; } = "AirSafe";
         public string OriginCountry { get; set; } = "Kosovo";
         public string DestinationCountry { get; set; } = "Albania";
         public DateTime Reservation { get; set; } = DateTime.Now;

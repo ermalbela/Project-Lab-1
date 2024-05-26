@@ -52,36 +52,36 @@ const Login = () => {
     setErrors(validate(user));
     if(patterns.userName.test(user.userName) && patterns.password.test(user.password)){
       try{
-        axios.post(loginUser, {Email: user.email, Password: user.password, Remember: checked})
-        .then(res => {
-          fetchUserRole();
-          console.log(res.data);
-          localStorage.setItem('name', JSON.stringify(res.data.updateResult.name));
-          localStorage.setItem('userId', JSON.stringify(res.data.updateResult.id));
-          localStorage.setItem('token', JSON.stringify(res.data.tokenString));
+        const res = await axios.post(loginUser, {Email: user.email, Password: user.password, Remember: checked});
+  
+        await fetchUserRole();
+        console.log(res.data);
+        localStorage.setItem('name', JSON.stringify(res.data.updateResult.name));
+        localStorage.setItem('userId', JSON.stringify(res.data.updateResult.id));
+        localStorage.setItem('token', JSON.stringify(res.data.tokenString));
 
-          const Toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.onmouseenter = Swal.stopTimer;
-              toast.onmouseleave = Swal.resumeTimer;
-            }
-          });
-          Toast.fire({
-            icon: "success",
-            title: "Logged In Successfully"
-          });
-          history(`/`);
-        })
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        });
+        Toast.fire({
+          icon: "success",
+          title: "Logged In Successfully"
+        });
+        history(`/`);
+        
       } catch (err) {
         if(!err.response){
           setErrors({globalError: 'Error, No Server Response!'})
         } else if (err.response?.status === 400) {
-          setErrors({globalError: 'Missing Username or Password!'})
+          setErrors({globalError: 'Missing Email or Password!'})
         } else if (err.response?.status === 401) {
           setErrors({globalError: 'Unauthorized!'})
         } else{
