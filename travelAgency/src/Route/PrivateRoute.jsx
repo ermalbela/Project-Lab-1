@@ -9,7 +9,7 @@ const PrivateRoute = () => {
 
 
   return(
-    role !== '' && role && localStorage.getItem('token') ?
+    role !== '' && role  ?
       <Outlet />
     : 
       <Navigate to={`/login`} />

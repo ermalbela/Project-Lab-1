@@ -1,0 +1,93 @@
+
+.main {
+    .btnAddSection {
+        display: flex;
+        justify-content: flex-end;
+        align-items: end;
+        margin-bottom: 10px;
+
+        .btnAdd {
+            background-color: rgb(43, 43, 215);
+            color: white;
+            border-radius: 5px;
+            border: none;
+        }
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .box {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 5px;
+            border: 1px solid darkgray;
+            border-radius: 5px;
+            padding: 10px;
+
+            .left {
+
+                .image {
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 5px;
+                }
+            }
+
+            .right {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                .title {
+                    font-family: 'Times New Roman', Times, serif;
+                    font-weight: 600;
+                    font-size: 24px;
+                }
+
+                .desc {
+                    font-size: 16px;
+                    width: 550px;
+
+                    @media (max-width: 724px) {
+                        width: 100%;
+                    }
+                }
+                .sectionPrice {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    align-items: center;
+                    .oldPrice {
+                        font-weight: 500;
+                        background: #b25f41;
+                        padding: 5px;
+                        border-radius: 20px;
+                    width: 100px;
+                    text-align: center;
+                    text-decoration: line-through;
+                }
+                .price {
+                    font-weight: 500;
+                    background: rgb(15, 195, 198);
+                    padding: 5px;
+                    border-radius: 20px;
+                    width: 100px;
+                    text-align: center;
+                }
+                .btnBookNow {
+                    background-color: blue;
+                    padding: 5px;
+                    width: 100px;
+                    text-align: center;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                }
+            }
+            }
+        }
+    }
+}

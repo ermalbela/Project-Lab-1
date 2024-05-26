@@ -2,16 +2,12 @@ import React, { useContext } from "react";
 import {Navbar, Nav, NavLink, Container, NavbarBrand, NavbarToggle, NavbarCollapse, Button, NavItem} from 'react-bootstrap';
 import { routes } from "../Route/routes";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
-import { SignInButton, UserButton, useAuth } from "@clerk/clerk-react";
-=======
 import axios from "axios";
 import { logoutUser } from "../Endpoint";
 import AuthContext from "../_helper/AuthContext";
->>>>>>> 698a96ff1a44a7e8521bfbf79ba2a056b5f0025c
 
 const Header = () => {
-  const {userId} = useAuth()
+  
 
   const {setRole} = useContext(AuthContext);
 
@@ -45,22 +41,12 @@ const Header = () => {
                 <Link className="nav-link" to={path}>{name}</Link>
               </NavLink>
             ))}
-<<<<<<< HEAD
-              {/* <Link className="nav-link" to='/sign-in'>
-                <NavLink as='button' className="ms-5 btn btn-primary">
-                  Log in
-=======
               <Link className="nav-link" to='/'>
                 <NavLink as='button' className="ms-5 btn btn-primary" onClick={handleLogout}>
                   Log Out
->>>>>>> 698a96ff1a44a7e8521bfbf79ba2a056b5f0025c
                 </NavLink>
-              </Link> */}
-              {!userId ? (
-                <SignInButton className="ms-5 btn btn-primary" mode='modal' redirectUrl="/" />
-              ) : (
-                <UserButton afterSignOutUrl="/" />
-              )} 
+              </Link> 
+             
           </Nav>
         </NavbarCollapse>
       </Container>

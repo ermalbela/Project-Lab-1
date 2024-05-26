@@ -1,6 +1,7 @@
 import Dashboard from "../Components/Dashboard";
 import Flights from "../Components/Flights";
 import React from "react";
+import Offers from "../Components/Offers";
 
 
 export const routes = [

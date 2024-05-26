@@ -19,7 +19,6 @@ import AuthContext from '../_helper/AuthContext';
 
 const Dashboard = () => {
 
-  const {role} = useContext(AuthContext);
 
   const [fromCountry, setFromCountry] = useState('');
   const [toCountry, setToCountry] = useState('');
@@ -335,10 +334,7 @@ const Dashboard = () => {
         </DropdownButton>
       </Col>
       <Col className='d-flex justify-content-end'>
-        {role === 'Admin' ? <>
-          <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Flight</Button>
-          <Button onClick={() => setCreateBus(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Bus Trip</Button>
-        </> : ''}
+        
       </Col>
     </Row>
     <Row className="justify-content-center">
@@ -480,8 +476,6 @@ const Dashboard = () => {
             </FormGroup>
           </Col>
           <FormGroup className='formGroup d-flex justify-content-between'>
-            <Button className='' variant='danger' onClick={addRandom(createFlights)}>ADD RANDOM</Button>
-            <Button className="admin-buttons" onClick={handleClick(createFlights, flight)}>Create Flight</Button>
           </FormGroup>
         </Form>
       </Modal.Body>
@@ -571,17 +565,20 @@ const Dashboard = () => {
             </FormGroup>
           </Col>
           <FormGroup className='formGroup d-flex justify-content-between'>
-            <Button className='' variant='danger' onClick={addRandom(createBuses)}>ADD RANDOM</Button>
-            <Button className="admin-buttons" onClick={handleClick(createBuses, bus)}>Create BusTrip</Button>
           </FormGroup>
         </Form>
       </Modal.Body>
     </Modal>
     <div className='offers' style={{margin: '6rem 0 1rem 0'}}>
+      <div className='d-flex justify-content-between align-items-center'>
       <h2>
         Cheap Flight Offers
       </h2>
-      <Row className="g-4">
+      <div>
+        <a href='/offers' className='btn p-0 border-0 bg-transparent' style={{color: 'white'}}>More</a>
+      </div>
+      </div>
+      <Row className="g-4 d-flex">
         {initialValues.map((itemProps, idx) => ( //Mapping over offers then returning Cards from OfferCard Component
           <Col key={idx} onClick={() => {
             setFromCountry(itemProps.originCountry);
