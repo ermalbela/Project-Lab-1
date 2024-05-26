@@ -98,7 +98,7 @@ const Register = () => {
                   <h5>Register</h5>
                 </div>
                 <FormGroup className='formGroup'>
-                  <FormLabel>userName</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <div className="input-group login-form-inputs">
                     <InputGroup.Text id="basic-addon1">
                       <img src={userIcon} style={{width: '19px'}} />
@@ -108,7 +108,7 @@ const Register = () => {
                   <p className='invalidFeedback fullWidth'>{errors.userName}</p>
                 </FormGroup>
                 <FormGroup className='formGroup'>
-                  <FormLabel>email</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <div className="input-group login-form-inputs">
                     <InputGroup.Text id="basic-addon1">
                       <img src={emailIcon} style={{width: '19px'}} />

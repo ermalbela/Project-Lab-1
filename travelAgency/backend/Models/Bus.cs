@@ -8,6 +8,7 @@ namespace SecureWebSite.Server.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BusId { get; set; }
+        public string Name { get; set; } = "FlixBus";
         public string OriginCountry { get; set; } = "Kosova";
         public string DestinationCountry { get; set; } = "Albania";
         public DateTime Reservation { get; set; } = DateTime.Now;

@@ -30,6 +30,7 @@ namespace SecureWebSite.Server.Controllers
             {
                 Flight _flight = new Flight()
                 {
+                    Name = flight.Name,
                     OriginCountry = flight.OriginCountry,
                     DestinationCountry = flight.DestinationCountry,
                     Reservation = flight.Reservation,
