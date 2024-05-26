@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card} from 'react-bootstrap';
+import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card, Container} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from './MySelect';
 import {components} from 'react-select';
@@ -21,7 +21,7 @@ import Loader from '../Layout/Loader';
 
 const Dashboard = () => {
 
-  const {role} = useContext(AuthContext);
+  const {role, setRole} = useContext(AuthContext);
 
   const [fromCountry, setFromCountry] = useState('');
   const [toCountry, setToCountry] = useState('');
@@ -42,14 +42,15 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    if(role !== '' || role !== undefined && role){
+    if(role !== '' && role !== undefined && role){
       setIsLoading(false);
     } else{
+      history('/login');
       localStorage.removeItem('token');
       localStorage.removeItem('name');
       localStorage.removeItem('userId');
     }
-  }, [role]);
+  }, [role, setRole]);
 
   const [flight, setFlight] = useState(initialData);
   const [bus, setBus] = useState(initialData);
@@ -375,6 +376,29 @@ const Dashboard = () => {
       })
   }
 
+
+  // ========================================REVIEWS============================================
+  const [reviews, setReviews] = useState([
+    { name: 'John Doe', review: 'Great service, very satisfied!', rating: 5, date: '2024-05-01' },
+    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02' },
+    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02' }
+  ]);
+
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 0; i < 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          style={{ color: i < rating ? '#ffc107' : '#e4e5e9', fontSize: '2.5rem' }}
+        >
+          &#9733;
+        </span>
+      );
+    }
+    return stars;
+  };
+
   return isLoading ? (
     <Loader />
   ) : (
@@ -387,7 +411,7 @@ const Dashboard = () => {
       </Col>
       <Col className='d-flex justify-content-end'>
         {role === 'Admin' ? <>
-          <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Flight</Button>
+          <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px', marginRight: '2%'}}>Create Flight</Button>
           <Button onClick={() => setCreateBus(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Bus Trip</Button>
         </> : ''}
       </Col>
@@ -642,6 +666,7 @@ const Dashboard = () => {
         </Form>
       </Modal.Body>
     </Modal>
+    
     <div className='offers' style={{margin: '6rem 0 1rem 0'}}>
       <h2>
         Cheap Flight Offers
@@ -656,6 +681,26 @@ const Dashboard = () => {
             <OfferCard props={itemProps}/>
           </Col>
           ))}
+      </Row>
+    </div>
+
+    <div className="offers">
+      <h2>Reviews</h2>
+      <Row className="g-4">
+        {reviews.map((review, idx) => (
+          <Col key={idx} md={6} lg={4}>
+            <Card className="h-100">
+              <Card.Body>
+                <Card.Title className='text-start mb-3'>{review.name}</Card.Title>
+                <Card.Text>{review.review}</Card.Text>
+                <Card.Text>{review.date}</Card.Text>
+              </Card.Body>
+                <Card.Footer className="text-muted text-center">
+                  {renderStars(review.rating)}
+                </Card.Footer>
+            </Card>
+          </Col>
+        ))}
       </Row>
     </div>
     </>
