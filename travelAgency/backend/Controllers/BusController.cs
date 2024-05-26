@@ -30,6 +30,7 @@ namespace SecureWebSite.Server.Controllers
             {
                 Bus _bus = new Bus()
                 {
+                    Name = bus.Name,
                     OriginCountry = bus.OriginCountry,
                     DestinationCountry = bus.DestinationCountry,
                     Reservation = bus.Reservation,

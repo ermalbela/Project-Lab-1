@@ -170,7 +170,7 @@ const Bus = () => {
                       <Col className='d-flex align-items-center'>
                         <img src={planeIcon} className='plane-icon'/>
                         <div className='d-flex align-items-center flex-column'>
-                          <h5>AirSafe</h5>
+                          <h5>{bus.name}</h5>
                           <h6 className='text-muted'>Bus ID: {bus.busId}</h6>
                         </div>
                       </Col>

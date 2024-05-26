@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from './MySelect';
@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import FlightContext from '../_helper/FlightContext';
 import AuthContext from '../_helper/AuthContext';
 import BusContext from '../_helper/BusContext';
+import Loader from '../Layout/Loader';
 
 
 const Dashboard = () => {
@@ -27,8 +28,10 @@ const Dashboard = () => {
   const [errors, setErrors] = useState({});
   const [createFlight, setCreateFlight] = useState(false);
   const [createBus, setCreateBus] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const initialData = {
+    name: '',
     originCountry: '',
     destinationCountry: '',
     departure: '',
@@ -37,6 +40,16 @@ const Dashboard = () => {
     ticketPrice: '',
     date: ''
   }
+
+  useEffect(() => {
+    if(role !== '' || role !== undefined && role){
+      setIsLoading(false);
+    } else{
+      localStorage.removeItem('token');
+      localStorage.removeItem('name');
+      localStorage.removeItem('userId');
+    }
+  }, [role]);
 
   const [flight, setFlight] = useState(initialData);
   const [bus, setBus] = useState(initialData);
@@ -173,6 +186,9 @@ const Dashboard = () => {
 
   const validate = (vals) => {
     const errors = {};
+    if(!patterns.name.test(vals.name)){
+      errors.name = 'Enter a valid Company Name!';
+    }
     if(!patterns.name.test(vals.originCountry)){
       errors.originCountry = 'Enter a valid Origin Country!';
     }
@@ -192,18 +208,20 @@ const Dashboard = () => {
   }
 
   
-  const depDate = new Date(flight.departure);
-  const timeDeparture = depDate.toLocaleTimeString([], {hour12: false});
-  const arrDate = new Date(flight.arrival);
-  const timeArrival = arrDate.toLocaleTimeString([], { hour12: false });
 
   // =============================POSTING DATA TO BACKEND============================= // 
   const handleClick = async (url, category) => {
+    const depDate = new Date(category.departure);
+    const timeDeparture = depDate.toLocaleTimeString([], {hour12: false});
+    const arrDate = new Date(category.arrival);
+    const timeArrival = arrDate.toLocaleTimeString([], { hour12: false });
+
     setErrors(validate(category));
-    console.log(url);
-    if(category.originCountry !== '' && category.destinationCountry !== '' && category.date !== '' && category.tickets !== '' && category.departure !== '' && category.arrival !== '' && category.ticketPrice !== ''){
+    if(category.originCountry !== '' && category.destinationCountry !== '' && category.date !== '' && category.tickets !== '' && category.departure !== '' && category.arrival !== '' && category.ticketPrice !== '' && category.name !== ''){
       try{
-        axios.post(url, {OriginCountry: category.originCountry, DestinationCountry: category.destinationCountry, Reservation: category.date, TicketsLeft: category.tickets, Departure: timeDeparture, Arrival: timeArrival, TicketPrice: category.ticketPrice}, {
+        console.log(timeDeparture);
+        console.log(timeArrival);
+        axios.post(url, {Name: category.name, OriginCountry: category.originCountry, DestinationCountry: category.destinationCountry, Reservation: category.date, TicketsLeft: category.tickets, Departure: timeDeparture, Arrival: timeArrival, TicketPrice: category.ticketPrice}, {
           headers: {
             'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
           }
@@ -223,7 +241,7 @@ const Dashboard = () => {
             } else if (err.response?.status === 401) {
               Swal.fire('Unauthorized!!!', '', 'error');
             } else{
-              Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+              Swal.fire('Something Went Wrong!', '', 'error');
             }
           });
       } catch(err) {
@@ -262,16 +280,16 @@ const Dashboard = () => {
             history('/flights');
           }
         })
-        // .catch(err => {
-        //   if(!err.response){
-        //     Swal.fire('Error, No Server Response!', '', 'error');
-        //     setErrors({globalError: 'Error, No Server Response!'})
-        //   } else if (err.response?.status === 401) {
-        //     Swal.fire('Unauthorized!!!', '', 'error');
-        //   } else{
-        //     Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
-        //   }
-        // })
+        .catch(err => {
+          if(!err.response){
+            Swal.fire('Error, No Server Response!', '', 'error');
+            setErrors({globalError: 'Error, No Server Response!'})
+          } else if (err.response?.status === 401) {
+            Swal.fire('Unauthorized!!!', '', 'error');
+          } else{
+            Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+          }
+        })
     }
   }
 
@@ -281,7 +299,16 @@ const Dashboard = () => {
     console.log(url);
     //Countries you wanna add in Origin Country and Destination Country
     const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
+    let names;
+    let ticketPrice;
 
+    if(url == '/api/bus/create_bus'){
+      names = ['FlixBus', 'MegaBus', 'HappyBus', 'GreenBus'];
+      ticketPrice = (Math.random() * 200 + 40).toFixed(2)
+    } else{
+      names = ['DeltaAir', 'AirSafe', 'UnitedAir', 'FlixAir'];
+      ticketPrice = (Math.random() * 600 + 60).toFixed(2);
+    }
 
     const originCountry = countries[Math.floor(Math.random() * countries.length)];
     let destinationCountry;
@@ -308,14 +335,19 @@ const Dashboard = () => {
     arrivalTime.setHours(arrivalHour);
     arrivalTime.setMinutes(arrivalMinute);
     
+    // Choose a random name from the names array
+    const name = names[Math.floor(Math.random() * names.length)];
+
+
     const finalData = {
+      Name: name,
       OriginCountry: originCountry,
       DestinationCountry: destinationCountry,
       Reservation: new Date(),
       TicketsLeft: Math.floor(Math.random() * 60) + 60,
       Departure: departureTime.toLocaleTimeString('en-US', { hour12: false }),
       Arrival: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
-      TicketPrice: (Math.random() * 600 + 60).toFixed(2)
+      TicketPrice: ticketPrice
     };
     
     axios.post(url, finalData, {
@@ -343,7 +375,9 @@ const Dashboard = () => {
       })
   }
 
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <>
     <Row className='justify-content-between'>
       <Col>
@@ -487,13 +521,20 @@ const Dashboard = () => {
               <p className='invalidFeedback fullWidth'>{errors.date}</p>
             </FormGroup>
           </Col>
-          <Col>
-            <FormGroup className='formGroup'>
+          <Col className='d-flex justify-content-between'>
+            <FormGroup className='formGroup modal-inputs'>
               <FormLabel>Ticket Price</FormLabel>
               <div className="input-group login-form-inputs">
                   <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={flight.ticketPrice} onChange={handleChange} />
               </div>
               <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+            </FormGroup>
+            <FormGroup className='formGroup modal-inputs'>
+              <FormLabel>Company Name</FormLabel>
+              <div className="input-group login-form-inputs">
+                  <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={flight.name} onChange={handleChange} />
+              </div>
+              <p className='invalidFeedback fullWidth'>{errors.name}</p>
             </FormGroup>
           </Col>
           <FormGroup className='formGroup d-flex justify-content-between'>
@@ -578,13 +619,20 @@ const Dashboard = () => {
               <p className='invalidFeedback fullWidth'>{errors.date}</p>
             </FormGroup>
           </Col>
-          <Col>
-            <FormGroup className='formGroup'>
+          <Col className="d-flex justify-content-between">
+            <FormGroup className='formGroup modal-inputs'>
               <FormLabel>Ticket Price</FormLabel>
               <div className="input-group login-form-inputs">
                   <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={bus.ticketPrice} onChange={handleBusChange} />
               </div>
               <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+            </FormGroup>
+            <FormGroup className='formGroup modal-inputs'>
+              <FormLabel>Company Name</FormLabel>
+              <div className="input-group login-form-inputs">
+                  <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={bus.name} onChange={handleBusChange} />
+              </div>
+              <p className='invalidFeedback fullWidth'>{errors.name}</p>
             </FormGroup>
           </Col>
           <FormGroup className='formGroup d-flex justify-content-between'>
