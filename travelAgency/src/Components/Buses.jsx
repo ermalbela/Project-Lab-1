@@ -77,6 +77,8 @@ const Bus = () => {
           Swal.fire('Unauthorized!!!', '', 'error');
         } else if(err.response.data){
           Swal.fire(err.response.data, '','error');
+        } else{
+          Swal.fire('Something went wrong', '', 'error');
         }
       })
     

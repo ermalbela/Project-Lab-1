@@ -74,8 +74,10 @@ const Flights = () => {
           Swal.fire('Error, No Server Response!', '', 'error');
         } else if (err.response?.status === 401) {
           Swal.fire('Unauthorized!!!', '', 'error');
+        } else if(err.response.data){
+          Swal.fire(err.response.data, '', 'error');
         } else{
-          Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+          Swal.fire('Something went wrong', '', 'error');
         }
       })
     

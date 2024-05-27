@@ -180,6 +180,12 @@ body > * {
   cursor: pointer;
 }
 
+.review-card{
+  box-shadow: 3px 5px 13px 2px rgb(224 224 234 / 20%);
+  border: none!important;
+  background-color: #F4F6EF!important;
+}
+
 .timeline-content > * {
   color: #000;
 }

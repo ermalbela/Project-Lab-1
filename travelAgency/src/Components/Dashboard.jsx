@@ -690,7 +690,7 @@ const Dashboard = () => {
       <Row className="g-4">
         {reviews.map((review, idx) => (
           <Col key={idx} md={6} lg={4}>
-            <Card className="h-100">
+            <Card className="h-100 review-card">
               <Card.Body>
                 <Card.Title className='text-start mb-3'>{review.name}</Card.Title>
                 <Card.Text>{review.review}</Card.Text>
