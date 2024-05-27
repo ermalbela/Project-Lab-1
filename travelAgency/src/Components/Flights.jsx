@@ -72,7 +72,6 @@ const Flights = () => {
       .catch(err => {
         if(!err.response){
           Swal.fire('Error, No Server Response!', '', 'error');
-          setErrors({globalError: 'Error, No Server Response!'})
         } else if (err.response?.status === 401) {
           Swal.fire('Unauthorized!!!', '', 'error');
         } else{

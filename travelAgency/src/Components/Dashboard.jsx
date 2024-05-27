@@ -370,6 +370,7 @@ const Dashboard = () => {
           setErrors({globalError: 'Error, No Server Response!'})
         } else if (err.response?.status === 401) {
           Swal.fire('Unauthorized!!!', '', 'error');
+          history('/login');
         } else{
           Swal.fire('Something went wrong!', '', 'error');
         }
