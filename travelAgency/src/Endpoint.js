@@ -12,6 +12,7 @@ export const filteredFlights = flightsApi + 'filtered_flights';
 export const purchaseFlight = flightsApi + 'purchase_flight';
 export const createBuses = busesApi + 'create_bus';
 export const filteredTrips = busesApi + 'filtered_bus';
+export const purchaseBus = busesApi + 'purchase_bus';
 
 
 

@@ -108,17 +108,11 @@ namespace SecureWebSite.Server.Controllers
 
 
 
-        /*  [HttpPost("test_number")]
-          public IActionResult TestNumber([FromBody] List<int> _num)
-          {
-              Console.WriteLine("NUMBER --------------> " + _num[0]);
-
-              return Ok( new { num = _num[0], _num });
-          }
+       
 
           public class PurchaseBusRequest
           {
-              public List<int> FlightId { get; set; }
+              public List<int> BusId { get; set; }
               public User User { get; set; }
               public int Adults { get; set; }
               public int Children { get; set; }
@@ -128,50 +122,50 @@ namespace SecureWebSite.Server.Controllers
           }
 
 
-          [HttpPost("purchase_flight")]
-          public async Task<ActionResult> PurchaseFlight(PurchaseFlightRequest request)
+          [HttpPost("purchase_bus")]
+          public async Task<ActionResult> PurchaseBus(PurchaseBusRequest request)
           {
-              int _flightId = request.FlightId[0];
+              int _busId = request.BusId[0];
               try
               {
 
-                  var existingUserTicket = await _context.FlightTickets.FirstOrDefaultAsync(ut => ut.UserId == request.User.Id);
+                  var existingUserTicket = await _context.BusTickets.FirstOrDefaultAsync(ut => ut.UserId == request.User.Id);
 
                   if (existingUserTicket != null)
                   {
                       return BadRequest("User has already purchased a ticket.");
                   }
 
-                  // Get the flight
-                  var flight = await _context.Flights.FindAsync(_flightId);
+                  // Get the bus
+                  var bus = await _context.Buses.FindAsync(_busId);
 
-                  if (flight == null)
+                  if (bus == null)
                   {
-                      return NotFound(flight);
+                      return NotFound(bus);
                   }
 
                   // Check if there are available tickets
-                  if (flight.TicketsLeft <= 0)
+                  if (bus.TicketsLeft <= 0)
                   {
-                      return BadRequest("No more tickets left for this flight.");
+                      return BadRequest("No more tickets left for this bus.");
                   }
 
                   if (request.Adults <= 0)
                   {
-                      return BadRequest("There Should Be An Adult In The Flight.");
+                      return BadRequest("There Should Be An Adult In The bus.");
                   }
 
                   // Decrease ticketsLeft count
                   int totalTicketsSold = request.Adults + request.Children + request.Infant;
-                  flight.TicketsLeft -= totalTicketsSold;
+                  bus.TicketsLeft -= totalTicketsSold;
 
 
                   // Create a new UserTicket
-                  var _flightTicket = new FlightTicket
+                  var _busTicket = new BusTicket
                   {
                       User = await _context.Users.FindAsync(request.User.Id),
-                      Flight = flight,
-                      FlightId = _flightId,
+                      Bus = bus,
+                      BusId = _busId,
                       Adults = request.Adults,
                       Category = request.Category,
                       Infant = request.Infant,
@@ -182,19 +176,19 @@ namespace SecureWebSite.Server.Controllers
 
 
                   // Add UserTicket to database
-                  _context.FlightTickets.Add(_flightTicket);
+                  _context.BusTickets.Add(_busTicket);
 
                   // Save changes to the database
                   await _context.SaveChangesAsync();
 
-                  return Ok(new { message = "Flight ticket purchased successfully.", _flightTicket });
+                  return Ok(new { message = "Bus ticket purchased successfully.", _busTicket });
               }
               catch (Exception ex)
               {
                   return StatusCode(500, $"An error occurred: {ex.Message}");
               }
 
-          }*/
+          }
 
 
     }
