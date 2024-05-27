@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Container, Row, Col, Button, Modal, Card, DropdownButton, DropdownItem } from 'react-bootstrap';
-import planeIcon from '../assets/images/plane-icon.png';
+import busIcon from '../assets/images/busIcon.png';
 import axios from 'axios';
 import { purchaseBus } from '../Endpoint';
 import Swal from 'sweetalert2';
@@ -170,7 +170,7 @@ const Bus = () => {
                   <div className="timeline-content d-flex justify-content-between">
                     <Row className="d-flex align-items-center justify-content-between fullWidth">
                       <Col className='d-flex align-items-center'>
-                        <img src={planeIcon} className='plane-icon'/>
+                        <img src={busIcon} className='plane-icon'/>
                         <div className='d-flex align-items-center flex-column'>
                           <h5>{bus.name}</h5>
                           <h6 className='text-muted'>Bus ID: {bus.busId}</h6>
