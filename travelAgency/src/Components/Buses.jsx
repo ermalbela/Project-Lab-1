@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Container, Row, Col, Button, Modal, Card, DropdownButton, DropdownItem } from 'react-bootstrap';
 import planeIcon from '../assets/images/plane-icon.png';
 import axios from 'axios';
-// import { getBuses } from '../Endpoint';
+import { purchaseBus } from '../Endpoint';
 import Swal from 'sweetalert2';
 import Loader from '../Layout/Loader';
 import BusContext from '../_helper/BusContext';
 import checkCircle from '../assets/images/check-circle.png';
 import minusCircle from '../assets/images/minus-circle.png';
 import useQuicksort from '../_helper/useQuicksort';
+
 
 const Bus = () => {
 
@@ -57,24 +58,25 @@ const Bus = () => {
     const validNum = [busId];
     const passengerCountsArr = Object.values(passengerCounts);
     console.log(passengerCountsArr);
+    
 
-    axios.post(purchasebus, {busId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation}, {
+    axios.post(purchaseBus, {busId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation}, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
     })
       .then(res => {
-        Swal.fire(res.busData.message, '', 'success');
+        Swal.fire(res.data.message, '', 'success');
         console.log(res)
       })
       .catch(err => {
+        console.log(err);
         if(!err.response){
           Swal.fire('Error, No Server Response!', '', 'error');
-          setErrors({globalError: 'Error, No Server Response!'})
         } else if (err.response?.status === 401) {
           Swal.fire('Unauthorized!!!', '', 'error');
-        } else{
-          Swal.fire('Fetching filtered buss failed, please try again!', '', 'error');
+        } else if(err.response.data){
+          Swal.fire(err.response.data, '','error');
         }
       })
     

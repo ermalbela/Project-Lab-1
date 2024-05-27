@@ -235,16 +235,16 @@ const Dashboard = () => {
             setCreateBus(false);
             setBus(initialData);
           })
-          .catch(err => {
-            if(!err.response){
-              Swal.fire('Error, No Server Response!', '', 'error');
-              setErrors({globalError: 'Error, No Server Response!'})
-            } else if (err.response?.status === 401) {
-              Swal.fire('Unauthorized!!!', '', 'error');
-            } else{
-              Swal.fire('Something Went Wrong!', '', 'error');
-            }
-          });
+          // .catch(err => {
+          //   if(!err.response){
+          //     Swal.fire('Error, No Server Response!', '', 'error');
+          //     setErrors({globalError: 'Error, No Server Response!'})
+          //   } else if (err.response?.status === 401) {
+          //     Swal.fire('Unauthorized!!!', '', 'error');
+          //   } else{
+          //     Swal.fire('Something Went Wrong!', '', 'error');
+          //   }
+          // });
       } catch(err) {
         console.log(err);
       }
