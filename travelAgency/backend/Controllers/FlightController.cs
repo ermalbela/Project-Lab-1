@@ -28,16 +28,29 @@ namespace SecureWebSite.Server.Controllers
 
             try
             {
+                if (flight.Plane == null || flight.Plane.PlaneId == 0)
+                {
+                    return BadRequest("Plane is required.");
+                }
+
+                var existingPlane = await _context.Planes.FindAsync(flight.Plane.PlaneId);
+                if (existingPlane == null)
+                {
+                    return NotFound("Plane not found.");
+                }
+
+
                 Flight _flight = new Flight()
                 {
-                    Name = flight.Name,
                     OriginCountry = flight.OriginCountry,
                     DestinationCountry = flight.DestinationCountry,
                     Reservation = flight.Reservation,
                     TicketsLeft = flight.TicketsLeft,
                     Departure = flight.Departure,
                     Arrival = flight.Arrival,
-                    TicketPrice = flight.TicketPrice
+                    TicketPrice = flight.TicketPrice,
+                    PlaneId = flight.PlaneId,
+                    Plane = existingPlane
                 };
                 // Validate the flight object if needed
                 if (_flight == null)
@@ -133,12 +146,6 @@ namespace SecureWebSite.Server.Controllers
             try
             {
 
-                var existingUserTicket = await _context.FlightTickets.FirstOrDefaultAsync(ut => ut.UserId == request.User.Id);
-
-                if (existingUserTicket != null)
-                {
-                    return BadRequest("User has already purchased a ticket.");
-                }
 
                 // Get the flight
                 var flight = await _context.Flights.FindAsync(_flightId);
@@ -167,15 +174,12 @@ namespace SecureWebSite.Server.Controllers
                 // Create a new UserTicket
                 var _flightTicket = new FlightTicket
                 {
-                    User = await _context.Users.FindAsync(request.User.Id),
                     Flight = flight,
-                    FlightId = _flightId,
                     Adults = request.Adults,
                     Category = request.Category,
                     Infant = request.Infant,
                     Children = request.Children,
                     Reservation = request.Reservation,
-                    UserId = request.User.Id
                 };
 
 

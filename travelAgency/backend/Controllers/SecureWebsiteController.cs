@@ -30,7 +30,8 @@ namespace SecureWebSite.Server.Controllers
 								{
 									Name = user.Name,
 									Email = user.Email,
-									UserName = user.UserName
+									UserName = user.UserName,
+									Role = "Superadmin"
 								};
 
 								result = await userManager.CreateAsync(user_, user.PasswordHash);
@@ -42,7 +43,7 @@ namespace SecureWebSite.Server.Controllers
 								return BadRequest("Something went wrong, please try again. " + ex.Message);
 						}
 
-						return Ok(new { message = "Registered Successfully.", result = result });
+						return Ok(new { message = "Registered Successfully.", result });
 				}
 
 				[HttpPost("login")]
@@ -72,7 +73,7 @@ namespace SecureWebSite.Server.Controllers
 										var claims = new List<Claim>
 										{
 											new Claim(ClaimTypes.Email,user_.UserName),
-											new Claim(ClaimTypes.Role,user_.IsAdmin ? "Admin" : "User")
+											new Claim(ClaimTypes.Role,user_.Role == "Superadmin" ? "Superadmin" : user_.Role == "Admin" ? "Admin" : "User")
 										};
 										var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("Jwt:Key").Value));
 
@@ -117,17 +118,6 @@ namespace SecureWebSite.Server.Controllers
 						}
 
 						return Ok(new { message = "You are free to go!" });
-				}
-
-				[HttpGet("home/{email}"), Authorize]
-				public async Task<ActionResult> HomePage(string email)
-				{
-						User userInfo = await userManager.FindByEmailAsync(email);
-						if (userInfo == null){
-								return BadRequest(new { message = "Something went wrong, please try again." });
-						}
-
-						return Ok(new { userInfo });
 				}
 
 				[HttpGet("users")]
