@@ -54,7 +54,7 @@ const FlightCompanies = () => {
       <Row>
         <Col className='d-flex justify-content-between'>
           <h2>Flight Companies and Their Planes</h2>
-          {role == 'Superadmin' && <Button onClick={() => setCreateCompany(true)} className="top-button superadmin-buttons" style={{height: '39px'}}>Create Plane</Button>}
+          {role == 'Superadmin' && <Button onClick={() => setCreateCompany(true)} className="top-button superadmin-buttons" style={{height: '39px'}}>Add Company</Button>}
         </Col>
       </Row>
       <div className="offers">
