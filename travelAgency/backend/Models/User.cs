@@ -19,7 +19,8 @@ namespace SecureWebSite.Server.Models
 				[Column(TypeName = "datetime")]
 				public DateTime LastLogin { get; set; } = DateTime.Now;
 
-				public bool IsAdmin { get; set; } = false;
+				public string? Role { get; set; }
+				public FlightTicket? FlightTicket { get; set; }
 
     }
 }

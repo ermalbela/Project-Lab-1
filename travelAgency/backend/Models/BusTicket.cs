@@ -12,6 +12,12 @@
         public int BusId { get; set; }
         public User User { get; set; }
         public Bus Bus { get; set; }
+<<<<<<< HEAD
         
+=======
+        //public ICollection<User> Users { get; set; }
+
+
+>>>>>>> e4b0b29ec40efe37ca4effaa767e91b061386928
     }
 }

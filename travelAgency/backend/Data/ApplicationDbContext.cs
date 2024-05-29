@@ -11,6 +11,8 @@ namespace SecureWebSite.Server.Data
         
 			public DbSet<Bus> Buses { get; set; }
 			public DbSet<BusTicket> BusTickets { get; set; }
+			public DbSet<FlightCompany> FlightCompanies { get; set; }
+			public DbSet<Plane> Planes { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 		}

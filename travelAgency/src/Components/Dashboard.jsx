@@ -9,7 +9,7 @@ import travel from '../assets/images/travel.webp';
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, createBuses, filteredTrips } from '../Endpoint';
+import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +17,6 @@ import FlightContext from '../_helper/FlightContext';
 import AuthContext from '../_helper/AuthContext';
 import BusContext from '../_helper/BusContext';
 import Loader from '../Layout/Loader';
-
 
 const Dashboard = () => {
 
@@ -27,6 +26,7 @@ const Dashboard = () => {
   const [toCountry, setToCountry] = useState('');
   const [errors, setErrors] = useState({});
   const [createFlight, setCreateFlight] = useState(false);
+  const [createPlane, setCreatePlane] = useState(false);
   const [createBus, setCreateBus] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,9 +51,10 @@ const Dashboard = () => {
       localStorage.removeItem('userId');
     }
   }, [role, setRole]);
-
+  
   const [flight, setFlight] = useState(initialData);
   const [bus, setBus] = useState(initialData);
+  const [plane, setPlane] = useState('');
 
   const history = useNavigate();
 
@@ -341,7 +342,7 @@ const Dashboard = () => {
 
 
     const finalData = {
-      Name: name,
+      PlaneId: 1,
       OriginCountry: originCountry,
       DestinationCountry: destinationCountry,
       Reservation: new Date(),
@@ -351,7 +352,7 @@ const Dashboard = () => {
       TicketPrice: ticketPrice
     };
     
-    axios.post(url, finalData, {
+    axios.post('api/plane/create_plane', {FlightCompanyId: 1, PlaneNumber: 'Plane1'}, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
@@ -364,25 +365,26 @@ const Dashboard = () => {
         setCreateBus(false);
         setBus(initialData);
       })
-      .catch(err => {
-        if(!err.response){
-          Swal.fire('Error, No Server Response!', '', 'error');
-          setErrors({globalError: 'Error, No Server Response!'})
-        } else if (err.response?.status === 401) {
-          Swal.fire('Unauthorized!!!', '', 'error');
-          history('/login');
-        } else{
-          Swal.fire('Something went wrong!', '', 'error');
-        }
-      })
+      // .catch(err => {
+      //   if(!err.response){
+      //     Swal.fire('Error, No Server Response!', '', 'error');
+      //     setErrors({globalError: 'Error, No Server Response!'})
+      //   } else if (err.response?.status === 401) {
+      //     Swal.fire('Unauthorized!!!', '', 'error');
+      //     history('/login');
+      //   } else{
+      //     Swal.fire('Something went wrong!', '', 'error');
+      //   }
+      // })
   }
 
 
   // ========================================REVIEWS============================================
   const [reviews, setReviews] = useState([
-    { name: 'John Doe', review: 'Great service, very satisfied!', rating: 5, date: '2024-05-01' },
-    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02' },
-    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02' }
+    // HOW THE DATA SHOULD LOOK FOR REVIEWS
+    { name: 'John Doe', review: 'Great service, very satisfied!', rating: 5, date: '2024-05-01', planeNumber: 'AirSafe' },
+    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02', planeNumber: 'AirLines' },
+    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02', planeNumber: 'AirSafe' }
   ]);
 
   const renderStars = (rating) => {
@@ -400,6 +402,16 @@ const Dashboard = () => {
     return stars;
   };
 
+  const addPlane = () => {
+    axios.post(createPlanes, {PlaneNumber: plane, FlightCompanyId: 1}, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+    .then(res => console.log(res.data))
+    .catch(err => console.log(err));
+  }
+
   return isLoading ? (
     <Loader />
   ) : (
@@ -410,8 +422,9 @@ const Dashboard = () => {
           {['Bus', 'Airplane'].map((item, idx) => <DropdownItem key={idx} onClick={() => setDropdownVal(item)}>{item}</DropdownItem>)}
         </DropdownButton>
       </Col>
-      <Col className='d-flex justify-content-end'>
-        {role === 'Admin' ? <>
+      <Col className='d-flex justify-content-between'>
+        {role == 'Superadmin' && <Button onClick={() => setCreatePlane(true)} className="top-button superadmin-buttons" style={{height: '39px'}}>Create Plane</Button>}
+        {role === 'Admin' || role === 'Superadmin' ? <>
           <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px', marginRight: '2%'}}>Create Flight</Button>
           <Button onClick={() => setCreateBus(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Bus Trip</Button>
         </> : ''}
@@ -668,6 +681,27 @@ const Dashboard = () => {
       </Modal.Body>
     </Modal>
     
+    <Modal size="sm" show={createPlane} onHide={() => setCreatePlane(false)} aria-labelledby="example-modal-sizes-title-sm">
+      <Modal.Header>
+        <Modal.Title id="example-modal-sizes-title-lg">
+          Add Plane
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <FormGroup className='formGroup modal-inputs'>
+          <FormLabel>Plane Number</FormLabel>
+          <div className="input-group login-form-inputs">
+              <FormControl className="form-control" type="text" name="name" placeholder="e.g. Plane3" value={plane} onChange={e => setPlane(e.target.value)} />
+          </div>
+          <p className='invalidFeedback fullWidth'>{errors.plane}</p>
+        </FormGroup>
+        <FormGroup className='formGroup d-flex justify-content-between'>
+          <Button className='' variant='danger' onClick={() => addRandom(createFlights)}>ADD RANDOM</Button>
+          <Button className="admin-buttons" onClick={() => addPlane()}>Create Flight</Button>
+        </FormGroup>
+      </Modal.Body>
+    </Modal>
+
     <div className='offers' style={{margin: '6rem 0 1rem 0'}}>
       <h2>
         Cheap Flight Offers
@@ -697,6 +731,7 @@ const Dashboard = () => {
                 <Card.Text>{review.date}</Card.Text>
               </Card.Body>
                 <Card.Footer className="text-muted text-center">
+                <Card.Text>{review.planeNumber}</Card.Text>
                   {renderStars(review.rating)}
                 </Card.Footer>
             </Card>

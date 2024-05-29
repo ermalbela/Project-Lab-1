@@ -8,7 +8,6 @@ namespace SecureWebSite.Server.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FlightId { get; set; }
-        public string Name { get; set; } = "AirSafe";
         public string OriginCountry { get; set; } = "Kosovo";
         public string DestinationCountry { get; set; } = "Albania";
         public DateTime Reservation { get; set; } = DateTime.Now;
@@ -16,5 +15,8 @@ namespace SecureWebSite.Server.Models
         public TimeOnly Departure { get; set; } = new TimeOnly(); //Default TimeOnly() is 00:00:00
         public TimeOnly Arrival { get; set; } = new TimeOnly();
         public float TicketPrice { get; set; } = 0.0f;
+        public int PlaneId { get; set; }
+        public Plane? Plane { get; set; }
+
     }
 }

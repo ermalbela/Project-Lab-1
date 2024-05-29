@@ -289,3 +289,7 @@ body > * {
   margin-right: 5px;
   font-size: 18px;
 }
+
+.superadmin-buttons{
+  background-color: rgb(78, 6, 6)!important;
+}
