@@ -10,27 +10,21 @@ const PrivateRoute = () => {
 
 
   useEffect(() => {
-    fetchUserRole();
 
-    if(role){
-      console.log(role);
-    } else{
-      localStorage.removeItem('token');
-      localStorage.removeItem('name');
-      localStorage.removeItem('userId');
-      setRole('');
-    }
+    fetchUserRole();
+  
   }, [role, setRole]);
 
   async function fetchUserRole() {
     console.log(role);
-      try {
-          const response = await axios.get(getRole, { withCredentials: true });
-          setRole(response.data.role);
-          console.log(response.data)
-      } catch (error) {
-          console.error('Error fetching user role:', error);
-      }
+      const response = await axios.get(getRole, { withCredentials: true })
+      .catch(err => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+      });
+      setRole(response?.data?.role);
+      console.log(response?.data)
   }
 
   return(

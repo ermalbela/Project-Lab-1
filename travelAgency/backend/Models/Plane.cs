@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SecureWebSite.Server.Models
 {
@@ -17,6 +18,7 @@ namespace SecureWebSite.Server.Models
         public int FlightCompanyId { get; set; }
         public FlightCompany? FlightCompany { get; set; }
 
+        [JsonIgnore]
         public ICollection<Flight>? Flights { get; set; }
     }
 }

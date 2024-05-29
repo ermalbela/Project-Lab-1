@@ -5,11 +5,13 @@ using SecureWebSite.Server.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SecureWebSite.Server.Controllers
 {
     [Route("api/plane")]
     [ApiController]
+    [Authorize]
     public class PlaneController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -82,6 +84,21 @@ namespace SecureWebSite.Server.Controllers
                 // Retrieve all flight companies from the database
                 var flightCompanies = await _context.FlightCompanies.Select(f => new { FlightCompanyId = f.FlightCompanyId, FlightCompany = f.CompanyName, Planes = f.Planes }).ToListAsync();
                 return Ok(flightCompanies);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Something went wrong while fetching flight companies. " + ex.Message });
+            }
+        }
+
+        [HttpGet("get_planes")]
+        public async Task<ActionResult<IEnumerable<FlightCompany>>> GetPlanes()
+        {
+            try
+            {
+                // Retrieve all flight companies from the database
+                var planes = await _context.Planes.Select(f => new { FlightCompanyId = f.FlightCompanyId, FlightCompany = f.FlightCompany, PlaneNumber = f.PlaneNumber, Flights = f.Flights }).ToListAsync();
+                return Ok(planes);
             }
             catch (Exception ex)
             {

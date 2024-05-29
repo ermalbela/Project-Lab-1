@@ -21,7 +21,8 @@ export const purchaseBus = busesApi + 'purchase_bus';
 
 const planesApi = '/api/plane/';
 export const createPlanes = planesApi + 'create_plane';
-export const editPlane = planesApi + 'edit_plane_';
+export const getPlanes = planesApi + 'get_planes';
+export const editPlanes = planesApi + 'edit_plane_';
 export const deletePlane = planesApi + 'delete_plane_';
 export const createFlightCompany = planesApi + 'create_company';
 export const getFlightCompanies = planesApi + 'get_companies';

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SecureWebSite.Server.Models
 {
@@ -16,6 +17,8 @@ namespace SecureWebSite.Server.Models
         public TimeOnly Arrival { get; set; } = new TimeOnly();
         public float TicketPrice { get; set; } = 0.0f;
         public int PlaneId { get; set; }
+        
+        [JsonIgnore]
         public Plane? Plane { get; set; }
 
     }

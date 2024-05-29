@@ -280,16 +280,16 @@ const Dashboard = () => {
             history('/flights');
           }
         })
-        .catch(err => {
-          if(!err.response){
-            Swal.fire('Error, No Server Response!', '', 'error');
-            setErrors({globalError: 'Error, No Server Response!'})
-          } else if (err.response?.status === 401) {
-            Swal.fire('Unauthorized!!!', '', 'error');
-          } else{
-            Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
-          }
-        })
+        // .catch(err => {
+        //   if(!err.response){
+        //     Swal.fire('Error, No Server Response!', '', 'error');
+        //     setErrors({globalError: 'Error, No Server Response!'})
+        //   } else if (err.response?.status === 401) {
+        //     Swal.fire('Unauthorized!!!', '', 'error');
+        //   } else{
+        //     Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
+        //   }
+        // })
     }
   }
 
@@ -340,7 +340,7 @@ const Dashboard = () => {
 
 
     const finalData = {
-      PlaneId: 1,
+      PlaneId: 17,
       OriginCountry: originCountry,
       DestinationCountry: destinationCountry,
       Reservation: new Date(),
@@ -350,7 +350,7 @@ const Dashboard = () => {
       TicketPrice: ticketPrice
     };
     
-    axios.post('api/plane/create_plane', {FlightCompanyId: 1, PlaneNumber: 'Plane1'}, {
+    axios.post(createFlights, finalData, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
