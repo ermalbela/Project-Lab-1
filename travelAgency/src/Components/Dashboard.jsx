@@ -582,6 +582,7 @@ const Dashboard = () => {
         </Form>
       </Modal.Body>
     </Modal>
+    
     {/* Bus Modal */}
     <Modal size="lg" show={createBus} onHide={() => setCreateBus(false)} aria-labelledby="example-modal-sizes-title-lg">
       <Modal.Header>
@@ -681,6 +682,7 @@ const Dashboard = () => {
       </Modal.Body>
     </Modal>
     
+    {/* PLANE MODAL */}
     <Modal size="sm" show={createPlane} onHide={() => setCreatePlane(false)} aria-labelledby="example-modal-sizes-title-sm">
       <Modal.Header>
         <Modal.Title id="example-modal-sizes-title-lg">
