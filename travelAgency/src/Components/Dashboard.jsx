@@ -26,7 +26,6 @@ const Dashboard = () => {
   const [toCountry, setToCountry] = useState('');
   const [errors, setErrors] = useState({});
   const [createFlight, setCreateFlight] = useState(false);
-  const [createPlane, setCreatePlane] = useState(false);
   const [createBus, setCreateBus] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,7 +53,6 @@ const Dashboard = () => {
   
   const [flight, setFlight] = useState(initialData);
   const [bus, setBus] = useState(initialData);
-  const [plane, setPlane] = useState('');
 
   const history = useNavigate();
 
@@ -402,16 +400,6 @@ const Dashboard = () => {
     return stars;
   };
 
-  const addPlane = () => {
-    axios.post(createPlanes, {PlaneNumber: plane, FlightCompanyId: 1}, {
-      headers: {
-        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
-      }
-    })
-    .then(res => console.log(res.data))
-    .catch(err => console.log(err));
-  }
-
   return isLoading ? (
     <Loader />
   ) : (
@@ -422,8 +410,7 @@ const Dashboard = () => {
           {['Bus', 'Airplane'].map((item, idx) => <DropdownItem key={idx} onClick={() => setDropdownVal(item)}>{item}</DropdownItem>)}
         </DropdownButton>
       </Col>
-      <Col className='d-flex justify-content-between'>
-        {role == 'Superadmin' && <Button onClick={() => setCreatePlane(true)} className="top-button superadmin-buttons" style={{height: '39px'}}>Create Plane</Button>}
+      <Col className='d-flex justify-content-end'>
         {role === 'Admin' || role === 'Superadmin' ? <>
           <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px', marginRight: '2%'}}>Create Flight</Button>
           <Button onClick={() => setCreateBus(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Bus Trip</Button>
@@ -679,28 +666,6 @@ const Dashboard = () => {
             <Button className="admin-buttons" onClick={() => handleClick(createBuses, bus)}>Create BusTrip</Button>
           </FormGroup>
         </Form>
-      </Modal.Body>
-    </Modal>
-    
-    {/* PLANE MODAL */}
-    <Modal size="sm" show={createPlane} onHide={() => setCreatePlane(false)} aria-labelledby="example-modal-sizes-title-sm">
-      <Modal.Header>
-        <Modal.Title id="example-modal-sizes-title-lg">
-          Add Plane
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <FormGroup className='formGroup modal-inputs'>
-          <FormLabel>Plane Number</FormLabel>
-          <div className="input-group login-form-inputs">
-              <FormControl className="form-control" type="text" name="name" placeholder="e.g. Plane3" value={plane} onChange={e => setPlane(e.target.value)} />
-          </div>
-          <p className='invalidFeedback fullWidth'>{errors.plane}</p>
-        </FormGroup>
-        <FormGroup className='formGroup d-flex justify-content-between'>
-          <Button className='' variant='danger' onClick={() => addRandom(createFlights)}>ADD RANDOM</Button>
-          <Button className="admin-buttons" onClick={() => addPlane()}>Create Flight</Button>
-        </FormGroup>
       </Modal.Body>
     </Modal>
 
