@@ -18,11 +18,16 @@ namespace SecureWebSite.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Define the relationship between Plane and FlightCompany
+            // Configure relationships
             modelBuilder.Entity<Plane>()
                 .HasOne(p => p.FlightCompany)
-                .WithMany(fc => fc.Planes) // Assuming FlightCompany has a navigation property 'Planes'
+                .WithMany(fc => fc.Planes)
                 .HasForeignKey(p => p.FlightCompanyId);
+
+            modelBuilder.Entity<Flight>()
+                .HasOne(f => f.Plane)
+                .WithMany(p => p.Flights)
+                .HasForeignKey(f => f.PlaneId);
         }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 		}

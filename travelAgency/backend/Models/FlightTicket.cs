@@ -1,4 +1,6 @@
-﻿namespace SecureWebSite.Server.Models
+﻿using System.Text.Json.Serialization;
+
+namespace SecureWebSite.Server.Models
 {
     public class FlightTicket
     {
@@ -9,6 +11,8 @@
         public int Children { get; set; }
         public int Infant { get; set; }
         public Flight Flight { get; set; }
+        
+        [JsonIgnore]
         public ICollection<User> Users { get; set; }
     }
 }

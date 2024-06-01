@@ -10,9 +10,7 @@ const PrivateRoute = () => {
 
 
   useEffect(() => {
-
     fetchUserRole();
-  
   }, [role, setRole]);
 
   async function fetchUserRole() {

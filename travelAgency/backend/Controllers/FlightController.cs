@@ -8,6 +8,7 @@ using SecureWebSite.Server.Models;
 using System.Numerics;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 
 namespace SecureWebSite.Server.Controllers
 {
@@ -19,10 +20,12 @@ namespace SecureWebSite.Server.Controllers
     public class FlightController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public FlightController(ApplicationDbContext context)
+        public FlightController(ApplicationDbContext context, UserManager<User> um)
         {
             _context = context;
+            _userManager = um;
         }
 
         public class FlightRequest
@@ -109,15 +112,11 @@ namespace SecureWebSite.Server.Controllers
         {
             try
             {
-                Flight _flight = new Flight()
-                {
-                    OriginCountry = flight.OriginCountry,
-                    DestinationCountry = flight.DestinationCountry,
-                    Reservation = flight.Reservation,
-                };
 
-                var filtered_flights = await _context.Flights
+                var filtered_flights = await _context.Flights.Select(f => 
+                    new { FlightCompany = f.Plane.FlightCompany.CompanyName, f.Plane, f.PlaneId, f.DestinationCountry, f.OriginCountry, f.Arrival, f.Departure, f.TicketPrice, f.TicketsLeft, f.FlightId, f.Reservation } )
                     .Where(f => f.DestinationCountry == flight.DestinationCountry && f.OriginCountry == flight.OriginCountry).ToListAsync();
+
 
 
                 return Ok(new { filtered_flights });
@@ -164,6 +163,11 @@ namespace SecureWebSite.Server.Controllers
             try
             {
 
+                var existingUser = await _userManager.FindByIdAsync(request.User.Id);
+                if (existingUser == null)
+                {
+                    return NotFound("User not found.");
+                }
 
                 // Get the flight
                 var flight = await _context.Flights.FindAsync(_flightId);
@@ -184,6 +188,13 @@ namespace SecureWebSite.Server.Controllers
                     return BadRequest("There Should Be An Adult In The Flight.");
                 }
 
+                var userHasTicket = await _context.FlightTickets.AnyAsync(ft => ft.Flight.FlightId == _flightId && ft.Users.Any(u => u.Id == request.User.Id));
+
+                if (userHasTicket)
+                {
+                    return BadRequest("User has already purchased a ticket for this flight.");
+                }
+
                 // Decrease ticketsLeft count
                 int totalTicketsSold = request.Adults + request.Children + request.Infant;
                 flight.TicketsLeft -= totalTicketsSold;
@@ -200,6 +211,12 @@ namespace SecureWebSite.Server.Controllers
                     Reservation = request.Reservation,
                 };
 
+                if (_flightTicket.Users == null)
+                {
+                    _flightTicket.Users = new List<User>(); // Initialize the list if null
+                }
+
+                _flightTicket.Users.Add(existingUser);
 
                 // Add UserTicket to database
                 _context.FlightTickets.Add(_flightTicket);
@@ -214,6 +231,24 @@ namespace SecureWebSite.Server.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
 
+        }
+
+        [HttpGet("get_purchased_flights")]
+        public async Task<ActionResult<IEnumerable<FlightTicket>>> GetPurchasedFlights()
+        {
+            try
+            {
+                var flightTickets = await _context.FlightTickets.Select(f => new { f.Adults, f.Category, f.Children, f.FlightTicketId, f.Infant, f.Reservation, f.Users }).ToListAsync();
+
+
+                return Ok(flightTickets);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Something went wrong while fetching flights. " + ex.Message });
+
+            }
         }
 
 

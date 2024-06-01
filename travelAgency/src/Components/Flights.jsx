@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Container, Row, Col, Button, Modal, Card, DropdownButton, DropdownItem } from 'react-bootstrap';
 import planeIcon from '../assets/images/plane-icon.png';
 import axios from 'axios';
-import { getFlights, purchaseFlight } from '../Endpoint';
+import { getFlights, getPurchasedFlights, purchaseFlight } from '../Endpoint';
 import Swal from 'sweetalert2';
 import Loader from '../Layout/Loader';
 import FlightContext from '../_helper/FlightContext';
@@ -13,11 +13,10 @@ import AuthContext from '../_helper/AuthContext';
 
 const Flights = () => {
 
-  const {role} = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
   const {data, setData} = useContext(FlightContext);
   const [show, setShow] = useState(false);
-  const [selectedFlight, setSelectedFlight] = useState(null);
+  const [selectedFlight, setSelectedFlight] = useState([]);
   const [passengerCounts, setPassengerCounts] = useState({adult: 1, child: 0, infant: 0});
 
   // ===============================FETCH THE WHOLE FLIGHTS HERE===============================//
@@ -36,6 +35,16 @@ const Flights = () => {
   //   fetchData();
   // }, []);
 
+  const getData = async () => {
+    const response = await axios.get(getPurchasedFlights, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    });
+    console.log(response.data);
+  }
+
+
   useEffect(() => {
     if(data !== '' || data !== undefined){
       setIsLoading(false);
@@ -49,11 +58,12 @@ const Flights = () => {
   }
 
   const [sortKey, setSortKey] = useState('reservation');
-
   const sortedFlights = useQuicksort(data, sortKey);
   
 
   const handlePurchase = (flightId, category, reservation) => {
+    console.log(selectedFlight);
+    console.log(flightId);
     const Name = JSON.parse(localStorage.getItem('name'));
     const Id = JSON.parse(localStorage.getItem('userId'));
     const validNum = [flightId];
@@ -156,6 +166,7 @@ const Flights = () => {
               ))}
             </DropdownButton>
           </div>
+          <Button onClick={() => getData()}>Click me</Button>
           {/* ===============================MAPPING OVER THE DATA HERE=============================== */}
           {sortedFlights.map((flight, idx) => {
             const date = new Date(flight.reservation);
@@ -173,8 +184,8 @@ const Flights = () => {
                       <Col className='d-flex align-items-center'>
                         <img src={planeIcon} className='plane-icon'/>
                         <div className='d-flex align-items-center flex-column'>
-                          <h5>{flight.name}</h5>
-                          <h6 className='text-muted'>Flight ID: {flight.flightId}</h6>
+                          <h5>{flight.flightCompany}</h5>
+                          <h6 className='text-muted'>Plane: {flight.plane.planeNumber}</h6>
                         </div>
                       </Col>
                       <Col xs={4} className='d-flex align-items-center justify-content-center'>

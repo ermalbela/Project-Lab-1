@@ -276,7 +276,7 @@ const Dashboard = () => {
             setBusData(res.data?.filtered_bus?.result)
             history('/bus');
           } else{
-            setData(res.data?.filtered_flights?.result);
+            setData(res.data?.filtered_flights);
             history('/flights');
           }
         })

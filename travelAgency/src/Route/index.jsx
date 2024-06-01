@@ -12,12 +12,18 @@ import PrivateRoute from './PrivateRoute';
 
 const Routers = () => {
 
+  const {role} = useContext(AuthContext);
+
   return (
       <BrowserRouter>
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path='*' element={<PrivateRoute />}>
-              <Route path={`*`} element={<LayoutRoutes />}/>
+              {
+                role !== '' && role !== undefined && role.length > 0? 
+                <Route path={`*`} element={<LayoutRoutes />}/>
+                : ''
+              }
             </Route>
             <Route path={`/login`} element={<Login />}/>
             <Route path={`/register`} element={<Register />}/>

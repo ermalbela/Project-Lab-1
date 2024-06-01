@@ -31,7 +31,7 @@ namespace SecureWebSite.Server.Controllers
 									Name = user.Name,
 									Email = user.Email,
 									UserName = user.UserName,
-									Role = "User"
+									Role = "Admin"
 								};
 
 								result = await userManager.CreateAsync(user_, user.PasswordHash);
