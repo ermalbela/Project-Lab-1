@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SecureWebSite.Server.Data;
 
@@ -11,9 +12,11 @@ using SecureWebSite.Server.Data;
 namespace SecureWebSite.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240529200543_Deleting bus from database")]
+    partial class Deletingbusfromdatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,87 +156,6 @@ namespace SecureWebSite.Server.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("SecureWebSite.Server.Models.Bus", b =>
-                {
-                    b.Property<int>("BusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusId"));
-
-                    b.Property<TimeSpan>("ArrivalTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("BusCompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<TimeSpan>("DepartureTime")
-                        .HasColumnType("time");
-
-                    b.Property<string>("Destination")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Origin")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<decimal>("TicketPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TicketsAvailable")
-                        .HasColumnType("int");
-
-                    b.HasKey("BusId");
-
-                    b.HasIndex("BusCompanyId");
-
-                    b.ToTable("Buses");
-                });
-
-            modelBuilder.Entity("SecureWebSite.Server.Models.BusTicket", b =>
-                {
-                    b.Property<int>("BusTicketId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusTicketId"));
-
-                    b.Property<int>("BusId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfAdults")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfChildren")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfInfants")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ReservationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("BusTicketId");
-
-                    b.HasIndex("BusId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BusTickets");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.Flight", b =>
@@ -439,24 +361,6 @@ namespace SecureWebSite.Server.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("YourNamespace.Models.BusCompany", b =>
-                {
-                    b.Property<int>("BusCompanyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusCompanyId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("BusCompanyId");
-
-                    b.ToTable("BusCompanies");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -506,36 +410,6 @@ namespace SecureWebSite.Server.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SecureWebSite.Server.Models.Bus", b =>
-                {
-                    b.HasOne("YourNamespace.Models.BusCompany", "BusCompany")
-                        .WithMany("Buses")
-                        .HasForeignKey("BusCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BusCompany");
-                });
-
-            modelBuilder.Entity("SecureWebSite.Server.Models.BusTicket", b =>
-                {
-                    b.HasOne("SecureWebSite.Server.Models.Bus", "Bus")
-                        .WithMany()
-                        .HasForeignKey("BusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SecureWebSite.Server.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Bus");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.Flight", b =>
@@ -593,11 +467,6 @@ namespace SecureWebSite.Server.Data.Migrations
             modelBuilder.Entity("SecureWebSite.Server.Models.Plane", b =>
                 {
                     b.Navigation("Flights");
-                });
-
-            modelBuilder.Entity("YourNamespace.Models.BusCompany", b =>
-                {
-                    b.Navigation("Buses");
                 });
 #pragma warning restore 612, 618
         }
