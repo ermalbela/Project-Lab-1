@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using SecureWebSite.Server.Data;
 using SecureWebSite.Server.Data.Migrations;
 using SecureWebSite.Server.Models;
+using System.Numerics;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 
 namespace SecureWebSite.Server.Controllers
 {
@@ -16,24 +20,40 @@ namespace SecureWebSite.Server.Controllers
     public class FlightController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public FlightController(ApplicationDbContext context)
+        public FlightController(ApplicationDbContext context, UserManager<User> um)
         {
             _context = context;
+            _userManager = um;
+        }
+
+        public class FlightRequest
+        {
+            public string OriginCountry { get; set; }
+            public string DestinationCountry { get; set; }
+            public DateTime Reservation { get; set; }
+            public int TicketsLeft { get; set; }
+            public TimeOnly Departure { get; set; }
+            public TimeOnly Arrival { get; set; }
+            public float TicketPrice { get; set; }
+            public List<int> PlaneId { get; set; }
+            //public Plane? Plane { get; set; }
         }
 
         [HttpPost("create_flight")]
         public async Task<ActionResult> CreateFlight(Flight flight)
         {
-
+            //int _planeId = flight.PlaneId[0];
             try
             {
-                if (flight.Plane == null || flight.Plane.PlaneId == 0)
+
+                if (flight.PlaneId == 0)
                 {
                     return BadRequest("Plane is required.");
                 }
 
-                var existingPlane = await _context.Planes.FindAsync(flight.Plane.PlaneId);
+                var existingPlane = await _context.Planes.FindAsync(flight.PlaneId);
                 if (existingPlane == null)
                 {
                     return NotFound("Plane not found.");
@@ -58,13 +78,28 @@ namespace SecureWebSite.Server.Controllers
                     return BadRequest("Flight object is null.");
                 }
 
+                if (existingPlane.Flights == null)
+                {
+                    existingPlane.Flights = new List<Flight>();
+                }
+
+                existingPlane.Flights.Add(_flight);
+
                 // Add the flight object to the context
                 _context.Flights.Add(_flight);
 
                 // Save changes to the database
                 await _context.SaveChangesAsync();
 
-                return Ok(new {message = "Flight created successfully.", flight = _flight});
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve
+                };
+
+                // Serialize the flightCompany object with configured options
+                var json = JsonSerializer.Serialize(_flight, options);
+
+                return Ok(json);
             }
             catch (Exception ex)
             {
@@ -77,21 +112,12 @@ namespace SecureWebSite.Server.Controllers
         {
             try
             {
-                Flight _flight = new Flight()
-                {
-                    OriginCountry = flight.OriginCountry,
-                    DestinationCountry = flight.DestinationCountry,
-                    Reservation = flight.Reservation,
-                };
 
-                IQueryable<Flight> query = _context.Flights;
+                var filtered_flights = await _context.Flights.Select(f => 
+                    new { FlightCompany = f.Plane.FlightCompany.CompanyName, f.Plane, f.PlaneId, f.DestinationCountry, f.OriginCountry, f.Arrival, f.Departure, f.TicketPrice, f.TicketsLeft, f.FlightId, f.Reservation } )
+                    .Where(f => f.DestinationCountry == flight.DestinationCountry && f.OriginCountry == flight.OriginCountry).ToListAsync();
 
-                if(!string.IsNullOrEmpty(_flight.OriginCountry) && !string.IsNullOrEmpty(_flight.DestinationCountry))
-                {
-                    query = query.Where(f => f.DestinationCountry == _flight.DestinationCountry && f.OriginCountry == _flight.OriginCountry);
-                }
 
-                var filtered_flights = query.ToListAsync();
 
                 return Ok(new { filtered_flights });
 
@@ -113,18 +139,9 @@ namespace SecureWebSite.Server.Controllers
 
             } catch (Exception ex)
             {
-                return BadRequest(new { message = "Something went wrong while fetching users. " + ex.Message });
+                return BadRequest(new { message = "Something went wrong while fetching flights. " + ex.Message });
 
             }
-        }
-
-
-        [HttpPost("test_number")]
-        public IActionResult TestNumber([FromBody] List<int> _num)
-        {
-            Console.WriteLine("NUMBER --------------> " + _num[0]);
-            
-            return Ok( new { num = _num[0], _num });
         }
 
         public class PurchaseFlightRequest
@@ -146,6 +163,11 @@ namespace SecureWebSite.Server.Controllers
             try
             {
 
+                var existingUser = await _userManager.FindByIdAsync(request.User.Id);
+                if (existingUser == null)
+                {
+                    return NotFound("User not found.");
+                }
 
                 // Get the flight
                 var flight = await _context.Flights.FindAsync(_flightId);
@@ -166,6 +188,13 @@ namespace SecureWebSite.Server.Controllers
                     return BadRequest("There Should Be An Adult In The Flight.");
                 }
 
+                var userHasTicket = await _context.FlightTickets.AnyAsync(ft => ft.Flight.FlightId == _flightId && ft.Users.Any(u => u.Id == request.User.Id));
+
+                if (userHasTicket)
+                {
+                    return BadRequest("User has already purchased a ticket for this flight.");
+                }
+
                 // Decrease ticketsLeft count
                 int totalTicketsSold = request.Adults + request.Children + request.Infant;
                 flight.TicketsLeft -= totalTicketsSold;
@@ -182,6 +211,12 @@ namespace SecureWebSite.Server.Controllers
                     Reservation = request.Reservation,
                 };
 
+                if (_flightTicket.Users == null)
+                {
+                    _flightTicket.Users = new List<User>(); // Initialize the list if null
+                }
+
+                _flightTicket.Users.Add(existingUser);
 
                 // Add UserTicket to database
                 _context.FlightTickets.Add(_flightTicket);
@@ -196,6 +231,24 @@ namespace SecureWebSite.Server.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
 
+        }
+
+        [HttpGet("get_purchased_flights")]
+        public async Task<ActionResult<IEnumerable<FlightTicket>>> GetPurchasedFlights()
+        {
+            try
+            {
+                var flightTickets = await _context.FlightTickets.Select(f => new { f.Adults, f.Category, f.Children, f.FlightTicketId, f.Infant, f.Reservation, f.Users }).ToListAsync();
+
+
+                return Ok(flightTickets);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Something went wrong while fetching flights. " + ex.Message });
+
+            }
         }
 
 

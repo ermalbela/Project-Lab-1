@@ -1,41 +1,90 @@
 import axios from 'axios';
-import React, { useContext, useState } from 'react'
-import { createFlightCompany, createPlanes, deletePlane, editPlane, getFlightCompanies } from '../Endpoint';
+import React, { useContext, useEffect, useState } from 'react'
+import { createFlightCompany, createPlanes, deletePlane, editPlanes, getFlightCompanies, getPlanes } from '../Endpoint';
 import { Button, Card, Col, Row, Modal, FormGroup, FormLabel, FormControl} from 'react-bootstrap';
 import AuthContext from '../_helper/AuthContext';
+import FlightCompanyContext from '../_helper/FlightCompanyContext';
+import Loader from '../Layout/Loader';
+import Swal from 'sweetalert2';
 
 const FlightCompanies = () => {
 
-  const [data, setData] = useState([]);
+  const {companyData, setCompanyData} = useContext(FlightCompanyContext);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [Plane, setPlane] = useState('');
   const {role} = useContext(AuthContext);
   const [createCompany, setCreateCompany] = useState(false);
   const [company, setCompany] = useState('');
   const [createPlane, setCreatePlane] = useState(false);
   const [currentPlane, setCurrentPlane] = useState([]);
+  const [editPlane, setEditPlane] = useState(false);
 
-  const handleClick = async () => {
-    console.log(123);
+  const getData = async () => {
+    const response = await axios.get(getFlightCompanies, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    });
 
-    const response = await axios.get(getFlightCompanies);
-
-    setData(response.data);
+    setCompanyData(response.data);
   }
 
   const handleDelete = id => {
-    axios.delete(deletePlane + id)
-    .then(res => console.log(res.data))
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(deletePlane + id, {
+          headers: {
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+          }
+        })
+        .then(() => {
+          getData();
+        })
+        Swal.fire({
+          title: "Deleted!",
+          text: "Plane has been deleted.",
+          icon: "success"
+        });
+      }
+    });
+    
   }
 
-  const handleEdit = (id) => {
-    axios.put(editPlane + id, {PlaneNumber: Plane, PlaneId: Plane.PlaneId})
-    .then(res => res.data)
-
+  const handleEdit = (id, plane) => {
+    axios.put(editPlanes + id, {PlaneNumber: Plane, PlaneId: plane.planeId}, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+    .then(res => {
+      console.log(res.data)
+      setEditPlane(false);
+      setPlane('');
+      getData();
+    })
   }
 
   const addCompany = () => {
-    axios.post(createFlightCompany, {CompanyName: company})
-    .then(res => console.log(res));
+    axios.post(createFlightCompany, {CompanyName: company}, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+    .then(res => {
+      console.log(res)
+      getData();
+      setCreateCompany(false);
+      setCompany(false);
+    });
   }
 
   const addPlane = (id) => {
@@ -44,12 +93,25 @@ const FlightCompanies = () => {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
     })
-    .then(res => console.log(res.data))
+    .then(res => {
+      console.log(res.data)
+      getData();
+      setPlane('');
+      setCreatePlane(false);
+    })
     .catch(err => console.log(err));
-    setPlane('');
+    
   }
 
-  return (
+  useEffect(() => {
+    if(companyData !== '' || companyData !== undefined && companyData){
+      setIsLoading(false);
+    }
+  })
+
+  return isLoading ? (
+    <Loader />
+  ) : (
     <>
       <Row>
         <Col className='d-flex justify-content-between'>
@@ -57,11 +119,11 @@ const FlightCompanies = () => {
           {role == 'Superadmin' && <Button onClick={() => setCreateCompany(true)} className="top-button superadmin-buttons" style={{height: '39px'}}>Add Company</Button>}
         </Col>
       </Row>
-      <div className="offers">
+      <div className="flight-companies">
         <Row className="g-4">
-          {data.map((company) => (
+          {companyData.map((company) => (
             <Col key={company.flightCompanyId} md={6} lg={4}>
-              <Card className="h-100 review-card">
+              <Card className="h-100 flight-companies-card">
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-center">
                   <Card.Title className='text-start mb-3'>{company.flightCompany}</Card.Title>
@@ -76,7 +138,10 @@ const FlightCompanies = () => {
                     <Card.Footer className="text-muted d-flex justify-content-around" key={plane.planeId}>
                       <h5 className='d-flex align-items-center p-0 m-0'>Plane Number: {plane.planeNumber}</h5>
                       <Button variant='danger' onClick={() => handleDelete(plane.planeId)}>Delete</Button>
-                      <Button variant='warning' onClick={() => handleEdit(plane.planeId, plane)}>Edit</Button>
+                      <Button variant='warning' onClick={() => {
+                        setEditPlane(true);
+                        setCurrentPlane(plane);
+                      }}>Edit</Button>
                     </Card.Footer>
                   ))}
                 </Card.Body>
@@ -85,25 +150,32 @@ const FlightCompanies = () => {
           ))}
         </Row>
       </div>
-      <br />
-      <Button onClick={() => handleClick()}>Fetch Planes</Button>
 
+      <Button onClick={async () => {
+        const response = await axios.get(getPlanes, {
+          headers: {
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+          }
+        })
 
-      <Modal size="sm" show={createCompany} onHide={() => setCreateCompany(false)} aria-labelledby="example-modal-sizes-title-sm">
+        console.log(response.data);
+        
+      }}>Click me</Button>
+
+      <Modal size="md" show={createCompany} onHide={() => setCreateCompany(false)} aria-labelledby="example-modal-sizes-title-sm">
       <Modal.Header>
         <Modal.Title id="example-modal-sizes-title-lg">
           Add Company
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <FormGroup className='formGroup modal-inputs'>
+        <FormGroup className='formGroup'>
           <FormLabel>Company Name</FormLabel>
           <div className="input-group login-form-inputs">
               <FormControl className="form-control" type="text" name="companyName" placeholder="e.g. AirLine" value={company} onChange={e => setCompany(e.target.value)} />
           </div>
         </FormGroup>
-        <FormGroup className='formGroup d-flex justify-content-between'>
-          <Button className='' variant='danger' onClick={() => addRandom(createFlights)}>ADD RANDOM</Button>
+        <FormGroup className='formGroup d-flex justify-content-end'>
           <Button className="admin-buttons" onClick={() => addCompany()}>Add Company</Button>
         </FormGroup>
       </Modal.Body>
@@ -111,22 +183,42 @@ const FlightCompanies = () => {
 
     {/* PLANE MODAL */}
     {currentPlane &&
-      <Modal size="sm" show={createPlane} onHide={() => setCreatePlane(false)} aria-labelledby="example-modal-sizes-title-sm">
+      <Modal size="md" show={createPlane} onHide={() => setCreatePlane(false)} aria-labelledby="example-modal-sizes-title-sm">
         <Modal.Header>
           <Modal.Title id="example-modal-sizes-title-lg">
             Add Plane
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormGroup className='formGroup modal-inputs'>
+          <FormGroup className='formGroup'>
             <FormLabel>Plane Number</FormLabel>
             <div className="input-group login-form-inputs">
                 <FormControl className="form-control" type="text" name="name" placeholder="e.g. Plane1" value={Plane} onChange={e => setPlane(e.target.value)} />
             </div>
           </FormGroup>
-          <FormGroup className='formGroup d-flex justify-content-between'>
-            <Button className='' variant='danger' onClick={() => addRandom(createFlights)}>ADD RANDOM</Button>
+          <FormGroup className='formGroup d-flex justify-content-end'>
             <Button className="admin-buttons" onClick={() => addPlane(currentPlane.flightCompanyId)}>Create Flight</Button>
+          </FormGroup>
+        </Modal.Body>
+      </Modal>
+    }
+
+    {currentPlane &&
+      <Modal size="md" show={editPlane} onHide={() => setEditPlane(false)} aria-labelledby="example-modal-sizes-title-sm">
+        <Modal.Header>
+          <Modal.Title id="example-modal-sizes-title-lg">
+            Edit Plane
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormGroup className='formGroup'>
+            <FormLabel>Plane Number</FormLabel>
+            <div className="input-group login-form-inputs">
+                <FormControl className="form-control" type="text" name="name" placeholder="e.g. Plane1" value={Plane} onChange={e => setPlane(e.target.value)} />
+            </div>
+          </FormGroup>
+          <FormGroup className='formGroup d-flex justify-content-end'>
+            <Button className="admin-buttons" onClick={() => handleEdit(currentPlane.planeId, currentPlane)}>Edit Plane</Button>
           </FormGroup>
         </Modal.Body>
       </Modal>
