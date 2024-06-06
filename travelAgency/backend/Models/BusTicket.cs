@@ -1,19 +1,30 @@
-﻿namespace SecureWebSite.Server.Models
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace SecureWebSite.Server.Models
 {
     public class BusTicket
     {
+        [Key]
         public int BusTicketId { get; set; }
-        public DateTime Reservation { get; set; }
-        public string Category { get; set; }
-        public int Adults { get; set; }
-        public int Children { get; set; }
-        public int Infant { get; set; }
-        public string UserId { get; set; }
-        public int BusId { get; set; }
-        public User User { get; set; }
+
+        [Required]
+        public DateTime ReservationDate { get; set; }
+
+        [Required]
+        public int NumberOfAdults { get; set; }
+
+        [Required]
+        public int NumberOfChildren { get; set; }
+
+        [Required]
+        public int NumberOfInfants { get; set; }
+        
         public Bus Bus { get; set; }
-        //public ICollection<User> Users { get; set; }
 
-
+        [JsonIgnore]
+        public ICollection<User> Users { get; set; }
     }
 }
