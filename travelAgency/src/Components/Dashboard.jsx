@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card, Container} from 'react-bootstrap';
 import { countries } from '../Menu';
-import MySelect from './MySelect';
+import MySelect from '../CommonElements/MySelect';
 import {components} from 'react-select';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
