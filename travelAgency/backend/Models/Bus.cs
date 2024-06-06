@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using YourNamespace.Models;
 
 namespace SecureWebSite.Server.Models
 {
@@ -8,13 +10,19 @@ namespace SecureWebSite.Server.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BusId { get; set; }
-        public string Name { get; set; } = "FlixBus";
-        public string OriginCountry { get; set; } = "Kosova";
-        public string DestinationCountry { get; set; } = "Albania";
-        public DateTime Reservation { get; set; } = DateTime.Now;
-        public int TicketsLeft { get; set; } = 0;
-        public TimeOnly Departure { get; set; } = new TimeOnly(); //Default TimeOnly() is 00:00:00
-        public TimeOnly Arrival { get; set; } = new TimeOnly();
-        public float TicketPrice { get; set; } = 0.0f;
+
+        [Required]
+        [MaxLength(50)]
+        public string BusNumber { get; set; }
+       
+        [Required]
+        public int DeckersNr { get; set; }
+        
+
+        public int BusCompanyId { get; set; }
+        public BusCompany? BusCompany { get; set; }
+
+        [JsonIgnore]
+        public ICollection<BusTrips>? BusTrips { get; set; }
     }
 }
