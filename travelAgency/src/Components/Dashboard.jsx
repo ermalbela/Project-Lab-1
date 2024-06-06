@@ -144,9 +144,7 @@ const Dashboard = () => {
       ...provided,
       whiteSpace: "nowrap",
       overflowX: "auto",
-      WebkitOverflowScrolling: "touch",
-      backgroundColor: '#F4F6EF',
-      cursor: 'text'
+      WebkitOverflowScrolling: "touch"
     }),
     menu: (provided) => ({
       ...provided,
@@ -156,32 +154,20 @@ const Dashboard = () => {
     option: (styles, {isFocused, isSelected}) => {
       return{
         ...styles,
-        backgroundColor: isSelected ? '#13294B' : isFocused ? '#cee6e2' : '#F4F6EF',
-        color: !isSelected ? '#000' : isSelected || isFocused ? '#F4F6EF' : '',
+        backgroundColor: isSelected ? '#6ea4c2' : isFocused ? '#cee6e2' : '#fff',
+        color: !isSelected ? '#000' : isSelected || isFocused ? '#000' : '',
         borderRadius: '5px'
       }
     },
-    dropdownIndicator: (provided) => ({
-      ...provided,
-      backgroundColor: '#F4F6EF'
-    }),
-    indicatorSeparator: (provided) => ({
-      ...provided,
-      margin: 0
-    }),
-    clearIndicator: (provided) => ({
-      ...provided,
-      backgroundColor: '#F4F6EF'
-    }),
-    control: (provided) => ({
-      ...provided,
-      borderColor: 'hsl(0, 0%, 80%);',
-      boxShadow: 'none',
-      ':hover': {
-        borderColor: 'hsl(0, 0%, 80%);',
-        boxShadow: 'none'
-      }
-    }),
+    // control: (provided) => ({
+    //   ...provided,
+    //   borderColor: 'hsl(0, 0%, 80%);',
+    //   boxShadow: 'none',
+    //   ':hover': {
+    //     borderColor: 'hsl(0, 0%, 80%);',
+    //     boxShadow: 'none'
+    //   }
+    // }),
   }
 
   const validate = (vals) => {

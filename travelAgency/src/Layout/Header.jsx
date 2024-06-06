@@ -63,7 +63,7 @@ const Header = () => {
               </NavLink>
             ))}
             <Link className="nav-link" to='/'>
-              <NavLink as='button' className="ms-5 btn btn-primary" onClick={handleLogout}>
+              <NavLink as='button' className="ms-5 btn btn-primary logout-button" onClick={handleLogout}>
                 Log Out
               </NavLink>
             </Link>

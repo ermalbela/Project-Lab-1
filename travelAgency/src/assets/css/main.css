@@ -1,55 +1,114 @@
 body{
   margin: 0;
   padding: 0;
-  background-color: #327D81!important;
+  background-color: #f5f7fb!important;
 }
 
 body > * {
-  color: #fff;
+  color: #000;
+}
+
+.card{
+  border: 1px solid #e6edef !important;
+  transition: all 0.3s ease !important;
+  letter-spacing: 0.5px !important;
+  border-radius: 0 !important;
+  background-color: #fff !important;
 }
 
 .navbar{
-  background-color: #327D81!important;
-  box-shadow: 0px 1px 20px 0px rgb(224 224 234 / 20%);
+  transition: 0.5s;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(25, 124, 207, 0.08);
 }
 
-.navbar .container > * {
-  color: white;
+.logout-button{
+  color: #fff!important;
 }
 
 .nav-link{
-  color: white!important;
   display: flex!important;
   align-items: center;
   text-decoration: none;
 }
 
 .btn-primary{
-  background-color: #13294B!important;
+  background-color: #24695c!important;
   outline: none!important;
-  border: #13294B!important;
+  border: #24695c!important;
 }
 
 .page-wrapper{
   margin: 7rem 5rem 2rem 5rem;
 }
+.react-select__menu{
+  font-weight: 400;
+  color: #1e2125!important;
+  text-decoration: none;
+  border: 0;
+  border: none;
+  padding: 0;
+  border-radius: 5%;
+}
 
 .react-select-container{
-  max-width: 300px;
+  min-width: 219.33px;
+  min-height: 42.6px;
 }
 
-.react-select__menu-list::-webkit-scrollbar {
-  width: 6px; /* Width of the scrollbar */
+.react-select__control{
+  min-width: 219.33px;
+  min-height: 42.6px!important;
 }
 
-.react-select__menu-list::-webkit-scrollbar-thumb {
-  background-color: #13294B; /* Color of the scrollbar thumb */
-  border-radius: 13px; /* Border radius of the scrollbar thumb */
-  /* box-shadow: inset 0 0 0 10px; */
+.react-select__menu-list{
+  background-color: #fff!important;
+  border: 1px solid rgba(246, 255, 253, 0.2);
+  color: #000;
 }
 
-.react-select__menu-list::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(#13294B, 0.2); /* Color of the scrollbar thumb on hover */
+.react-select__option{
+  font-family: Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  background-color: #171b21;
+}
+
+.react-select__value-container {
+  white-space: nowrap!important;
+  overflow-x: auto!important;
+  -webkit-overflow-scrolling: touch!important;
+  display: flex!important;
+  flex-wrap: nowrap!important;
+}
+
+.react-select__value-container::-webkit-scrollbar{
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
+}
+.react-select__value-container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #e6edef;
+}
+
+.react-select__multi-value {
+  margin: 2px 2px 2px 0!important;
+  border-radius: 3px!important;
+  background-color: #f3f3f3!important;
+  color: #fff!important;
+  display: flex!important;
+  align-items: center!important;
+  min-width: unset!important;
+}
+
+.react-select__multi-value__label {
+  font-size: 14px!important;
+  padding: 2px 4px!important;
+  margin-right: 5px!important;
+  white-space: nowrap!important;
+  overflow: hidden!important;
+  text-overflow: ellipsis!important;
 }
 
 .react-datepicker-wrapper{
@@ -62,7 +121,7 @@ body > * {
 }
 
 .digits{
-  background-color: #F4F6EF!important;
+  background-color: #fff!important;
   width: 300px!important;
 }
 
@@ -78,20 +137,33 @@ body > * {
 
 .dropdown-menu{
   transform: translate3d(0px, 44.8px, 0px)!important;
-  background-color: #F4F6EF!important;
+  background-color: #fff!important;
 }
 
 .dropdown-item {
   display: flex!important;
   align-items: center;
-  background-color: #F4F6EF!important;
+  color: #000!important;
   justify-content: space-around;
+  display: block;
+  width: 100%;
+  clear: both;
+  font-weight: 400;
+  text-align: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+}
+
+.dropdown-item:hover, .dropdown-item:focus{
+  background-color: #e9ecef!important;
 }
 
 .dropdown-item:active {
   color: black!important;
   text-decoration: none;
-  background-color: #F4F6EF!important;
+  background-color: #fff!important;
 }
 
 .rounded-circle{
@@ -148,7 +220,7 @@ body > * {
 }
 
 .customized-text{
-  color: #F4F6EF!important;
+  color: #fff!important;
 }
 
 .plane-icon{
@@ -174,16 +246,20 @@ body > * {
 }
 
 .offer-card{
-  box-shadow: 3px 5px 13px 2px rgb(224 224 234 / 20%);
-  border: none!important;
-  background-color: #F4F6EF!important;
   cursor: pointer;
+  border: 1px solid #e6edef;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  border-radius: 0;
+  background-color: #fff;
 }
 
 .review-card{
-  box-shadow: 3px 5px 13px 2px rgb(224 224 234 / 20%);
-  border: none!important;
-  background-color: #F4F6EF!important;
+  border: 1px solid #e6edef;
+  background-color: #fff;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  border-radius: 0;
 }
 
 .timeline-content > * {
@@ -222,8 +298,8 @@ body > * {
 }
 
 .navbar-brand:focus, .navbar-brand:hover{
-  color: white!important;
   cursor: pointer;
+  color: #24695c!important;
 }
 
 .flight-category-text{
@@ -249,12 +325,6 @@ body > * {
   width: 17px;
 }
 
-.card{
-  box-shadow: 3px 5px 13px 2px rgb(224 224 234 / 20%)!important;
-  border: none!important;
-  background-color: #F4F6EF!important;
-}
-
 .custom-modal-header{
   border: none!important;
   box-shadow: 0px 1px 20px 0px rgb(224 224 234 / 20%);
@@ -273,11 +343,11 @@ body > * {
 
 .vip-header{
   border: none!important;
-  background-image: linear-gradient(#327D81, #f4f6ef);
+  background-image: linear-gradient(#327D81, #fff);
 } 
 
 .card-header{
-  border-bottom: 1px solid #F4F6EF!important;
+  border-bottom: 1px solid #fff!important;
 }
 
 .sort-dropdown{
@@ -302,9 +372,9 @@ body > * {
 .flight-companies h2 {
   margin-bottom: 1rem;
 }
-
+/* 
 .flight-companies-card{
   box-shadow: 3px 5px 13px 2px rgb(224 224 234 / 20%);
   border: none!important;
-  background-color: #F4F6EF!important;
-}
+  background-color: #fff!important;
+} */

@@ -13,7 +13,7 @@ namespace SecureWebSite.Server.Controllers
 {
 		[Route("api/securewebsite")]
 		[ApiController]
-		public class SecureWebsiteController(SignInManager<User> sm, UserManager<User> um, IConfiguration config) : ControllerBase
+		public class UserController(SignInManager<User> sm, UserManager<User> um, IConfiguration config) : ControllerBase
 		{
 				private readonly SignInManager<User> signInManager = sm;
 				private readonly UserManager<User> userManager = um;
