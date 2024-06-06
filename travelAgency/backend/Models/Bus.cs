@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using YourNamespace.Models;
 
 namespace SecureWebSite.Server.Models
@@ -12,32 +12,17 @@ namespace SecureWebSite.Server.Models
         public int BusId { get; set; }
 
         [Required]
-        [StringLength(15)]
-        public string CompanyName { get; set; }
-
+        [MaxLength(50)]
+        public string BusNumber { get; set; }
+       
         [Required]
-        [StringLength(20)]
-        public string Origin { get; set; }
+        public int DeckersNr { get; set; }
+        
 
-        [Required]
-        [StringLength(20)]
-        public string Destination { get; set; }
-
-        [Required]
-        public int TicketsAvailable { get; set; }
-
-        [Required]
-        public TimeSpan DepartureTime { get; set; }
-
-        [Required]
-        public TimeSpan ArrivalTime { get; set; }
-
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TicketPrice { get; set; }
-
-        [ForeignKey("BusCompany")]
         public int BusCompanyId { get; set; }
-        public BusCompany BusCompany { get; set; }
+        public BusCompany? BusCompany { get; set; }
+
+        [JsonIgnore]
+        public ICollection<BusTrips>? BusTrips { get; set; }
     }
 }

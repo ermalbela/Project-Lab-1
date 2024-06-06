@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SecureWebSite.Server.Models
 {
@@ -20,13 +21,10 @@ namespace SecureWebSite.Server.Models
 
         [Required]
         public int NumberOfInfants { get; set; }
-
-        [ForeignKey("UserId")]
-        public string UserId { get; set; }
-        public User User { get; set; }
-
-        [ForeignKey("BusId")]
-        public int BusId { get; set; }
+        
         public Bus Bus { get; set; }
+
+        [JsonIgnore]
+        public ICollection<User> Users { get; set; }
     }
 }

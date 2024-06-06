@@ -7,6 +7,7 @@ namespace YourNamespace.Models
     public class BusCompany
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BusCompanyId { get; set; }
 
         [Required]

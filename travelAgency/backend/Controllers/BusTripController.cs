@@ -21,16 +21,16 @@ namespace SecureWebSite.Server.Controllers
 
         // GET: api/Buses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bus>>> GetBuses()
+        public async Task<ActionResult<IEnumerable<BusTrips>>> GetBuses()
         {
-            return await _context.Buses.ToListAsync();
+            return await _context.BusTrips.ToListAsync();
         }
 
         // GET: api/Buses/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Bus>> GetBus(int id)
+        public async Task<ActionResult<BusTrips>> GetBus(int id)
         {
-            var bus = await _context.Buses.FindAsync(id);
+            var bus = await _context.BusTrips.FindAsync(id);
 
             if (bus == null)
             {
@@ -42,25 +42,25 @@ namespace SecureWebSite.Server.Controllers
 
         // POST: api/Buses/Add
         [HttpPost("Add")]
-        public async Task<ActionResult<Bus>> AddBus(Bus bus)
+        public async Task<ActionResult<BusTrips>> AddBus(BusTrips bus)
         {
-            // Check if a bus with the same BusId already exists
-            if (BusExists(bus.BusId))
+            // Check if a bus with the same BusTripsId already exists
+            if (BusExists(bus.BusTripsId))
             {
-                return Conflict("A bus with the same BusId already exists.");
+                return Conflict("A bus trip with the same Id already exists.");
             }
 
-            _context.Buses.Add(bus);
+            _context.BusTrips.Add(bus);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBus), new { id = bus.BusId }, bus);
+            return CreatedAtAction(nameof(GetBus), new { id = bus.BusTripsId }, bus);
         }
 
         // PUT: api/Buses/Edit/5
         [HttpPut("Edit/{id}")]
-        public async Task<IActionResult> EditBus(int id, Bus bus)
+        public async Task<IActionResult> EditBus(int id, BusTrips bus)
         {
-            if (id != bus.BusId)
+            if (id != bus.BusTripsId)
             {
                 return BadRequest();
             }
@@ -90,13 +90,13 @@ namespace SecureWebSite.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBus(int id)
         {
-            var bus = await _context.Buses.FindAsync(id);
+            var bus = await _context.BusTrips.FindAsync(id);
             if (bus == null)
             {
                 return NotFound();
             }
 
-            _context.Buses.Remove(bus);
+            _context.BusTrips.Remove(bus);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -104,7 +104,7 @@ namespace SecureWebSite.Server.Controllers
 
         private bool BusExists(int id)
         {
-            return _context.Buses.Any(e => e.BusId == id);
+            return _context.BusTrips.Any(e => e.BusTripsId == id);
         }
     }
 }

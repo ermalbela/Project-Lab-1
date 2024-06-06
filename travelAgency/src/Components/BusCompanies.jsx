@@ -1,26 +1,52 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Modal, FormGroup, FormLabel, FormControl} from 'react-bootstrap'; //importet qe behen nga Reacti
 import Header from '../Layout/Header';
-import Footer from '../Layout/Footer';
 import Loader from '../Layout/Loader';
 import BusContext from '../_helper/BusContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { addBuses, getBusCopmanies, getBuses } from '../Endpoint';
 
-const Bus = () => {
+
+const BusCompany = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { busData, setBusData } = useContext(BusContext);
   const [selectedBus, setSelectedBus] = useState(null);
+  const [openBusModal, setOpenBusModal] = useState(false);
+  const [busNumber,setBusNumber] = useState(""); //UseState per vendosjen e emrit te busit
+  const [deckerNumber,setDeckerNumber] = useState(1);
+  const [currentBus,setCurrentBus] = useState(null); //UseState
+
+  //metod per shtimin e autobusve
+  const handleBus = (id) => {
+    console.log(id);
+    axios.post(addBuses, {BusNumber:busNumber,DeckersNr:deckerNumber,BusCompanyId:id,}, { 
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+    .then(res => {
+      console.log(res.data);
+      Swal.fire('Trip Added Successfully', '', 'success');
+      
+      setCurrentBus('');
+      setOpenBusModal(false);
+    })
+    .catch(err => console.log(err));
+    
+  }
+
 
   useEffect(() => {
     const fetchBusData = async () => {
       try {
-        const response = await axios.get('/api/buses'); // Replace with your actual endpoint
+        const response = await axios.get(getBusCopmanies); 
+        console.log(response.data);
         setBusData(response.data);
         setIsLoading(false);
       } catch (err) {
         console.log(err);
-        setIsLoading(false); // Ensure loader hides if there's an error
+        setIsLoading(false); 
       }
     };
 
@@ -30,6 +56,11 @@ const Bus = () => {
   const handleBusClick = (bus) => {
     setSelectedBus(bus);
   };
+  const addBus = (bus) => {
+    setOpenBusModal(true);
+    setCurrentBus(bus);
+
+  }
 
   const handlePurchase = (tripId) => {
     const Name = JSON.parse(localStorage.getItem('name'));
@@ -61,7 +92,7 @@ const Bus = () => {
         ) : (
           <Row>
             <Col md={12}>
-              <h2 className='customized-text'>Buses</h2>
+              <h2 className='customized-text'>Bus Companies</h2>
               <Row>
                 {busData && busData.map((bus, idx) => (
                   <Col md={4} key={idx}>
@@ -69,11 +100,13 @@ const Bus = () => {
                       <Card.Body>
                         <Card.Title>{bus.name}</Card.Title>
                         <Card.Text>
-                          <strong>Origin:</strong> {bus.originCountry} <br />
+                          {/* <strong>Origin:</strong> {bus.originCountry} <br />
                           <strong>Destination:</strong> {bus.destinationCountry} <br />
-                          <strong>Price:</strong> ${bus.ticketPrice.toFixed(2)}
+                          <strong>Price:</strong> ${bus.ticketPrice.toFixed(2)} */}
                         </Card.Text>
                         <Button variant="primary" onClick={() => handleBusClick(bus)}>View Trips</Button>
+                        <Button variant="primary" style={{marginLeft:"5px" }} onClick={()=> addBus(bus)}>Add Bus</Button>
+                        
                       </Card.Body>
                     </Card>
                   </Col>
@@ -105,9 +138,36 @@ const Bus = () => {
           </Row>
         )}
       </Container>
-      <Footer />
+      {/* Add Bus modal */}
+
+    {currentBus &&  <Modal size="md" show={openBusModal} onHide={() => setOpenBusModal(false)} aria-labelledby="example-modal-sizes-title-sm">
+      <Modal.Header>
+        <Modal.Title id="example-modal-sizes-title-lg">
+          Add Bus
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <FormGroup className='formGroup'>
+          <FormLabel>Bus Number</FormLabel>
+          <div className="input-group login-form-inputs">
+              <FormControl className="form-control" type="text" name="busNumber" placeholder="e.g. B432" value={busNumber} onChange={e => setBusNumber(e.target.value)} />
+          </div>
+        </FormGroup>
+        <FormGroup className='formGroup'>
+          <FormLabel>Number of Deckers</FormLabel>
+          <div className="input-group login-form-inputs">
+              <FormControl className="form-control" type="text" name="deckerNumber" placeholder="e.g. 1 or 2" value={deckerNumber} onChange={e => setDeckerNumber(e.target.value)} />
+          </div>
+        </FormGroup>
+        <FormGroup className='formGroup d-flex justify-content-end'>
+          <Button className="admin-buttons" onClick={() => handleBus(currentBus.busCompanyId)}>Add Bus</Button>
+        </FormGroup>
+      </Modal.Body>
+    </Modal> }
+
+
     </div>
   );
 };
 
-export default Bus;
+export default BusCompany;

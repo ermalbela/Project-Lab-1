@@ -350,7 +350,7 @@ const Dashboard = () => {
       TicketPrice: ticketPrice
     };
     
-    axios.post(createFlights, finalData, {
+    axios.post(url, finalData, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
@@ -363,6 +363,95 @@ const Dashboard = () => {
         setCreateBus(false);
         setBus(initialData);
       })
+      // .catch(err => {
+      //   if(!err.response){
+      //     Swal.fire('Error, No Server Response!', '', 'error');
+      //     setErrors({globalError: 'Error, No Server Response!'})
+      //   } else if (err.response?.status === 401) {
+      //     Swal.fire('Unauthorized!!!', '', 'error');
+      //     history('/login');
+      //   } else{
+      //     Swal.fire('Something went wrong!', '', 'error');
+      //   }
+      // })
+  }
+  //=========================ADD RANDOM Bus============================
+    const addRandomBus = async () => {
+      //Countries you wanna add in Origin Country and Destination Country
+    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
+    let names = ['FlixBus', 'MegaBus', 'HappyBus', 'GreenBus'];
+    let  ticketPrice = (Math.random() * 200 + 20).toFixed(2);
+
+
+    const originCountry = countries[Math.floor(Math.random() * countries.length)];
+    let destinationCountry;
+    
+    do {
+      destinationCountry = countries[Math.floor(Math.random() * countries.length)];
+    } while (destinationCountry === originCountry);
+    
+    // Generate random hour and minute for Departure time
+    const departureHour = Math.floor(Math.random() * 4) + 20;
+    const departureMinute = Math.floor(Math.random() * 4) * 15;
+    
+    // Generate random hour for Arrival time, making sure it's 2 hours after Departure time
+    const arrivalHour = (departureHour + 2) % 24;
+    
+    // Generate random minute for Arrival time, making sure it's in intervals of 15
+    const arrivalMinute = Math.floor(Math.random() * 4) * 15;
+
+    const departureTime = new Date();
+    departureTime.setHours(departureHour);
+    departureTime.setMinutes(departureMinute);
+
+    const arrivalTime = new Date();
+    arrivalTime.setHours(arrivalHour);
+    arrivalTime.setMinutes(arrivalMinute);
+    
+    // Choose a random name from the names array
+    const name = names[Math.floor(Math.random() * names.length)];
+
+
+    const finalData = {
+      BusId: 17,
+      Origin: originCountry,
+      Destination: destinationCountry,
+      Reservation: new Date(),
+      TicketsAvailable: Math.floor(Math.random() * 60) + 60,
+      DepartureTime: departureTime.toLocaleTimeString('en-US', { hour12: false }),
+      ArrivalTime: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
+      TicketPrice: ticketPrice
+    };
+
+    
+    axios.post("api/BusCompany/createBusCompany", {Name: "KosovaTrans",Buses: []}, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+      .then(res => {
+        console.log(res)
+        Swal.fire('Bus Trip Added Successfully', '', 'success');
+        setCreateFlight(false);
+        setFlight(initialData);
+        setCreateBus(false);
+        setBus(initialData);
+      })
+
+    
+    // axios.post(createBuses, finalData, {
+    //   headers: {
+    //     'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+    //   }
+    // })
+    //   .then(res => {
+    //     console.log(res)
+    //     Swal.fire('Bus Trip Added Successfully', '', 'success');
+    //     setCreateFlight(false);
+    //     setFlight(initialData);
+    //     setCreateBus(false);
+    //     setBus(initialData);
+    //   })
       // .catch(err => {
       //   if(!err.response){
       //     Swal.fire('Error, No Server Response!', '', 'error');
@@ -662,7 +751,7 @@ const Dashboard = () => {
             </FormGroup>
           </Col>
           <FormGroup className='formGroup d-flex justify-content-between'>
-            <Button variant='danger' onClick={() => addRandom(createBuses)}>ADD RANDOM</Button>
+            <Button variant='danger' onClick={() => addRandomBus()}>ADD RANDOM</Button>
             <Button className="admin-buttons" onClick={() => handleClick(createBuses, bus)}>Create BusTrip</Button>
           </FormGroup>
         </Form>
