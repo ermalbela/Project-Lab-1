@@ -158,16 +158,7 @@ const Dashboard = () => {
         color: !isSelected ? '#000' : isSelected || isFocused ? '#000' : '',
         borderRadius: '5px'
       }
-    },
-    // control: (provided) => ({
-    //   ...provided,
-    //   borderColor: 'hsl(0, 0%, 80%);',
-    //   boxShadow: 'none',
-    //   ':hover': {
-    //     borderColor: 'hsl(0, 0%, 80%);',
-    //     boxShadow: 'none'
-    //   }
-    // }),
+    }
   }
 
   const validate = (vals) => {
