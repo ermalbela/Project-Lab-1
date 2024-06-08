@@ -1,4 +1,4 @@
-const userApi = 'api/securewebsite/';
+const userApi = 'api/users/';
 export const getRole = userApi + 'user-role';
 export const registerUser = userApi + 'register';
 export const loginUser = userApi + 'login';

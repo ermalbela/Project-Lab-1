@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react';
 import FlightContext from './_helper/FlightContext';
 import AuthContext from './_helper/AuthContext';
 import BusContext from './_helper/BusContext';
-import FlightCompanyContext from './_helper/FlightCompanyContext';
 
 function App() {
 
@@ -14,9 +13,6 @@ function App() {
   const [busData, setBusData] = useState([]);
   const busDataValue = useMemo(() => ({busData, setBusData}), [busData, setBusData]);
 
-  const [companyData, setCompanyData] = useState([]);
-  const companyDataValue = useMemo(() => ({companyData, setCompanyData}), [companyData, setCompanyData]);
-
   const [role, setRole] = useState([]);
   const roleValue = useMemo(() => ({role, setRole}), [role, setRole]);
 
@@ -25,9 +21,7 @@ function App() {
       <AuthContext.Provider value={roleValue}>
         <FlightContext.Provider value={dataValue}>
           <BusContext.Provider value={busDataValue}>
-            <FlightCompanyContext.Provider value={companyDataValue}>
-              <Routers />
-            </FlightCompanyContext.Provider>
+            <Routers />
           </BusContext.Provider>
         </FlightContext.Provider>
       </AuthContext.Provider>

@@ -9,11 +9,27 @@ body > * {
 }
 
 .card{
-  border: 1px solid #e6edef !important;
-  transition: all 0.3s ease !important;
-  letter-spacing: 0.5px !important;
-  border-radius: 0 !important;
-  background-color: #fff !important;
+  margin-bottom: 30px;
+  border: 1px solid #e6edef!important;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px!important;
+  border-radius: 0!important;
+  background-color: #fff;
+}
+
+.card .card-header {
+  padding: 30px;
+  padding-bottom: 15px!important;
+  border-bottom: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  position: relative;
+  background-color: #fff;
+}
+
+.card .card-body {
+  padding: 30px;
+  background-color: transparent;
 }
 
 .navbar{
@@ -52,12 +68,12 @@ body > * {
 }
 
 .react-select-container{
-  min-width: 219.33px;
+  min-width: 200.33px;
   min-height: 42.6px;
 }
 
 .react-select__control{
-  min-width: 219.33px;
+  min-width: 200.33px;
   min-height: 42.6px!important;
 }
 
@@ -92,24 +108,6 @@ body > * {
   background-color: #e6edef;
 }
 
-.react-select__multi-value {
-  margin: 2px 2px 2px 0!important;
-  border-radius: 3px!important;
-  background-color: #f3f3f3!important;
-  color: #fff!important;
-  display: flex!important;
-  align-items: center!important;
-  min-width: unset!important;
-}
-
-.react-select__multi-value__label {
-  font-size: 14px!important;
-  padding: 2px 4px!important;
-  margin-right: 5px!important;
-  white-space: nowrap!important;
-  overflow: hidden!important;
-  text-overflow: ellipsis!important;
-}
 
 .react-datepicker-wrapper{
   width: 100%;
@@ -122,12 +120,37 @@ body > * {
 
 .digits{
   background-color: #fff!important;
-  width: 300px!important;
+  width: 300px;
+  height: 39px!important;
+  min-width: 200.33px;
+  min-height: 42.6px;
+}
+
+.title{
+  margin: 2rem 0 2rem 0;
+}
+
+.form-control{
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  box-shadow: 0 1px 2px 0 rgb(57 70 92 / 5%);
+  border-width: 2px;
 }
 
 .form-control:focus{
-  border-color: hsl(0, 0%, 80%);;
-  box-shadow: none,
+  box-shadow: 0 1px 2px 0 rgb(57 70 92 / 5%)!important;
+  border-color: #19BCBF!important;
 }
 
 .dropdown-toggle{
@@ -174,38 +197,15 @@ body > * {
   place-content: center;
 }
 
-.timeline-container{
-  margin: 0 auto 0 50px;
-  border-left: 3px solid #818181;
-  padding-left: 20px;
-}
-
 .timeline-container .event{
-  box-shadow: 1px 5px 8px -2px rgba(0, 0, 0, 0.2);
+  border: 1px solid #e6edef!important;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px!important;
+  border-radius: 0!important;
+  background-color: #fff;
   padding: 20px;
   margin: 20px 0;
   position: relative;
-  background-color: #f8f8f8!important;
-  border-radius: 7px;
-}
-
-.timeline-container .event::before{
-  content: "";
-  width: 14px;
-  height: 14px;
-  border: 1px solid #000;
-  position: absolute;
-  left: -28px;
-  border-radius: 50%;
-  transform: translateY(-50%);
-  background-color: #13294B;
-}
-
-.timeline-container .event .event-date{
-  position: absolute;
-  left: -130px;
-  transform: translateY(-50%);
-  font-size: 13px;
 }
 
 .timeline-container p{
@@ -220,7 +220,7 @@ body > * {
 }
 
 .customized-text{
-  color: #fff!important;
+  color: #000!important;
 }
 
 .plane-icon{
@@ -230,36 +230,11 @@ body > * {
 }
 
 .top-button{
-  width: 135px;
+  width: 147px;
 }
 
 #dropdown-basic-button{
   width: 135px;
-}
-
-.offers{
-  margin-top: 6rem;
-}
-
-.offers h2 {
-  margin-bottom: 1rem;
-}
-
-.offer-card{
-  cursor: pointer;
-  border: 1px solid #e6edef;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
-  border-radius: 0;
-  background-color: #fff;
-}
-
-.review-card{
-  border: 1px solid #e6edef;
-  background-color: #fff;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
-  border-radius: 0;
 }
 
 .timeline-content > * {
@@ -275,10 +250,6 @@ body > * {
 .admin-buttons{
   background-color: #04663a!important;
   color: #fff;
-}
-
-.modal-content{
-  background-color: #13294B!important;
 }
 
 .modal-inputs{
@@ -327,12 +298,12 @@ body > * {
 
 .custom-modal-header{
   border: none!important;
-  box-shadow: 0px 1px 20px 0px rgb(224 224 234 / 20%);
+  box-shadow: 0 0 20px rgba(25, 124, 207, 0.08);
 }
 
 .custom-modal-footer{
   border: none!important;
-  box-shadow: 0px -1px 20px 0px rgb(224 224 234 / 20%);
+  box-shadow: 0 0 20px rgba(25, 124, 207, 0.08);
 }
 
 .custom-price{
@@ -346,10 +317,6 @@ body > * {
   background-image: linear-gradient(#327D81, #fff);
 } 
 
-.card-header{
-  border-bottom: 1px solid #fff!important;
-}
-
 .sort-dropdown{
   display: flex;
   align-items: center;
@@ -361,16 +328,27 @@ body > * {
 }
 
 .superadmin-buttons{
-  background-color: rgb(78, 6, 6)!important;
-}
-
-
-.flight-companies{
-  margin-top: 3rem;
+  background-color: #24695c!important;
 }
 
 .flight-companies h2 {
   margin-bottom: 1rem;
+}
+
+.plane{
+  padding: 10px;
+  border: 1px solid #e6edef!important;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px!important;
+  border-radius: 0!important;
+  background-color: #fff;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.ticket-header{
+  box-shadow: 0 0 20px rgba(25, 124, 207, 0.08);
 }
 /* 
 .flight-companies-card{

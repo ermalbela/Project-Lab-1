@@ -53,7 +53,7 @@ const Login = () => {
     if(patterns.userName.test(user.userName) && patterns.password.test(user.password)){
       try{
         const res = await axios.post(loginUser, {Email: user.email, Password: user.password, Remember: checked});
-  
+        
         await fetchUserRole();
         console.log(res.data);
         localStorage.setItem('name', JSON.stringify(res.data.updateResult.name));
@@ -79,13 +79,11 @@ const Login = () => {
         
       } catch (err) {
         if(!err.response){
-          setErrors({globalError: 'Error, No Server Response!'})
-        } else if (err.response?.status === 400) {
-          setErrors({globalError: 'Missing Email or Password!'})
+          Swal.fire('Error, No Server Response!', '', 'error');
         } else if (err.response?.status === 401) {
-          setErrors({globalError: 'Unauthorized!'})
+          Swal.fire('Unauthorized!', '', 'error');
         } else{
-          setErrors({globalError: 'Login Failed!'})
+          Swal.fire('Login Failed!', '', 'error');
         }
       }
     }
@@ -99,7 +97,6 @@ const Login = () => {
             <Card className='login-card mt-4' sm={2}>
               <Form className="d-flex justify-content-center flex-column login-form">
                 <div className="d-flex justify-content-center">
-                  <h5 className="invalidFeedback">{errors.globalError}</h5>
                 </div>
                 <div className="login-special-title">
                   <h5>Login</h5>

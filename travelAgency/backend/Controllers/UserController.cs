@@ -11,7 +11,7 @@ using System.Text;
 
 namespace SecureWebSite.Server.Controllers
 {
-		[Route("api/securewebsite")]
+		[Route("api/users")]
 		[ApiController]
 		public class UserController(SignInManager<User> sm, UserManager<User> um, IConfiguration config) : ControllerBase
 		{

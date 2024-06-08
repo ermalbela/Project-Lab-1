@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card, Container} from 'react-bootstrap';
+import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card, CardBody, CardHeader} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from '../CommonElements/MySelect';
 import {components} from 'react-select';
@@ -17,6 +17,9 @@ import FlightContext from '../_helper/FlightContext';
 import AuthContext from '../_helper/AuthContext';
 import BusContext from '../_helper/BusContext';
 import Loader from '../Layout/Loader';
+import germany from '../assets/images/germany.jpg'
+import turkey from '../assets/images/turkey.jpg'
+import greece from '../assets/images/greece.jpg'
 
 const Dashboard = () => {
 
@@ -76,8 +79,8 @@ const Dashboard = () => {
   const initialValues = [ // How the data should look like for Offers
     {
       originCountry : {
-        value: 'Albania', 
-        label: 'Albania'
+        value: 'Kosovo', 
+        label: 'Kosovo'
       },
       destinationCountry: {
         value: 'Italy', 
@@ -88,39 +91,39 @@ const Dashboard = () => {
     },
     {
       originCountry : {
-        value: 'Albania', 
-        label: 'Albania'
+        value: 'Kosovo', 
+        label: 'Kosovo'
       },
       destinationCountry: {
-        value: 'Italy', 
-        label: 'Italy'
+        value: 'Greece', 
+        label: 'Greece'
       },
-      text: '49.99$',
-      img: travel
+      text: '79.99$',
+      img: greece
     },
     {
       originCountry : {
-        value: 'Albania', 
-        label: 'Albania'
+        value: 'Kosovo', 
+        label: 'Kosovo'
       },
       destinationCountry: {
-        value: 'Italy', 
-        label: 'Italy'
+        value: 'Turkey', 
+        label: 'Turkey'
       },
-      text: '49.99$',
-      img: travel
+      text: '99.99$',
+      img: turkey
     },
     {
       originCountry : {
-        value: 'Albania', 
-        label: 'Albania'
+        value: 'Kosovo', 
+        label: 'Kosovo'
       },
       destinationCountry: {
-        value: 'Italy', 
-        label: 'Italy'
+        value: 'Germany', 
+        label: 'Germany'
       },
-      text: '49.99$',
-      img: travel
+      text: '99.99$',
+      img: germany
     }
   ]
 
@@ -275,7 +278,7 @@ const Dashboard = () => {
   const addRandom = async (url) => {
     console.log(url);
     //Countries you wanna add in Origin Country and Destination Country
-    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
+    const countries = ['Italy', 'Greece', 'Kosovo', 'Kosovo'];
     let names;
     let ticketPrice;
 
@@ -470,309 +473,333 @@ const Dashboard = () => {
     <Loader />
   ) : (
     <>
-    <Row className='justify-content-between'>
-      <Col>
-        <DropdownButton id="dropdown-basic-button" className="mb-4 top-button" title={dropdownVal}>
-          {['Bus', 'Airplane'].map((item, idx) => <DropdownItem key={idx} onClick={() => setDropdownVal(item)}>{item}</DropdownItem>)}
-        </DropdownButton>
-      </Col>
-      <Col className='d-flex justify-content-end'>
-        {role === 'Admin' || role === 'Superadmin' ? <>
-          <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px', marginRight: '2%'}}>Create Flight</Button>
-          <Button onClick={() => setCreateBus(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Bus Trip</Button>
-        </> : ''}
-      </Col>
-    </Row>
-    <Row className="justify-content-center">
-      <Col>
-        <MySelect
-          options={countriesWithLabels || []}
-          styles={customStyles}
-          closeMenuOnSelect={true}
-          hideSelectedOptions={false}
-          components={{ Option }}
-          onChange={(selected) => {
-            setFromCountry(selected);
-          }}
-          value={fromCountry}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          maxMenuHeight={"200px"}
-          placeholder="From..."
-          isClearable
-        />
-      </Col>
-      <Col>
-        <MySelect
-          options={countriesWithLabels || []}
-          styles={customStyles}
-          closeMenuOnSelect={true}
-          hideSelectedOptions={false}
-          components={{ Option }}
-          onChange={(selected) => {
-            setToCountry(selected);
-          }}
-          value={toCountry}
-          className="react-select-container"
-          classNamePrefix="react-select"
-          maxMenuHeight={"200px"}
-          placeholder="To..."
-          isClearable
-        />
-      </Col>
-      <Col>
-        <DatePicker
-          dateFormat="yyyy/MM/dd"
-          className="form-control digits"
-          selectsRange={true}
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(update) => {
-            setDateRange(update);
-          }}
-          placeholderText='Select Date...'
-        />
-      </Col>
-      <Col sm={2} className='d-flex justify-content-end'>
-        <Button style={{height: '39px'}} className='top-button' onClick={handleSearch}>Search</Button>
-      </Col>
-    </Row>
-
-    <Modal size="lg" show={createFlight} onHide={() => setCreateFlight(false)} aria-labelledby="example-modal-sizes-title-lg">
-      <Modal.Header>
-        <Modal.Title id="example-modal-sizes-title-lg">
-          Create Flight
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form className="d-flex justify-content-center flex-column">
-          <Col className='d-flex justify-content-between'>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Origin Country</FormLabel>
-              <div className="input-group login-form-inputs">
-                <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={flight.originCountry} onChange={handleChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Destination Country</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={flight.destinationCountry} onChange={handleChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
-            </FormGroup>
-          </Col>
-          <Col className='d-flex justify-content-between'>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Departure</FormLabel>
-              <div className="input-group login-form-inputs">
-                <DatePicker
-                  className='form-control modal-datepicker'
-                  selected={flight.departure}
-                  onChange={(date) => setFlight({...flight, departure: date})}
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeFormat="p"
-                  timeIntervals={30}
-                  dateFormat="p"
-                />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.departure}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Arrival</FormLabel>
-              <div className="input-group login-form-inputs">
-                <DatePicker
-                  className='form-control modal-datepicker'
-                  selected={flight.arrival}
-                  onChange={(date) => setFlight({...flight, arrival: date})}
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeFormat="p"
-                  timeIntervals={15}
-                  dateFormat="p"
-                />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
-            </FormGroup>
-          </Col>
-          <Col className='d-flex justify-content-between'>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Ticket Amount</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={flight.tickets} onChange={handleChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Departure Date</FormLabel>
-              <div className="input-group login-form-inputs">
-                <DatePicker className='form-control modal-datepicker' selected={flight.date} onChange={(newDate) => setFlight({...flight, date : newDate})} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.date}</p>
-            </FormGroup>
-          </Col>
-          <Col className='d-flex justify-content-between'>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Ticket Price</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={flight.ticketPrice} onChange={handleChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Company Name</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={flight.name} onChange={handleChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.name}</p>
-            </FormGroup>
-          </Col>
-          <FormGroup className='formGroup d-flex justify-content-between'>
-            <Button className='' variant='danger' onClick={() => addRandom(createFlights)}>ADD RANDOM</Button>
-            <Button className="admin-buttons" onClick={() => handleClick(createFlights, flight)}>Create Flight</Button>
-          </FormGroup>
-        </Form>
-      </Modal.Body>
-    </Modal>
-    
-    {/* Bus Modal */}
-    <Modal size="lg" show={createBus} onHide={() => setCreateBus(false)} aria-labelledby="example-modal-sizes-title-lg">
-      <Modal.Header>
-        <Modal.Title id="example-modal-sizes-title-lg">
-          Create BusTrip
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form className="d-flex justify-content-center flex-column">
-          <Col className='d-flex justify-content-between'>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Origin Country</FormLabel>
-              <div className="input-group login-form-inputs">
-                <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={bus.originCountry} onChange={handleBusChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Destination Country</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={bus.destinationCountry} onChange={handleBusChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
-            </FormGroup>
-          </Col>
-          <Col className='d-flex justify-content-between'>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Departure</FormLabel>
-              <div className="input-group login-form-inputs">
-                <DatePicker
-                  className='form-control modal-datepicker'
-                  selected={bus.departure}
-                  onChange={(date) => setBus({...bus, departure: date})}
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeFormat="p"
-                  timeIntervals={30}
-                  dateFormat="p"
-                />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.departure}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Arrival</FormLabel>
-              <div className="input-group login-form-inputs">
-                <DatePicker
-                  className='form-control modal-datepicker'
-                  selected={bus.arrival}
-                  onChange={(date) => setBus({...bus, arrival: date})}
-                  showTimeSelect
-                  showTimeSelectOnly
-                  timeFormat="p"
-                  timeIntervals={15}
-                  dateFormat="p"
-                />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
-            </FormGroup>
-          </Col>
-          <Col className='d-flex justify-content-between'>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Ticket Amount</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={bus.tickets} onChange={handleBusChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Departure Date</FormLabel>
-              <div className="input-group login-form-inputs">
-                <DatePicker className='form-control modal-datepicker' selected={bus.date} onChange={(newDate) => setBus({...bus, date : newDate})} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.date}</p>
-            </FormGroup>
-          </Col>
-          <Col className="d-flex justify-content-between">
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Ticket Price</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={bus.ticketPrice} onChange={handleBusChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
-            </FormGroup>
-            <FormGroup className='formGroup modal-inputs'>
-              <FormLabel>Company Name</FormLabel>
-              <div className="input-group login-form-inputs">
-                  <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={bus.name} onChange={handleBusChange} />
-              </div>
-              <p className='invalidFeedback fullWidth'>{errors.name}</p>
-            </FormGroup>
-          </Col>
-          <FormGroup className='formGroup d-flex justify-content-between'>
-            <Button variant='danger' onClick={() => addRandomBus()}>ADD RANDOM</Button>
-            <Button className="admin-buttons" onClick={() => handleClick(createBuses, bus)}>Create BusTrip</Button>
-          </FormGroup>
-        </Form>
-      </Modal.Body>
-    </Modal>
-
-    <div className='offers' style={{margin: '6rem 0 1rem 0'}}>
-      <h2>
-        Cheap Flight Offers
-      </h2>
-      <Row className="g-4">
-        {initialValues.map((itemProps, idx) => ( //Mapping over offers then returning Cards from OfferCard Component
-          <Col key={idx} onClick={() => {
-            setFromCountry(itemProps.originCountry);
-            setToCountry(itemProps.destinationCountry);
-            setDateRange(['04/26/2024', '05/02/2024']);
-          }}>
-            <OfferCard props={itemProps}/>
-          </Col>
-          ))}
-      </Row>
+    <div className="title">
+      <h2>Dashboard</h2>
     </div>
-
-    <div className="offers">
-      <h2>Reviews</h2>
-      <Row className="g-4">
-        {reviews.map((review, idx) => (
-          <Col key={idx} md={6} lg={4}>
-            <Card className="h-100 review-card">
-              <Card.Body>
-                <Card.Title className='text-start mb-3'>{review.name}</Card.Title>
-                <Card.Text>{review.review}</Card.Text>
-                <Card.Text>{review.date}</Card.Text>
-              </Card.Body>
-                <Card.Footer className="text-muted text-center">
-                <Card.Text>{review.planeNumber}</Card.Text>
-                  {renderStars(review.rating)}
-                </Card.Footer>
+    <Card>
+      <CardHeader>
+        <Row className='justify-content-between'>
+          <Col>
+            <DropdownButton id="dropdown-basic-button" className="mb-4 top-button" title={dropdownVal}>
+              {['Bus', 'Airplane'].map((item, idx) => <DropdownItem key={idx} onClick={() => setDropdownVal(item)}>{item}</DropdownItem>)}
+            </DropdownButton>
+          </Col>
+          <Col className='d-flex justify-content-end'>
+            {role === 'Admin' || role === 'Superadmin' ? <>
+              <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px', marginRight: '2%'}}>Create Flight</Button>
+              <Button onClick={() => setCreateBus(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Bus Trip</Button>
+            </> : ''}
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col>
+            <MySelect
+              options={countriesWithLabels || []}
+              styles={customStyles}
+              closeMenuOnSelect={true}
+              hideSelectedOptions={false}
+              components={{ Option }}
+              onChange={(selected) => {
+                setFromCountry(selected);
+              }}
+              value={fromCountry}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              maxMenuHeight={"200px"}
+              placeholder="From..."
+              isClearable
+            />
+          </Col>
+          <Col>
+            <MySelect
+              options={countriesWithLabels || []}
+              styles={customStyles}
+              closeMenuOnSelect={true}
+              hideSelectedOptions={false}
+              components={{ Option }}
+              onChange={(selected) => {
+                setToCountry(selected);
+              }}
+              value={toCountry}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              maxMenuHeight={"200px"}
+              placeholder="To..."
+              isClearable
+            />
+          </Col>
+          <Col>
+            <DatePicker
+              dateFormat="yyyy/MM/dd"
+              className="form-control digits"
+              selectsRange={true}
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(update) => {
+                setDateRange(update);
+              }}
+              placeholderText='Select Date...'
+            />
+          </Col>
+          <Col className='d-flex justify-content-end'>
+            <Button className='w-100' onClick={handleSearch}>Search</Button>
+          </Col>
+        </Row>
+      </CardHeader>
+      <CardBody>
+        <Row>
+          <Col sm={12} xl={6} className="d-flex flex-column">
+            <Card className="flex-grow-1 d-flex flex-column">
+              <CardHeader>
+                <h4>Cheap Flight Offers</h4>
+              </CardHeader>
+              <CardBody className="d-flex flex-column">
+                <div className='offers flex-grow-1'>
+                  <Row className="g-4">
+                    {initialValues.map((itemProps, idx) => (
+                      <Col sm={6} key={idx} className="d-flex" onClick={() => {
+                        setFromCountry(itemProps.originCountry);
+                        setToCountry(itemProps.destinationCountry);
+                        setDateRange(['04/26/2024', '05/02/2024']);
+                      }}>
+                        <OfferCard props={itemProps} className="flex-grow-1"/>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </CardBody>
             </Card>
           </Col>
-        ))}
-      </Row>
-    </div>
-    </>
+          <Col sm={12} xl={6} className="d-flex flex-column">
+            <Card className="flex-grow-1 d-flex flex-column">
+              <Card.Header>
+                <h4>Reviews</h4>
+              </Card.Header>
+              <CardBody className="d-flex flex-column">
+                <div className="offers flex-grow-1">
+                  <Row className="g-4">
+                    {reviews.map((review, idx) => (
+                      <Col sm={6} key={idx} className="d-flex">
+                        <Card className="flex-grow-1 review-card d-flex flex-column">
+                          <CardBody className="d-flex flex-column">
+                            <Card.Title className='text-start mb-3'>{review.name}</Card.Title>
+                            <Card.Text className='mb-3'>{review.review}</Card.Text>
+                            <Card.Text className='mb-3'>{review.date}</Card.Text>
+                            <div className="mt-auto">
+                              <Card.Footer className="text-muted text-center p-0 bg-white" style={{borderRadius: '0'}}>
+                                <Card.Text className='mb-2'>{review.planeNumber}</Card.Text>
+                                {renderStars(review.rating)}
+                              </Card.Footer>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Modal size="lg" show={createFlight} onHide={() => setCreateFlight(false)} aria-labelledby="example-modal-sizes-title-lg">
+          <Modal.Header>
+            <Modal.Title id="example-modal-sizes-title-lg">
+              Create Flight
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form className="d-flex justify-content-center flex-column">
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Origin Country</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={flight.originCountry} onChange={handleChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Destination Country</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={flight.destinationCountry} onChange={handleChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
+                </FormGroup>
+              </Col>
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Departure</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <DatePicker
+                      className='form-control modal-datepicker'
+                      selected={flight.departure}
+                      onChange={(date) => setFlight({...flight, departure: date})}
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeFormat="p"
+                      timeIntervals={30}
+                      dateFormat="p"
+                    />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.departure}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Arrival</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <DatePicker
+                      className='form-control modal-datepicker'
+                      selected={flight.arrival}
+                      onChange={(date) => setFlight({...flight, arrival: date})}
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeFormat="p"
+                      timeIntervals={15}
+                      dateFormat="p"
+                    />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
+                </FormGroup>
+              </Col>
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Ticket Amount</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={flight.tickets} onChange={handleChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Departure Date</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <DatePicker className='form-control modal-datepicker' selected={flight.date} onChange={(newDate) => setFlight({...flight, date : newDate})} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
+                </FormGroup>
+              </Col>
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Ticket Price</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={flight.ticketPrice} onChange={handleChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Company Name</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={flight.name} onChange={handleChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.name}</p>
+                </FormGroup>
+              </Col>
+              <FormGroup className='formGroup d-flex justify-content-between'>
+                <Button className='' variant='danger' onClick={() => addRandom(createFlights)}>ADD RANDOM</Button>
+                <Button className="admin-buttons" onClick={() => handleClick(createFlights, flight)}>Create Flight</Button>
+              </FormGroup>
+            </Form>
+          </Modal.Body>
+        </Modal>
+        
+        {/* Bus Modal */}
+        <Modal size="lg" show={createBus} onHide={() => setCreateBus(false)} aria-labelledby="example-modal-sizes-title-lg">
+          <Modal.Header>
+            <Modal.Title id="example-modal-sizes-title-lg">
+              Create BusTrip
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form className="d-flex justify-content-center flex-column">
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Origin Country</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={bus.originCountry} onChange={handleBusChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Destination Country</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={bus.destinationCountry} onChange={handleBusChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
+                </FormGroup>
+              </Col>
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Departure</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <DatePicker
+                      className='form-control modal-datepicker'
+                      selected={bus.departure}
+                      onChange={(date) => setBus({...bus, departure: date})}
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeFormat="p"
+                      timeIntervals={30}
+                      dateFormat="p"
+                    />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.departure}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Arrival</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <DatePicker
+                      className='form-control modal-datepicker'
+                      selected={bus.arrival}
+                      onChange={(date) => setBus({...bus, arrival: date})}
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeFormat="p"
+                      timeIntervals={15}
+                      dateFormat="p"
+                    />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
+                </FormGroup>
+              </Col>
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Ticket Amount</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={bus.tickets} onChange={handleBusChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Departure Date</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <DatePicker className='form-control modal-datepicker' selected={bus.date} onChange={(newDate) => setBus({...bus, date : newDate})} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
+                </FormGroup>
+              </Col>
+              <Col className="d-flex justify-content-between">
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Ticket Price</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={bus.ticketPrice} onChange={handleBusChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Company Name</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={bus.name} onChange={handleBusChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.name}</p>
+                </FormGroup>
+              </Col>
+              <FormGroup className='formGroup d-flex justify-content-between'>
+                <Button variant='danger' onClick={() => addRandomBus()}>ADD RANDOM</Button>
+                <Button className="admin-buttons" onClick={() => handleClick(createBuses, bus)}>Create BusTrip</Button>
+              </FormGroup>
+            </Form>
+          </Modal.Body>
+        </Modal>
+      </CardBody>
+    </Card>
+  </>
   )
 }
 

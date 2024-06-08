@@ -27,7 +27,6 @@ namespace SecureWebSite.Server
 								options.SignIn.RequireConfirmedAccount = true;
 								options.Password.RequiredLength = 6;
 								options.Password.RequiredUniqueChars = 0;
-								options.Password.RequireNonAlphanumeric = false;
 								options.Password.RequireLowercase = false;
 								options.Password.RequireUppercase = false;
 

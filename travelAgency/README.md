@@ -8,6 +8,6 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 
-# #327D81 -------> Ngjyra per background
-# #13294B -------> Ngjyra per buttona
-# #F4F6EF -------> Ngjyra per boxat
+# #e6edef -------> Ngjyra per background
+# #24695c -------> Ngjyra per buttona
+# #fff -------> Ngjyra per boxat
