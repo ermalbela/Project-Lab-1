@@ -89,23 +89,16 @@ body > * {
   background-color: #171b21;
 }
 
-.react-select__value-container {
-  white-space: nowrap!important;
-  overflow-x: auto!important;
-  -webkit-overflow-scrolling: touch!important;
-  display: flex!important;
-  flex-wrap: nowrap!important;
+.react-select__menu-list::-webkit-scrollbar{
+  width: 5px!important;
+  height: 5px!important;
+  background-color: transparent!important;
 }
 
-.react-select__value-container::-webkit-scrollbar{
-  width: 5px;
-  height: 5px;
-  background-color: transparent;
-}
-.react-select__value-container::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-  background-color: #e6edef;
+.react-select__menu-list::-webkit-scrollbar-thumb {
+  border-radius: 10px!important;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1)!important;
+  background-color: #9fb3b9!important;
 }
 
 
@@ -248,7 +241,7 @@ body > * {
 }
 
 .admin-buttons{
-  background-color: #04663a!important;
+  background-color: #0a4439!important;
   color: #fff;
 }
 
@@ -328,7 +321,7 @@ body > * {
 }
 
 .superadmin-buttons{
-  background-color: #24695c!important;
+  background-color: #0a4439!important;
 }
 
 .flight-companies h2 {
@@ -350,9 +343,47 @@ body > * {
 .ticket-header{
   box-shadow: 0 0 20px rgba(25, 124, 207, 0.08);
 }
-/* 
-.flight-companies-card{
-  box-shadow: 3px 5px 13px 2px rgb(224 224 234 / 20%);
-  border: none!important;
+
+#planes-dropdown-button{
+  width: 100%!important;
+  height: 100%!important;
+}
+
+.input-group > .dropdown > .dropdown-menu{
+  transform: translate3d(0px, 52px, 0px)!important;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  top: 0px!important;
+  bottom: auto!important;
+}
+
+
+.input-group > .dropdown > .dropdown-menu::-webkit-scrollbar{
+  width: 5px!important;
+  height: 5px!important;
   background-color: #fff!important;
-} */
+}
+
+.input-group > .dropdown > .dropdown-menu::-webkit-scrollbar-thumb {
+  border-radius: 10px!important;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1)!important;
+  background-color: #9fb3b9!important;
+}
+
+.action-buttons{
+  background-color: transparent!important;
+  transition: outline 0.3s ease, box-shadow 0.3s ease;
+}
+
+.action-buttons > img{
+  width: 25px;
+}
+
+.action-buttons:active {
+  outline: 1px solid #000!important;
+}
+
+.add-plane > button {
+  height: 36px!important;
+}

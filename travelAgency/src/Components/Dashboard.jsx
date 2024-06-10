@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card, CardBody, CardHeader} from 'react-bootstrap';
+import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card, CardBody, CardHeader, DropdownMenu} from 'react-bootstrap';
 import { countries } from '../Menu';
 import MySelect from '../CommonElements/MySelect';
 import {components} from 'react-select';
@@ -9,7 +9,7 @@ import travel from '../assets/images/travel.webp';
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes } from '../Endpoint';
+import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes, getPlanes } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -31,16 +31,17 @@ const Dashboard = () => {
   const [createFlight, setCreateFlight] = useState(false);
   const [createBus, setCreateBus] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedPlane, setSelectedPlane] = useState('Select Plane');
 
   const initialData = {
-    name: '',
     originCountry: '',
     destinationCountry: '',
     departure: '',
     arrival: '',
     tickets: '',
     ticketPrice: '',
-    date: ''
+    date: '',
+    planeNum: []
   }
 
   useEffect(() => {
@@ -56,6 +57,22 @@ const Dashboard = () => {
   
   const [flight, setFlight] = useState(initialData);
   const [bus, setBus] = useState(initialData);
+  
+  const getPlaneData = async () => {
+    const response = await axios.get(getPlanes, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+
+    console.log(response.data);
+    setFlight(prev => ({...prev, planeNum: response.data}));
+    console.log(flight)
+  }
+
+  useEffect(() => {
+    getPlaneData();
+  }, []);
 
   const history = useNavigate();
 
@@ -184,6 +201,9 @@ const Dashboard = () => {
     if(vals.date == '' || vals.date == undefined){
       errors.date = 'Please choose a date';
     }
+    if(vals.selectedPlane == undefined || vals.selectedPlane == 0 || vals.selectedPlane == 'Select Plane'){
+      errors.selectedPlane = 'Please choose a Plane';
+    }
     return errors;
   }
 
@@ -197,11 +217,11 @@ const Dashboard = () => {
     const timeArrival = arrDate.toLocaleTimeString([], { hour12: false });
 
     setErrors(validate(category));
-    if(category.originCountry !== '' && category.destinationCountry !== '' && category.date !== '' && category.tickets !== '' && category.departure !== '' && category.arrival !== '' && category.ticketPrice !== '' && category.name !== ''){
-      try{
+    if(category.originCountry !== '' && category.destinationCountry !== '' && category.date !== '' && category.tickets !== '' && category.departure !== '' && category.arrival !== '' && category.ticketPrice !== '' && category.selectedPlane !== ''){
+      // try{
         console.log(timeDeparture);
         console.log(timeArrival);
-        axios.post(url, {Name: category.name, OriginCountry: category.originCountry, DestinationCountry: category.destinationCountry, Reservation: category.date, TicketsLeft: category.tickets, Departure: timeDeparture, Arrival: timeArrival, TicketPrice: category.ticketPrice}, {
+        axios.post(url, {PlaneId: category.selectedPlane, OriginCountry: category.originCountry, DestinationCountry: category.destinationCountry, Reservation: category.date, TicketsLeft: category.tickets, Departure: timeDeparture, Arrival: timeArrival, TicketPrice: category.ticketPrice}, {
           headers: {
             'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
           }
@@ -214,19 +234,19 @@ const Dashboard = () => {
             setCreateBus(false);
             setBus(initialData);
           })
-          // .catch(err => {
-          //   if(!err.response){
-          //     Swal.fire('Error, No Server Response!', '', 'error');
-          //     setErrors({globalError: 'Error, No Server Response!'})
-          //   } else if (err.response?.status === 401) {
-          //     Swal.fire('Unauthorized!!!', '', 'error');
-          //   } else{
-          //     Swal.fire('Something Went Wrong!', '', 'error');
-          //   }
-          // });
-      } catch(err) {
-        console.log(err);
-      }
+          .catch(err => {
+            if(!err.response){
+              Swal.fire('Error, No Server Response!', '', 'error');
+            } else if (err.response?.status === 401) {
+              Swal.fire('Unauthorized!!!', '', 'error');
+              history('/');
+            } else{
+              Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
+            }
+          });
+      // } catch(err) {
+      //   console.log(err);
+      // }
     }     
   }
 
@@ -260,35 +280,25 @@ const Dashboard = () => {
             history('/flights');
           }
         })
-        // .catch(err => {
-        //   if(!err.response){
-        //     Swal.fire('Error, No Server Response!', '', 'error');
-        //     setErrors({globalError: 'Error, No Server Response!'})
-        //   } else if (err.response?.status === 401) {
-        //     Swal.fire('Unauthorized!!!', '', 'error');
-        //   } else{
-        //     Swal.fire('Fetching filtered flights failed, please try again!', '', 'error');
-        //   }
-        // })
+        .catch(err => {
+          if(!err.response){
+            Swal.fire('Error, No Server Response!', '', 'error');
+          } else if (err.response?.status === 401) {
+            Swal.fire('Unauthorized!!!', '', 'error');
+          } else{
+            Swal.fire(err.response?.data || 'Fetching filtered flights failed, please try again!', '', 'error');
+          }
+        })
     }
   }
 
 
   //=========================ADD RANDOM FLIGHT============================
-  const addRandom = async (url) => {
-    console.log(url);
+  const addRandom = async () => {
     //Countries you wanna add in Origin Country and Destination Country
     const countries = ['Italy', 'Greece', 'Kosovo', 'Kosovo'];
-    let names;
-    let ticketPrice;
+    let ticketPrice = (Math.random() * 600 + 60).toFixed(2);
 
-    if(url == '/api/bus/create_bus'){
-      names = ['FlixBus', 'MegaBus', 'HappyBus', 'GreenBus'];
-      ticketPrice = (Math.random() * 200 + 40).toFixed(2)
-    } else{
-      names = ['DeltaAir', 'AirSafe', 'UnitedAir', 'FlixAir'];
-      ticketPrice = (Math.random() * 600 + 60).toFixed(2);
-    }
 
     const originCountry = countries[Math.floor(Math.random() * countries.length)];
     let destinationCountry;
@@ -315,12 +325,13 @@ const Dashboard = () => {
     arrivalTime.setHours(arrivalHour);
     arrivalTime.setMinutes(arrivalMinute);
     
-    // Choose a random name from the names array
-    const name = names[Math.floor(Math.random() * names.length)];
+    // Choose a random planeId from the planeNum array
+    const randomPlane = Math.floor(Math.random() * flight.planeNum.length);
 
+    console.log(randomPlane);
 
     const finalData = {
-      PlaneId: 17,
+      PlaneId: flight.planeNum[randomPlane - 1].planeId,
       OriginCountry: originCountry,
       DestinationCountry: destinationCountry,
       Reservation: new Date(),
@@ -329,8 +340,10 @@ const Dashboard = () => {
       Arrival: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
       TicketPrice: ticketPrice
     };
-    
-    axios.post(url, finalData, {
+
+    console.log(finalData);
+
+    axios.post(createFlights, finalData, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
@@ -342,18 +355,18 @@ const Dashboard = () => {
         setFlight(initialData);
         setCreateBus(false);
         setBus(initialData);
+        getPlaneData();
       })
-      // .catch(err => {
-      //   if(!err.response){
-      //     Swal.fire('Error, No Server Response!', '', 'error');
-      //     setErrors({globalError: 'Error, No Server Response!'})
-      //   } else if (err.response?.status === 401) {
-      //     Swal.fire('Unauthorized!!!', '', 'error');
-      //     history('/login');
-      //   } else{
-      //     Swal.fire('Something went wrong!', '', 'error');
-      //   }
-      // })
+      .catch(err => {
+        if(!err.response){
+          Swal.fire('Error, No Server Response!', '', 'error');
+        } else if (err.response?.status === 401) {
+          Swal.fire('Unauthorized!!!', '', 'error');
+          history('/login');
+        } else{
+          Swal.fire(err.response?.data || 'Something went wrong!', '', 'error');
+        }
+      })
   }
   //=========================ADD RANDOM Bus============================
     const addRandomBus = async () => {
@@ -435,7 +448,6 @@ const Dashboard = () => {
       // .catch(err => {
       //   if(!err.response){
       //     Swal.fire('Error, No Server Response!', '', 'error');
-      //     setErrors({globalError: 'Error, No Server Response!'})
       //   } else if (err.response?.status === 401) {
       //     Swal.fire('Unauthorized!!!', '', 'error');
       //     history('/login');
@@ -684,15 +696,26 @@ const Dashboard = () => {
                   <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
-                  <FormLabel>Company Name</FormLabel>
-                  <div className="input-group login-form-inputs">
-                      <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={flight.name} onChange={handleChange} />
-                  </div>
+                  <FormLabel>Plane </FormLabel>
+                      {/* <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={flight.name} onChange={handleChange} /> */}
+                      <div className="input-group login-form-inputs">
+                        <FormGroup className='input-group modal-inputs'>
+                          <DropdownButton id="planes-dropdown-button" style={{width: 'inherit', height: 'inherit'}} title={selectedPlane}>
+                            {flight.planeNum && flight.planeNum.map((item, idx) => (
+                              <DropdownItem key={idx} onClick={() => {
+                                
+                                setFlight(prev => ({ ...prev, selectedPlane: item.planeId }))
+                                setSelectedPlane(item.planeNumber);
+                              }}>{item.planeNumber}</DropdownItem>
+                            ))}
+                          </DropdownButton>
+                        </FormGroup>
+                      </div>  
                   <p className='invalidFeedback fullWidth'>{errors.name}</p>
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
-                <Button className='' variant='danger' onClick={() => addRandom(createFlights)}>ADD RANDOM</Button>
+                <Button className='' variant='danger' onClick={() => addRandom()}>ADD RANDOM</Button>
                 <Button className="admin-buttons" onClick={() => handleClick(createFlights, flight)}>Create Flight</Button>
               </FormGroup>
             </Form>

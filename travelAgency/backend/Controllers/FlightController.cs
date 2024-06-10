@@ -28,19 +28,6 @@ namespace SecureWebSite.Server.Controllers
             _userManager = um;
         }
 
-        public class FlightRequest
-        {
-            public string OriginCountry { get; set; }
-            public string DestinationCountry { get; set; }
-            public DateTime Reservation { get; set; }
-            public int TicketsLeft { get; set; }
-            public TimeOnly Departure { get; set; }
-            public TimeOnly Arrival { get; set; }
-            public float TicketPrice { get; set; }
-            public List<int> PlaneId { get; set; }
-            //public Plane? Plane { get; set; }
-        }
-
         [HttpPost("create_flight")]
         public async Task<ActionResult> CreateFlight(Flight flight)
         {
@@ -124,7 +111,7 @@ namespace SecureWebSite.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Something went wrong while filtering flights. " + ex.Message });
+                return BadRequest("Something went wrong while filtering flights. " + ex.Message);
             }
         }
 

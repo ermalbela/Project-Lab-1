@@ -30,7 +30,7 @@ const Header = () => {
         <NavbarToggle aria-controls="basic-navbar-nav" />
         <NavbarCollapse id="basic-navbar-nav">
           <Nav className="ms-auto justify-content-center align-items-center">
-            {routes.map(({path, name}, i) => (
+            {routes.filter(route => route.show).map(({path, name}, i) => (
               <NavLink as='div' key={i}>
                 <Link className="nav-link" to={path}>{name}</Link>
               </NavLink>

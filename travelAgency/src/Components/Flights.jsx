@@ -225,7 +225,7 @@ const Flights = () => {
             {selectedFlight && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
               <Modal.Header className='custom-modal-header justify-content-between align-items-center'>
                 <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
-                <h5>Price calculated for: (adults: {passengerCounts['adult']} children: {passengerCounts['child']} infant: {passengerCounts['infant']})</h5>
+                <h5>Price calculated for: (Adults: {passengerCounts['adult']} Children: {passengerCounts['child']} Infant: {passengerCounts['infant']})</h5>
               </Modal.Header>
               <Modal.Body className='row'>
                 <Col>

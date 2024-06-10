@@ -8,10 +8,10 @@ import BusCompany from "../Components/BusCompanies";
 
 
 export const routes = [
-  {path: `/`, Component: <Dashboard />, name: 'Dashboard'},
-  {path: '/flights', Component: <Flights />, name: 'Flights'},
-  {path: '/bus', Component: <Bus />, name: 'Bus'},
-  {path: '/flight_companies', Component: <FlightCompanies />, name: 'Flight Companies'},
-  {path: '/buses_companies', Component: <BusCompany />, name: 'Buses Companies'},
+  {path: `/`, Component: <Dashboard />, name: 'Dashboard', show: true},
+  {path: '/flights', Component: <Flights />, name: 'Flights', show: false},
+  {path: '/bus', Component: <Bus />, name: 'Bus', show: false},
+  {path: '/flight_companies', Component: <FlightCompanies />, name: 'Flight Companies', show: true},
+  {path: '/buses_companies', Component: <BusCompany />, name: 'Buses Companies', show: true},
   
 ]

@@ -82,7 +82,7 @@ namespace SecureWebSite.Server.Controllers
             try
             {
                 // Retrieve all flight companies from the database
-                var flightCompanies = await _context.FlightCompanies.Select(f => new { FlightCompanyId = f.FlightCompanyId, FlightCompany = f.CompanyName, Planes = f.Planes }).ToListAsync();
+                var flightCompanies = await _context.FlightCompanies.Select(f => new { f.FlightCompanyId, FlightCompany = f.CompanyName, f.Planes }).ToListAsync();
                 return Ok(flightCompanies);
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace SecureWebSite.Server.Controllers
             try
             {
                 // Retrieve all flight companies from the database
-                var planes = await _context.Planes.Select(f => new { FlightCompanyId = f.FlightCompanyId, FlightCompany = f.FlightCompany, PlaneNumber = f.PlaneNumber, Flights = f.Flights }).ToListAsync();
+                var planes = await _context.Planes.Select(p => new { p.FlightCompanyId, p.FlightCompany, p.PlaneNumber, p.Flights, p.PlaneId }).ToListAsync();
                 return Ok(planes);
             }
             catch (Exception ex)
@@ -107,7 +107,7 @@ namespace SecureWebSite.Server.Controllers
         }
 
         [HttpPut("edit_plane_{id}")]
-        public async Task<IActionResult> Update(int id, Plane plane)
+        public async Task<IActionResult> UpdatePlane(int id, Plane plane)
         {
             if (id != plane.PlaneId)
             {
@@ -118,6 +118,15 @@ namespace SecureWebSite.Server.Controllers
             if (_plane == null)
             {
                 return NotFound( new {message = "Plane Not Found!"}); // Plane not found
+            }
+
+            var existingPlaneWithSameNumber = await _context.Planes
+                .Where(p => p.PlaneId != id && p.FlightCompanyId == _plane.FlightCompanyId && p.PlaneNumber == plane.PlaneNumber)
+                .FirstOrDefaultAsync();
+
+            if (existingPlaneWithSameNumber != null)
+            {
+                return BadRequest(new { message = "A plane with the same PlaneNumber already exists in the same flight company." });
             }
 
             _plane.PlaneNumber = plane.PlaneNumber;
@@ -143,7 +152,7 @@ namespace SecureWebSite.Server.Controllers
         }
 
 
-    [HttpPost("create_company")]
+        [HttpPost("create_company")]
         public async Task<ActionResult> CreateCompany(FlightCompany company)
         {
             try
@@ -164,6 +173,50 @@ namespace SecureWebSite.Server.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPut("edit_company_{id}")]
+        public async Task<IActionResult> UpdateCompany(int id, FlightCompany flightCompany)
+        {
+            try
+            {
+                if (id != flightCompany.FlightCompanyId)
+                {
+                    return BadRequest(new { message = "Flight Company Ids do not match" });
+                }
+
+                var _flightCompany = await _context.FlightCompanies.FindAsync(id);
+                if (_flightCompany == null)
+                {
+                    return NotFound(new { message = "Flight Company Not Found!" });
+                }
+
+                _flightCompany.CompanyName = flightCompany.CompanyName;
+
+            
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Flight Company updated successfully!", _flightCompany });
+
+            } catch(DbUpdateException ex)
+            {
+                return BadRequest(new { message = "An error occurred while updating the Flight Company.", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("delete_company_{id}")]
+        public async Task<IActionResult> DeleteCompany(int id)
+        {
+            var flightCompany = _context.FlightCompanies.FirstOrDefault(p => p.FlightCompanyId == id); ;
+            if (flightCompany == null)
+            {
+                return NotFound();
+            }
+
+            _context.FlightCompanies.Remove(flightCompany);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Flight Company deleted successfully!" });
         }
     }
 }

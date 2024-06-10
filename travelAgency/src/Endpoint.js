@@ -38,3 +38,5 @@ export const editPlanes = planesApi + 'edit_plane_';
 export const deletePlane = planesApi + 'delete_plane_';
 export const createFlightCompany = planesApi + 'create_company';
 export const getFlightCompanies = planesApi + 'get_companies';
+export const editCompanies = planesApi + 'edit_company_';
+export const deleteCompany = planesApi + 'delete_company_';
