@@ -49,11 +49,36 @@ namespace SecureWebSite.Server.Controllers
             {
                 return Conflict("A bus trip with the same Id already exists.");
             }
+            var existingBus = await _context.Buses.FindAsync(bus.BusId);
+            if (existingBus == null)
+            {
+                return NotFound("Bus not found.");
+            }
 
-            _context.BusTrips.Add(bus);
+
+            BusTrips _bus = new BusTrips()
+            {
+                Origin = bus.Origin,
+                Destination = bus.Destination,
+                TicketsAvailable = bus.TicketsAvailable,
+                DepartureTime = bus.DepartureTime,
+                ArrivalTime = bus.DepartureTime,
+                TicketPrice = bus.TicketPrice,
+                BusId = bus.BusId,
+                Bus = existingBus
+            };
+
+            if (existingBus.BusTrips == null)
+            {
+                existingBus.BusTrips = new List<BusTrips>();
+            }
+
+            existingBus.BusTrips.Add(_bus);
+
+            _context.BusTrips.Add(_bus);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBus), new { id = bus.BusTripsId }, bus);
+            return CreatedAtAction(nameof(GetBus), new { id = _bus.BusTripsId }, _bus);
         }
 
         // PUT: api/Buses/Edit/5

@@ -36,6 +36,15 @@ const BusCompany = () => {
     
   }
 
+  const [visibleBuses, setVisibleBuses] = useState({});
+
+  const toggleBuses = (idx) => {
+    setVisibleBuses((prevState) => ({
+      ...prevState,
+      [idx]: !prevState[idx],
+    }));
+  };
+
 
   useEffect(() => {
     const fetchBusData = async () => {
@@ -85,8 +94,6 @@ const BusCompany = () => {
 
   return (
     <div>
-      <Header />
-      <Container>
         {isLoading ? (
           <Loader />
         ) : (
@@ -98,12 +105,30 @@ const BusCompany = () => {
                   <Col md={4} key={idx}>
                     <Card className='mb-4'>
                       <Card.Body>
-                        <Card.Title>{bus.name}</Card.Title>
-                        <Card.Text>
+                        
+                        
+                        <div className="d-flex justify-content-between">
+                        <Card.Title>{bus.busCompany}</Card.Title> 
+                        <Button onClick={() => toggleBuses(idx)}  >
+                            {visibleBuses[idx] ? 'Hide Buses' : 'Show Buses'}<span>⏷</span>
+                          </Button>
+                        </div>
+                          <div>
+                         
+                            <div className={`busesContainer ? ${visibleBuses[idx] ? 'visible' : ''}`}>
+                              {visibleBuses[idx] && bus.buses.map((item, busIdx) => (
+                                <Card.Text key={busIdx}>
+                                  Bus Number : {item.busNumber}
+                                  <br />
+                                  Number of deckers : {item.deckersNr}
+                                </Card.Text>
+                              ))}
+                          </div>
+                          </div>
                           {/* <strong>Origin:</strong> {bus.originCountry} <br />
                           <strong>Destination:</strong> {bus.destinationCountry} <br />
                           <strong>Price:</strong> ${bus.ticketPrice.toFixed(2)} */}
-                        </Card.Text>
+                        
                         <Button variant="primary" onClick={() => handleBusClick(bus)}>View Trips</Button>
                         <Button variant="primary" style={{marginLeft:"5px" }} onClick={()=> addBus(bus)}>Add Bus</Button>
                         
@@ -114,7 +139,7 @@ const BusCompany = () => {
               </Row>
               {selectedBus && (
                 <div>
-                  <h3>Trips for {selectedBus.name}</h3>
+                  <h3>Trips for {selectedBus.busCompany}</h3>
                   <Row>
                     {selectedBus.trips && selectedBus.trips.map((trip, idx) => (
                       <Col md={4} key={idx}>
@@ -137,7 +162,7 @@ const BusCompany = () => {
             </Col>
           </Row>
         )}
-      </Container>
+      
       {/* Add Bus modal */}
 
     {currentBus &&  <Modal size="md" show={openBusModal} onHide={() => setOpenBusModal(false)} aria-labelledby="example-modal-sizes-title-sm">

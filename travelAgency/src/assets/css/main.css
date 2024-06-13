@@ -387,3 +387,14 @@ body > * {
 .add-plane > button {
   height: 36px!important;
 }
+.busesContainer {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s ease, max-height 0.5s ease;
+}
+
+.busesContainer.visible {
+  opacity: 1;
+  max-height: 1000px; /* Adjust based on content */
+}

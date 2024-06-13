@@ -37,7 +37,7 @@ namespace SecureWebSite.Server.Models
 
         [ForeignKey("BusCompany")]
         public int BusId { get; set; }
-        public Bus Bus{ get; set; }
+        public Bus? Bus{ get; set; }
        
     }
 }

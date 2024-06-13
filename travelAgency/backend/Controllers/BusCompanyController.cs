@@ -27,7 +27,16 @@ namespace SecureWebSite.Server.Controllers
         [HttpGet("get-bus-companies")]
         public async Task<ActionResult<IEnumerable<BusCompany>>> GetBusCompanies()
         {
-            return await _context.BusCompanies.ToListAsync();
+            try
+            {
+                
+                var busCompanies = await _context.BusCompanies.Select(f => new { f.BusCompanyId, BusCompany = f.Name, f.Buses }).ToListAsync();
+                return Ok(busCompanies);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Something went wrong while getting Bus Companies. " + ex.Message });
+            }
         }
 
         // GET: api/BusCompany/5

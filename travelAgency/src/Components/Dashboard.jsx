@@ -9,7 +9,7 @@ import travel from '../assets/images/travel.webp';
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes, getPlanes } from '../Endpoint';
+import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes, getPlanes, addBusCompany, getBuses } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +32,7 @@ const Dashboard = () => {
   const [createBus, setCreateBus] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlane, setSelectedPlane] = useState('Select Plane');
+  const [selectedBus, setSelectedBus] = useState('Select Bus');
 
   const initialData = {
     originCountry: '',
@@ -42,6 +43,16 @@ const Dashboard = () => {
     ticketPrice: '',
     date: '',
     planeNum: []
+  }
+  const initialBusData = {
+    originCountry: '',
+    destinationCountry: '',
+    departure: '',
+    arrival: '',
+    tickets: '',
+    ticketPrice: '',
+    date: '',
+    busNum: []
   }
 
   useEffect(() => {
@@ -56,7 +67,7 @@ const Dashboard = () => {
   }, [role, setRole]);
   
   const [flight, setFlight] = useState(initialData);
-  const [bus, setBus] = useState(initialData);
+  const [bus, setBus] = useState(initialBusData);
   
   const getPlaneData = async () => {
     const response = await axios.get(getPlanes, {
@@ -70,9 +81,24 @@ const Dashboard = () => {
     console.log(flight)
   }
 
+  const getBusData = async () => {
+    const response = await axios.get(getBuses, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+
+    console.log(response.data);
+    setBus(prev => ({...prev, busNum: response.data}));
+    console.log(bus)
+  }
+
   useEffect(() => {
     getPlaneData();
+    getBusData();
   }, []);
+
+ 
 
   const history = useNavigate();
 
@@ -234,16 +260,55 @@ const Dashboard = () => {
             setCreateBus(false);
             setBus(initialData);
           })
-          .catch(err => {
-            if(!err.response){
-              Swal.fire('Error, No Server Response!', '', 'error');
-            } else if (err.response?.status === 401) {
-              Swal.fire('Unauthorized!!!', '', 'error');
-              history('/');
-            } else{
-              Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
-            }
-          });
+          // .catch(err => {
+          //   if(!err.response){
+          //     Swal.fire('Error, No Server Response!', '', 'error');
+          //   } else if (err.response?.status === 401) {
+          //     Swal.fire('Unauthorized!!!', '', 'error');
+          //     history('/');
+          //   } else{
+          //     Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
+          //   }
+          // });
+      // } catch(err) {
+      //   console.log(err);
+      // }
+    }     
+  }
+
+  //Create Bus
+  const handleBusClick = async () => {
+    const depDate = new Date(bus.departure);
+    const timeDeparture = depDate.toLocaleTimeString([], {hour12: false});
+    const arrDate = new Date(bus.arrival);
+    const timeArrival = arrDate.toLocaleTimeString([], { hour12: false });
+
+    setErrors(validate(bus));
+    if(bus.originCountry !== '' && bus.destinationCountry !== '' && bus.date !== '' && bus.tickets !== '' && bus.departure !== '' && bus.arrival !== '' && bus.ticketPrice !== '' && bus.selectedBus !== ''){
+      // try{
+        console.log(timeDeparture);
+        console.log(timeArrival);
+        axios.post(createBuses, {BusId: bus.selectedBus, Origin: bus.originCountry, Destination: bus.destinationCountry, Reservation: bus.date, TicketsAvailable: bus.tickets, DepartureTime: timeDeparture, ArrivalTime: timeArrival, TicketPrice: bus.ticketPrice}, {
+          headers: {
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+          }
+        })
+          .then(res => {
+            console.log(res)
+            Swal.fire('Bus Trip Added Successfully', '', 'success');
+            setCreateBus(false);
+            setBus(initialBusData);
+          })
+          // .catch(err => {
+          //   if(!err.response){
+          //     Swal.fire('Error, No Server Response!', '', 'error');
+          //   } else if (err.response?.status === 401) {
+          //     Swal.fire('Unauthorized!!!', '', 'error');
+          //     history('/');
+          //   } else{
+          //     Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
+          //   }
+          // });
       // } catch(err) {
       //   console.log(err);
       // }
@@ -417,7 +482,7 @@ const Dashboard = () => {
     };
 
     
-    axios.post("api/BusCompany/createBusCompany", {Name: "KosovaTrans",Buses: []}, {
+    axios.post(addBusCompany, {Name: "KosovaTrans",Buses: []}, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
@@ -806,16 +871,27 @@ const Dashboard = () => {
                   <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
-                  <FormLabel>Company Name</FormLabel>
-                  <div className="input-group login-form-inputs">
-                      <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={bus.name} onChange={handleBusChange} />
-                  </div>
+                  <FormLabel>Plane </FormLabel>
+                      {/* <FormControl className="form-control" type="text" name="name" placeholder="e.g. AirSafe" value={flight.name} onChange={handleChange} /> */}
+                      <div className="input-group login-form-inputs">
+                        <FormGroup className='input-group modal-inputs'>
+                          <DropdownButton id="planes-dropdown-button" style={{width: 'inherit', height: 'inherit'}} title={selectedBus}>
+                            {bus.busNum && bus.busNum.map((item, idx) => (
+                              <DropdownItem key={idx} onClick={() => {
+                                
+                                setBus(prev => ({ ...prev, selectedBus: item.busId }))
+                                setSelectedBus(item.busNumber);
+                              }}>{item.busNumber}</DropdownItem>
+                            ))}
+                          </DropdownButton>
+                        </FormGroup>
+                      </div>  
                   <p className='invalidFeedback fullWidth'>{errors.name}</p>
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
                 <Button variant='danger' onClick={() => addRandomBus()}>ADD RANDOM</Button>
-                <Button className="admin-buttons" onClick={() => handleClick(createBuses, bus)}>Create BusTrip</Button>
+                <Button className="admin-buttons" onClick={() => handleBusClick()}>Create BusTrip</Button>
               </FormGroup>
             </Form>
           </Modal.Body>
