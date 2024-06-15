@@ -76,9 +76,7 @@ const Dashboard = () => {
       }
     })
 
-    console.log(response.data);
     setFlight(prev => ({...prev, planeNum: response.data}));
-    console.log(flight)
   }
 
   const getBusData = async () => {
@@ -88,9 +86,7 @@ const Dashboard = () => {
       }
     })
 
-    console.log(response.data);
     setBus(prev => ({...prev, busNum: response.data}));
-    console.log(bus)
   }
 
   useEffect(() => {
@@ -244,35 +240,21 @@ const Dashboard = () => {
 
     setErrors(validate(category));
     if(category.originCountry !== '' && category.destinationCountry !== '' && category.date !== '' && category.tickets !== '' && category.departure !== '' && category.arrival !== '' && category.ticketPrice !== '' && category.selectedPlane !== ''){
-      // try{
-        console.log(timeDeparture);
-        console.log(timeArrival);
         axios.post(url, {PlaneId: category.selectedPlane, OriginCountry: category.originCountry, DestinationCountry: category.destinationCountry, Reservation: category.date, TicketsLeft: category.tickets, Departure: timeDeparture, Arrival: timeArrival, TicketPrice: category.ticketPrice}, {
           headers: {
             'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
           }
         })
           .then(res => {
-            console.log(res)
             Swal.fire('Trip Added Successfully', '', 'success');
             setCreateFlight(false);
             setFlight(initialData);
             setCreateBus(false);
             setBus(initialData);
           })
-          // .catch(err => {
-          //   if(!err.response){
-          //     Swal.fire('Error, No Server Response!', '', 'error');
-          //   } else if (err.response?.status === 401) {
-          //     Swal.fire('Unauthorized!!!', '', 'error');
-          //     history('/');
-          //   } else{
-          //     Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
-          //   }
-          // });
-      // } catch(err) {
-      //   console.log(err);
-      // }
+          .catch(err => {
+            Swal.fire(err.response?.data?.message || 'Something went wrong', '', 'error');
+          })
     }     
   }
 
@@ -285,16 +267,12 @@ const Dashboard = () => {
 
     setErrors(validate(bus));
     if(bus.originCountry !== '' && bus.destinationCountry !== '' && bus.date !== '' && bus.tickets !== '' && bus.departure !== '' && bus.arrival !== '' && bus.ticketPrice !== '' && bus.selectedBus !== ''){
-      // try{
-        console.log(timeDeparture);
-        console.log(timeArrival);
         axios.post(createBuses, {BusId: bus.selectedBus, Origin: bus.originCountry, Destination: bus.destinationCountry, Reservation: bus.date, TicketsAvailable: bus.tickets, DepartureTime: timeDeparture, ArrivalTime: timeArrival, TicketPrice: bus.ticketPrice}, {
           headers: {
             'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
           }
         })
           .then(res => {
-            console.log(res)
             Swal.fire('Bus Trip Added Successfully', '', 'success');
             setCreateBus(false);
             setBus(initialBusData);
@@ -309,9 +287,6 @@ const Dashboard = () => {
           //     Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
           //   }
           // });
-      // } catch(err) {
-      //   console.log(err);
-      // }
     }     
   }
 
@@ -325,7 +300,9 @@ const Dashboard = () => {
         Reservation: moment(dateRange[0]).format('yyyy-MM-DD'),
         // Returning: moment(dateRange[1]).format('yyyy-MM-DD'),
         OriginCountry: fromCountry['value'],
+        Origin: fromCountry['value'],
         DestinationCountry: toCountry['value'],
+        Destination: toCountry['value'],
         // Adults: passengerCounts['adult'],
         // Children: passengerCounts['child'],
         // Infant: passengerCounts['infant']
@@ -336,9 +313,8 @@ const Dashboard = () => {
         }
       })
         .then(res => {
-          console.log(res.data)
           if(dropdownVal == 'Bus'){
-            setBusData(res.data?.filtered_bus?.result)
+            setBusData(res.data?.filtered_buses);
             history('/bus');
           } else{
             setData(res.data?.filtered_flights);
@@ -393,7 +369,6 @@ const Dashboard = () => {
     // Choose a random planeId from the planeNum array
     const randomPlane = Math.floor(Math.random() * flight.planeNum.length);
 
-    console.log(randomPlane);
 
     const finalData = {
       PlaneId: flight.planeNum[randomPlane - 1].planeId,
@@ -406,7 +381,6 @@ const Dashboard = () => {
       TicketPrice: ticketPrice
     };
 
-    console.log(finalData);
 
     axios.post(createFlights, finalData, {
       headers: {
@@ -414,7 +388,6 @@ const Dashboard = () => {
       }
     })
       .then(res => {
-        console.log(res)
         Swal.fire('Trip Added Successfully', '', 'success');
         setCreateFlight(false);
         setFlight(initialData);
@@ -471,7 +444,7 @@ const Dashboard = () => {
 
 
     const finalData = {
-      BusId: 17,
+      BusId: 3,
       Origin: originCountry,
       Destination: destinationCountry,
       Reservation: new Date(),
@@ -481,45 +454,30 @@ const Dashboard = () => {
       TicketPrice: ticketPrice
     };
 
+
     
-    axios.post(addBusCompany, {Name: "KosovaTrans",Buses: []}, {
+    axios.post(createBuses, finalData, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
     })
       .then(res => {
-        console.log(res)
         Swal.fire('Bus Trip Added Successfully', '', 'success');
         setCreateFlight(false);
         setFlight(initialData);
         setCreateBus(false);
         setBus(initialData);
       })
-
-    
-    // axios.post(createBuses, finalData, {
-    //   headers: {
-    //     'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
-    //   }
-    // })
-    //   .then(res => {
-    //     console.log(res)
-    //     Swal.fire('Bus Trip Added Successfully', '', 'success');
-    //     setCreateFlight(false);
-    //     setFlight(initialData);
-    //     setCreateBus(false);
-    //     setBus(initialData);
-    //   })
-      // .catch(err => {
-      //   if(!err.response){
-      //     Swal.fire('Error, No Server Response!', '', 'error');
-      //   } else if (err.response?.status === 401) {
-      //     Swal.fire('Unauthorized!!!', '', 'error');
-      //     history('/login');
-      //   } else{
-      //     Swal.fire('Something went wrong!', '', 'error');
-      //   }
-      // })
+      .catch(err => {
+        if(!err.response){
+          Swal.fire('Error, No Server Response!', '', 'error');
+        } else if (err.response?.status === 401) {
+          Swal.fire('Unauthorized!!!', '', 'error');
+          history('/login');
+        } else{
+          Swal.fire('Something went wrong!', '', 'error');
+        }
+      })
   }
 
 

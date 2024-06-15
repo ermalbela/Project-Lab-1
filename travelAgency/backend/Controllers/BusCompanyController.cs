@@ -74,13 +74,9 @@ namespace SecureWebSite.Server.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
             }
 
-            return NoContent();
+            return Ok(new { message = "Company edited successfully.", busCompany });
         }
 
         // POST: api/BusCompany
@@ -93,7 +89,7 @@ namespace SecureWebSite.Server.Controllers
             _context.BusCompanies.Add(busCompany);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("add-bus-company", new { id = busCompany.BusCompanyId }, busCompany);
+            return Ok(busCompany);
         }
 
         // DELETE: api/BusCompany/5
@@ -141,30 +137,34 @@ namespace SecureWebSite.Server.Controllers
         [HttpPut("edit-bus/{id}")]
         public async Task<IActionResult> PutBus(int id, Bus bus)
         {
-            if (id != bus.BusId)
             {
-                return BadRequest();
-            }
+                if (id != bus.BusId)
+                {
+                    return BadRequest(new { message = "Bus Ids do not match" }); // Request ID doesn't match plane ID
+                }
 
-            _context.Entry(bus).State = EntityState.Modified;
+                var _bus = await _context.Buses.FindAsync(id);
+                if (_bus == null)
+                {
+                    return NotFound(new { message = "Bus Not Found!" }); // Plane not found
+                }
 
-            try
-            {
+                var existingBusWithSameNumber = await _context.Buses
+                    .Where(b => b.BusId != id && b.BusCompanyId == _bus.BusCompanyId && b.BusNumber == bus.BusNumber)
+                    .FirstOrDefaultAsync();
+
+                if (existingBusWithSameNumber != null)
+                {
+                    return BadRequest(new { message = "A bus with the same Bus Number already exists in the same bus company." });
+                }
+
+                _bus.BusNumber = bus.BusNumber;
+                _bus.DeckersNr = bus.DeckersNr;
+
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BusExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                return Ok(new { message = "Bus updated successfully!", _bus }); // Plane updated successfully
+            }
         }
 
         // POST: api/Bus
