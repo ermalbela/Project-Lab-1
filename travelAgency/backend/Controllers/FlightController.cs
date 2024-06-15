@@ -185,7 +185,7 @@ namespace SecureWebSite.Server.Controllers
                 // Decrease ticketsLeft count
                 int totalTicketsSold = request.Adults + request.Children + request.Infant;
                 flight.TicketsLeft -= totalTicketsSold;
-
+                
 
                 // Create a new UserTicket
                 var _flightTicket = new FlightTicket
@@ -197,6 +197,8 @@ namespace SecureWebSite.Server.Controllers
                     Children = request.Children,
                     Reservation = request.Reservation,
                 };
+
+                existingUser.FlightTicket = _flightTicket;
 
                 if (_flightTicket.Users == null)
                 {

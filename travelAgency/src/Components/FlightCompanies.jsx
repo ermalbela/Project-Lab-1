@@ -71,19 +71,20 @@ const FlightCompanies = () => {
         })
         .then(() => {
           getData();
+          Swal.fire({
+            title: "Deleted!",
+            text: "Plane has been deleted.",
+            icon: "success"
+          });
         })
-        Swal.fire({
-          title: "Deleted!",
-          text: "Plane has been deleted.",
-          icon: "success"
-        });
+        
       }
     });
     
   }
 
   const handleEdit = (id, plane) => {
-    axios.put(editPlanes + id, {PlaneNumber: Plane, PlaneId: plane.planeId}, {
+    axios.put(editPlanes + id, {PlaneNumber: plane.planeNumber, PlaneId: plane.planeId}, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
@@ -120,7 +121,7 @@ const FlightCompanies = () => {
   const handleEditCompany = comp => {
     console.log(comp);
 
-    axios.put(editCompanies + comp.flightCompanyId, {CompanyName: company, FlightCompanyId: comp.flightCompanyId}, {
+    axios.put(editCompanies + comp.flightCompanyId, {CompanyName: comp.flightCompany, FlightCompanyId: comp.flightCompanyId}, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
@@ -154,11 +155,11 @@ const FlightCompanies = () => {
         })
         .then(() => {
           getData();
-        })
-        Swal.fire({
-          title: "Deleted!",
-          text: "Flight Company has been deleted.",
-          icon: "success"
+          Swal.fire({
+            title: "Deleted!",
+            text: "Flight Company has been deleted.",
+            icon: "success"
+          })
         })
         .catch(err => {
           Swal.fire(err?.response?.data || 'An error occured while trying to delete Flight Company.');
@@ -270,7 +271,7 @@ const FlightCompanies = () => {
               <FormGroup className='formGroup'>
                 <FormLabel>Company Name</FormLabel>
                 <div className="input-group login-form-inputs">
-                    <FormControl className="form-control" type="text" name="companyName" placeholder="e.g. AirLine" value={company} onChange={e => setCompany(e.target.value)} />
+                    <FormControl className="form-control" type="text" name="companyName" placeholder="e.g. AirLine" value={currentCompany.flightCompany} onChange={e => setCurrentCompany(prev => ({...prev, flightCompany: e.target.value}))} />
                 </div>
               </FormGroup>
               <FormGroup className='formGroup d-flex justify-content-between mt-3'>
@@ -315,7 +316,7 @@ const FlightCompanies = () => {
               <FormGroup className='formGroup'>
                 <FormLabel>Plane Number</FormLabel>
                 <div className="input-group login-form-inputs">
-                    <FormControl className="form-control" type="text" name="name" placeholder="e.g. Plane1" value={Plane} onChange={e => setPlane(e.target.value)} />
+                    <FormControl className="form-control" type="text" name="name" placeholder="e.g. Plane1" value={currentPlane.planeNumber} onChange={e => setCurrentPlane(prev => ({...prev, planeNumber: e.target.value}))} />
                 </div>
               </FormGroup>
               <FormGroup className='formGroup d-flex justify-content-between mt-3'>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SecureWebSite.Server.Data;
 
@@ -11,9 +12,11 @@ using SecureWebSite.Server.Data;
 namespace SecureWebSite.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240615000256_added reservation bustrips")]
+    partial class addedreservationbustrips
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -599,15 +602,13 @@ namespace SecureWebSite.Server.Data.Migrations
 
             modelBuilder.Entity("SecureWebSite.Server.Models.User", b =>
                 {
-                    b.HasOne("SecureWebSite.Server.Models.BusTicket", "BusTicket")
+                    b.HasOne("SecureWebSite.Server.Models.BusTicket", null)
                         .WithMany("Users")
                         .HasForeignKey("BusTicketId");
 
                     b.HasOne("SecureWebSite.Server.Models.FlightTicket", "FlightTicket")
                         .WithMany("Users")
                         .HasForeignKey("FlightTicketId");
-
-                    b.Navigation("BusTicket");
 
                     b.Navigation("FlightTicket");
                 });

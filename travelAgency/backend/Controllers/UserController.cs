@@ -135,6 +135,36 @@ namespace SecureWebSite.Server.Controllers
 					}
 				}
 
+				[HttpGet("get-user_{id}")]
+				public async Task<ActionResult<User>> GetUserById(string id)
+				{
+					try
+					{
+						// Retrieve the user from the database by ID
+						var user = await userManager.FindByIdAsync(id);
+						if (user == null)
+						{
+							return NotFound(new { message = "User not found." });
+						}
+
+						// Create an anonymous object to return
+						var result = new
+						{
+							userName = user.UserName,
+							email = user.Email,
+							user.FlightTicket,
+							user.BusTicket,
+							user.Role,
+						};
+
+						return Ok(result);
+					}
+					catch (Exception ex)
+					{
+						return BadRequest(new { message = "Something went wrong while fetching the user. " + ex.Message });
+					}
+				}
+
 				[HttpGet("user-role")]
 				public ActionResult GetUserRole()
 				{
