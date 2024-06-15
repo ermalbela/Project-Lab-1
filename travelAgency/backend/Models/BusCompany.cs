@@ -14,6 +14,6 @@ namespace YourNamespace.Models
         [StringLength(20)]
         public string Name { get; set; }
 
-        public ICollection<Bus> Buses { get; set; }
+        public ICollection<Bus>? Buses { get; set; }
     }
 }

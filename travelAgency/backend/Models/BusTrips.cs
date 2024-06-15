@@ -12,7 +12,7 @@ namespace SecureWebSite.Server.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BusTripsId { get; set; }
 
-    
+
 
         [Required]
         [StringLength(20)]
@@ -30,6 +30,7 @@ namespace SecureWebSite.Server.Models
 
         [Required]
         public TimeSpan ArrivalTime { get; set; }
+        public DateTime Reservation { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -38,6 +39,6 @@ namespace SecureWebSite.Server.Models
         [ForeignKey("BusCompany")]
         public int BusId { get; set; }
         public Bus? Bus{ get; set; }
-       
+
     }
 }

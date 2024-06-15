@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SecureWebSite.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/buses")]
     [ApiController]
     public class BusesController : ControllerBase
     {
@@ -20,14 +20,29 @@ namespace SecureWebSite.Server.Controllers
         }
 
         // GET: api/Buses
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<BusTrips>>> GetBuses()
+        [HttpPost("filtered_buses")]
+        public async Task<ActionResult<IEnumerable<BusTrips>>> FilteredFlights(BusTrips busTrip)
         {
-            return await _context.BusTrips.ToListAsync();
+            try
+            {
+
+                var filtered_buses = await _context.BusTrips.Select(b =>
+                    new { BusCompany = b.Bus.BusCompany.Name, b.Bus, b.BusId, b.Destination, b.Origin, b.ArrivalTime, b.DepartureTime, b.TicketPrice, b.TicketsAvailable, b.BusTripsId, b.Reservation })
+                    .Where(b => b.Destination == busTrip.Destination && b.Origin == busTrip.Origin).ToListAsync();
+
+
+
+                return Ok(new { filtered_buses });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Something went wrong while filtering buses. " + ex.Message);
+            }
         }
 
         // GET: api/Buses/5
-        [HttpGet("{id}")]
+        [HttpGet("get-bus/{id}")]
         public async Task<ActionResult<BusTrips>> GetBus(int id)
         {
             var bus = await _context.BusTrips.FindAsync(id);
@@ -40,8 +55,7 @@ namespace SecureWebSite.Server.Controllers
             return bus;
         }
 
-        // POST: api/Buses/Add
-        [HttpPost("Add")]
+        [HttpPost("add-bustrip")]
         public async Task<ActionResult<BusTrips>> AddBus(BusTrips bus)
         {
             // Check if a bus with the same BusTripsId already exists
@@ -82,7 +96,7 @@ namespace SecureWebSite.Server.Controllers
         }
 
         // PUT: api/Buses/Edit/5
-        [HttpPut("Edit/{id}")]
+        [HttpPut("edit/{id}")]
         public async Task<IActionResult> EditBus(int id, BusTrips bus)
         {
             if (id != bus.BusTripsId)
@@ -112,7 +126,7 @@ namespace SecureWebSite.Server.Controllers
         }
 
         // DELETE: api/Buses/5
-        [HttpDelete("{id}")]
+        [HttpDelete("delete-bustrip/{id}")]
         public async Task<IActionResult> DeleteBus(int id)
         {
             var bus = await _context.BusTrips.FindAsync(id);

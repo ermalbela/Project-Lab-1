@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Container, Row, Col, Button, Modal, Card, DropdownButton, DropdownItem } from 'react-bootstrap';
 import busIcon from '../assets/images/busIcon.png';
 import axios from 'axios';
-import { purchaseBus } from '../Endpoint';
+import { getPurchasedFlights, purchaseBus } from '../Endpoint';
 import Swal from 'sweetalert2';
 import Loader from '../Layout/Loader';
 import BusContext from '../_helper/BusContext';
@@ -42,7 +42,6 @@ const Bus = () => {
   }, [busData, setBusData]);
 
   const handleClick = bus => {
-    console.log(bus);
     setShow(true);
     setselectedBus(bus);
   }
@@ -57,7 +56,6 @@ const Bus = () => {
     const Id = JSON.parse(localStorage.getItem('userId'));
     const validNum = [busId];
     const passengerCountsArr = Object.values(passengerCounts);
-    console.log(passengerCountsArr);
     
 
     axios.post(purchaseBus, {busId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation}, {
@@ -67,19 +65,9 @@ const Bus = () => {
     })
       .then(res => {
         Swal.fire(res.data.message, '', 'success');
-        console.log(res)
       })
       .catch(err => {
-        console.log(err);
-        if(!err.response){
-          Swal.fire('Error, No Server Response!', '', 'error');
-        } else if (err.response?.status === 401) {
-          Swal.fire('Unauthorized!!!', '', 'error');
-        } else if(err.response.data){
-          Swal.fire(err.response.data, '','error');
-        } else{
-          Swal.fire('Something went wrong', '', 'error');
-        }
+          Swal.fire(err.response?.data?.message || 'Something went wrong', '', 'error');
       })
     
   }
@@ -144,7 +132,7 @@ const Bus = () => {
                 >
                     <DropdownItem eventKey="reservation">Reservation</DropdownItem>
                     <DropdownItem eventKey="ticketPrice">Price</DropdownItem>
-                    <DropdownItem eventKey="ticketsLeft">Tickets Left</DropdownItem>
+                    <DropdownItem eventKey="ticketsAvailable">Tickets Left</DropdownItem>
                 </DropdownButton>
             </div>
             <DropdownButton title="Passengers" show={showDropdown} onClick={toggleDropdown}>
@@ -160,7 +148,7 @@ const Bus = () => {
           {/* ===============================MAPPING OVER THE busData HERE=============================== */}
           {sortedbuss.map((bus, idx) => {
             const date = new Date(bus.reservation);
-            const options = { month: 'long', day: 'numeric', year: 'numeric' };
+            const options = { month: 'long', day: 'numeric'};
             const formattedDate = date.toLocaleDateString('en-US', options);
             
 
@@ -180,20 +168,20 @@ const Bus = () => {
                       </Col>
                       <Col xs={4} className='d-flex align-items-center justify-content-center'>
                         <div className='d-flex align-items-center flex-column justify-content-center' style={{width: '45%'}}>
-                          <h5 className="text-center fullWidth">{bus.originCountry} &nbsp;</h5>
-                          <h6 className="text-center">{bus.departure.slice(0, 5)} &nbsp;</h6>
+                          <h5 className="text-center fullWidth">{bus.origin} &nbsp;</h5>
+                          <h6 className="text-center">{bus.departureTime.slice(0, 5)} &nbsp;</h6>
                         </div>
                         <svg viewBox="0 0 33 12" role="img" className="svg-icon svg-fill icon__arrow--big--toright" style={{width: "10%", height: "20px", marginBottom: '4px'}}><path pid="0" d="m32.403 5.709.005-.008-2.84-4.944a.568.568 0 0 0-.77-.195.548.548 0 0 0-.198.757l2.34 4.11H1.063a.557.557 0 0 0-.562.553c0 .306.252.553.562.553h29.879l-2.343 4.138a.549.549 0 0 0 .199.757.567.567 0 0 0 .77-.196l2.841-4.971a.544.544 0 0 0-.006-.554z" fillRule="evenodd"></path></svg>
                         <div className='d-flex align-items-center flex-column' style={{width: '45%'}}>
-                          <h5 className="text-center fullWidth">&nbsp; {bus.destinationCountry}</h5>
-                          <h6 className="text-center">&nbsp; {bus.arrival.slice(0, 5)}</h6>
+                          <h5 className="text-center fullWidth">&nbsp; {bus.destination}</h5>
+                          <h6 className="text-center">&nbsp; {bus.arrivalTime.slice(0, 5)}</h6>
                         </div>
                       </Col>
                       {/* ===============================TICKET FUNCTIONALITY BUTTON=============================== */}
                       <Col className="d-flex justify-content-end align-items-center">
                         <h5 style={{marginBottom: '0px'}}>{bus.ticketPrice.toFixed(2)}$<span style={{fontSize: '14px'}}>(per adult)</span> &nbsp;</h5>
                         <div className='d-flex flex-column align-items-center justify-content-center'>
-                          <h6 className='text-muted'>({bus.ticketsLeft} Tickets Left)</h6>
+                          <h6 className='text-muted'>({bus.ticketsAvailable} Tickets Left)</h6>
                           <Button onClick={() => handleClick(bus)}>View Prices</Button>
                         </div>
                       </Col>
@@ -206,11 +194,11 @@ const Bus = () => {
           {selectedBus && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
             <Modal.Header className='custom-modal-header justify-content-between align-items-center'>
               <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
-              <h5>Price calculated for: (adults: {passengerCounts['adult']} children: {passengerCounts['child']} infant: {passengerCounts['infant']})</h5>
+              <h5>Price calculated for: (Adults: {passengerCounts['adult']} Children: {passengerCounts['child']} Infant: {passengerCounts['infant']})</h5>
             </Modal.Header>
             <Modal.Body className='row'>
               <Col>
-                <Card style={{height: '100%'}}>
+                <Card className='h-100'>
                   <Card.Header>
                     <p className='custom-price'>{totalPrice().toFixed(2)}$</p> Standard Category 
                   </Card.Header>
@@ -248,7 +236,7 @@ const Bus = () => {
                 </Card>
               </Col>
               <Col>
-                <Card style={{height: '100%'}}>
+                <Card  className='h-100'>
                   <Card.Header>
                     <p className='custom-price'>{(totalPrice() * 1.5).toFixed(2)}$</p> Standard+ Category 
                   </Card.Header>
@@ -286,7 +274,7 @@ const Bus = () => {
                 </Card>
               </Col>
               <Col>
-                <Card>
+                <Card className='h-100'>
                   <Card.Header className='vip-header'>
                     <p className='custom-price'>{(totalPrice() * 2).toFixed(2)}$</p> VIP Category
                   </Card.Header>
