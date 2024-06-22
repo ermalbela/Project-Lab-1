@@ -12,8 +12,8 @@ using SecureWebSite.Server.Data;
 namespace SecureWebSite.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240615014722_Asd")]
-    partial class Asd
+    [Migration("20240622172556_BusTicketChange")]
+    partial class BusTicketChange
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -192,7 +192,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusTicketId"));
 
-                    b.Property<int>("BusId")
+                    b.Property<int>("BusTripsId")
                         .HasColumnType("int");
 
                     b.Property<int>("NumberOfAdults")
@@ -209,7 +209,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasKey("BusTicketId");
 
-                    b.HasIndex("BusId");
+                    b.HasIndex("BusTripsId");
 
                     b.ToTable("BusTickets");
                 });
@@ -547,13 +547,13 @@ namespace SecureWebSite.Server.Data.Migrations
 
             modelBuilder.Entity("SecureWebSite.Server.Models.BusTicket", b =>
                 {
-                    b.HasOne("SecureWebSite.Server.Models.Bus", "Bus")
+                    b.HasOne("SecureWebSite.Server.Models.BusTrips", "BusTrips")
                         .WithMany()
-                        .HasForeignKey("BusId")
+                        .HasForeignKey("BusTripsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Bus");
+                    b.Navigation("BusTrips");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.BusTrips", b =>

@@ -30,7 +30,9 @@ namespace SecureWebSite.Server.Models
 
         [Required]
         public TimeSpan ArrivalTime { get; set; }
-        public DateTime Reservation { get; set; }
+        
+        [Required]
+        public DateTime Reservation { get; set; } = DateTime.Now;
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]

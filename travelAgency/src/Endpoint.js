@@ -17,7 +17,6 @@ export const getPurchasedFlights = flightsApi + 'get_purchased_flights';
 const busesApi = '/api/buses/';
 export const createBuses = busesApi + 'add-bustrip';
 export const filteredTrips = busesApi + 'filtered_buses';
-export const purchaseBus = busesApi + 'purchase_bus';
 
 //Endpoint krijohet per arsye te komunikimit te metodave te back-end me elementet e front-end
 const busCompanyApi = 'api/buscompany/';
@@ -36,7 +35,12 @@ export const createPlanes = planesApi + 'create_plane';
 export const getPlanes = planesApi + 'get_planes';
 export const editPlanes = planesApi + 'edit_plane';
 export const deletePlane = planesApi + 'deleteplane';
-export const createFlightCompany = planesApi + 'createcompany';
+export const createFlightCompany = planesApi + 'create_company';
 export const getFlightCompanies = planesApi + 'get_companies';
 export const editCompanies = planesApi + 'edit_company';
 export const deleteCompany = planesApi + 'deletecompany';
+
+
+const busTicketsApi = 'api/bus_tickets/';
+export const purchaseBus = busTicketsApi + 'purchase_bus_trip';
+export const getPurchasedTrips = busTicketsApi + 'get_purchased_bus_trips';

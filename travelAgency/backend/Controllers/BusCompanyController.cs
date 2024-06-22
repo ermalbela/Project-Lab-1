@@ -4,7 +4,7 @@ using SecureWebSite.Server.Data;
 using SecureWebSite.Server.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using Microsoft.AspNetCore.Authorization;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -14,6 +14,8 @@ namespace SecureWebSite.Server.Controllers
 {
     [Route("api/buscompany")]
     [ApiController]
+    [Authorize]
+
     public class BusCompanyController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

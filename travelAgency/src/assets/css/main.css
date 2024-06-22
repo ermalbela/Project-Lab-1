@@ -101,10 +101,8 @@ body > * {
   background-color: #9fb3b9!important;
 }
 
-
 .react-datepicker-wrapper{
   width: 100%;
-  height: 100%;
 }
 
 .react-datepicker__input-container{
@@ -330,7 +328,8 @@ body > * {
 
 .plane{
   padding: 10px;
-  border: 1px solid #e6edef!important;
+  border-bottom: 1px solid #e6edef!important;
+  margin-bottom: 2%;
   transition: all 0.3s ease;
   letter-spacing: 0.5px!important;
   border-radius: 0!important;

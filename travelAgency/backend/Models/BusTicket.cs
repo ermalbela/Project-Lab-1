@@ -22,7 +22,7 @@ namespace SecureWebSite.Server.Models
         [Required]
         public int NumberOfInfants { get; set; }
         
-        public Bus Bus { get; set; }
+        public BusTrips BusTrips { get; set; }
 
         [JsonIgnore]
         public ICollection<User> Users { get; set; }

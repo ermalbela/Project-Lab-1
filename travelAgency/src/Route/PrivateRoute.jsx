@@ -15,14 +15,14 @@ const PrivateRoute = () => {
 
   async function fetchUserRole() {
     console.log(role);
-      const response = await axios.get(getRole, { withCredentials: true })
-      .catch(err => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('name');
-        localStorage.removeItem('userId');
-      });
-      setRole(response?.data?.role);
-      console.log(response?.data)
+    const response = await axios.get(getRole, { withCredentials: true })
+    .catch(err => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('name');
+      localStorage.removeItem('userId');
+    });
+    setRole(response?.data?.role);
+    console.log(response?.data)
   }
 
   return(

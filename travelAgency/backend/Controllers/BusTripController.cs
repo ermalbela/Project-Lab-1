@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureWebSite.Server.Data;
+using Microsoft.AspNetCore.Authorization;
 using SecureWebSite.Server.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace SecureWebSite.Server.Controllers
 {
     [Route("api/buses")]
     [ApiController]
+    [Authorize]
+
     public class BusesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

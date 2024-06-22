@@ -43,6 +43,7 @@ const FlightCompanies = () => {
     })
     .then(res => {
       console.log(res.data)
+      Swal.fire('Plane Added Successfully.', '', 'success');
       getData();
       setPlane('');
       setCreatePlane(false);
@@ -91,6 +92,7 @@ const FlightCompanies = () => {
     })
     .then(res => {
       console.log(res.data)
+      Swal.fire('Plane Edited Successfully.', '', 'success');
       setEditPlane(false);
       setPlane('');
       getData();
@@ -109,6 +111,7 @@ const FlightCompanies = () => {
     })
     .then(res => {
       console.log(res)
+      Swal.fire('Flight Company Added Successfully.', '', 'success');
       getData();
       setCreateCompany(false);
       setCompany(false);
@@ -128,6 +131,7 @@ const FlightCompanies = () => {
     })
     .then(res => {
       console.log(res.data)
+      Swal.fire('Flight Company Edited Successfully.', '', 'success');
       setEditCompany(false);
       setCompany('');
       getData();
@@ -197,28 +201,30 @@ const FlightCompanies = () => {
                       <Card.Title className='text-start mb-3'>{company.flightCompany}</Card.Title>
                       <Card.Title>
                         <div className="d-flex justify-content-end add-plane">
-                          <Button className="superadmin-buttons" onClick={() => {
+                        {role == 'Superadmin' && <Button className="superadmin-buttons" onClick={() => {
                             setCurrentPlane(company)
                             setCreatePlane(true)
                           }}>Add Plane</Button>
+                          }
                         </div>
                       </Card.Title>
                     </div>
-                    <Card.Title style={{marginRight: '2%', display: 'flex', justifyContent: 'end'}}>
+                    {role == 'Superadmin' && <Card.Title style={{marginRight: '2%', display: 'flex', justifyContent: 'end'}}>
                       <Button className='action-buttons' onClick={() => {
                         setEditCompany(true);
                         setCurrentCompany(company);
                       }}><img src={editIcon} alt="edit icon" /></Button>
                       <Button className='action-buttons' onClick={() => handleDeleteCompany(company.flightCompanyId)}><img src={deleteIcon} alt="delete icon" /></Button>
-                    </Card.Title>
+                    </Card.Title>}
                     {company.planes.map(plane => (
                       <div className="text-muted d-flex justify-content-between align-items-center plane" key={plane.planeId}>
                         <h5 className='d-flex align-items-center p-0 m-0 flex-grow-1'>Plane Number: {plane.planeNumber}</h5>
-                        <Button className="action-buttons" onClick={() => {
+                        {role == 'Superadmin' && <Button className="action-buttons" onClick={() => {
                           setEditPlane(true);
                           setCurrentPlane(plane);
                         }}><img src={editIcon} alt="edit icon" /></Button>
-                        <Button className="action-buttons" onClick={() => handleDelete(plane.planeId)}><img src={deleteIcon} alt="delete icon" /></Button>
+                        }
+                        {role == 'Superadmin' && <Button className="action-buttons" onClick={() => handleDelete(plane.planeId)}><img src={deleteIcon} alt="delete icon" /></Button>}
                       </div>
                     ))}
                   </CardBody>

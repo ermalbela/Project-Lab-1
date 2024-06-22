@@ -111,7 +111,6 @@ const Dashboard = () => {
     setBus({...bus, [name]: value});
   }
 
-  const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, setStartDate] = useState(null);
   const [dropdownVal, setDropdownVal] = useState('Traveling with');
 
@@ -226,6 +225,15 @@ const Dashboard = () => {
     if(vals.selectedPlane == undefined || vals.selectedPlane == 0 || vals.selectedPlane == 'Select Plane'){
       errors.selectedPlane = 'Please choose a Plane';
     }
+    if(countries.includes(vals.toCountry['value']) == false){
+      errors.toCountry = 'Please choose a valid country.';
+    }
+    if(countries.includes(vals.fromCountry['value']) == false){
+      errors.fromCountry = 'Please choose a valid country.';
+    }
+    if(moment(vals.startDate, 'yyyy/MM/DD').isValid()){
+      errors.startDate = 'Please choose a valid date.';
+    }
     return errors;
   }
 
@@ -277,16 +285,16 @@ const Dashboard = () => {
             setCreateBus(false);
             setBus(initialBusData);
           })
-          // .catch(err => {
-          //   if(!err.response){
-          //     Swal.fire('Error, No Server Response!', '', 'error');
-          //   } else if (err.response?.status === 401) {
-          //     Swal.fire('Unauthorized!!!', '', 'error');
-          //     history('/');
-          //   } else{
-          //     Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
-          //   }
-          // });
+          .catch(err => {
+            if(!err.response){
+              Swal.fire('Error, No Server Response!', '', 'error');
+            } else if (err.response?.status === 401) {
+              Swal.fire('Unauthorized!!!', '', 'error');
+              history('/');
+            } else{
+              Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
+            }
+          });
     }     
   }
 
@@ -295,9 +303,12 @@ const Dashboard = () => {
   });
 
   const handleSearch = () => {
-    if(fromCountry['value'] !== '' && fromCountry['value'] !== undefined && toCountry['value'] !== '' && toCountry['value'] !== undefined && dateRange[0] !== null && dateRange[1] !== null){
+    const vals = {toCountry, fromCountry, startDate};
+    setErrors(validate(vals));
+
+    if(fromCountry['value'] !== '' && fromCountry['value'] !== undefined && toCountry['value'] !== '' && toCountry['value'] !== undefined && startDate !== null && countries.includes(fromCountry['value']) && countries.includes(toCountry['value']) && moment(startDate, 'yyyy/MM/DD', true).isValid()){
       const finalVals = {
-        Reservation: moment(dateRange[0]).format('yyyy-MM-DD'),
+        Reservation: moment(startDate).format('yyyy-MM-DD'),
         // Returning: moment(dateRange[1]).format('yyyy-MM-DD'),
         OriginCountry: fromCountry['value'],
         Origin: fromCountry['value'],
@@ -337,7 +348,7 @@ const Dashboard = () => {
   //=========================ADD RANDOM FLIGHT============================
   const addRandom = async () => {
     //Countries you wanna add in Origin Country and Destination Country
-    const countries = ['Italy', 'Greece', 'Kosovo', 'Kosovo'];
+    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
     let ticketPrice = (Math.random() * 600 + 60).toFixed(2);
 
 
@@ -439,12 +450,11 @@ const Dashboard = () => {
     arrivalTime.setHours(arrivalHour);
     arrivalTime.setMinutes(arrivalMinute);
     
-    // Choose a random name from the names array
-    const name = names[Math.floor(Math.random() * names.length)];
+    const randomBus = Math.floor(Math.random() * bus.busNum.length);
 
 
     const finalData = {
-      BusId: 3,
+      BusId: bus.busNum[randomBus - 1].busId,
       Origin: originCountry,
       Destination: destinationCountry,
       Reservation: new Date(),
@@ -542,6 +552,7 @@ const Dashboard = () => {
               placeholder="From..."
               isClearable
             />
+            <p className='invalidFeedback'>{errors.fromCountry}</p>
           </Col>
           <Col>
             <MySelect
@@ -560,6 +571,7 @@ const Dashboard = () => {
               placeholder="To..."
               isClearable
             />
+            <p className='invalidFeedback'>{errors.toCountry}</p>
           </Col>
           <Col>
             <DatePicker
@@ -567,9 +579,15 @@ const Dashboard = () => {
               className='form-control digits'
               selected={startDate}
               onChange={(date) => setStartDate(date)}
-              isClearable
+              isClearablex  
+              minDate={new Date()}
+              maxDate={moment().add(12, 'months').toDate()}
               placeholderText="Select Date...."
+              popperClassName="some-custom-class"
+              popperPlacement="bottom-start"
+              dataPlacement="bottom-start"
             />
+            <p className='invalidFeedback'>{errors.startDate}</p>
             {/* <DatePicker
               dateFormat="yyyy/MM/dd"
               className="form-control digits"
@@ -583,7 +601,7 @@ const Dashboard = () => {
             /> */}
           </Col>
           <Col className='d-flex justify-content-end'>
-            <Button className='w-100' onClick={handleSearch}>Search</Button>
+            <Button className='w-100' style={{maxHeight: '42.6px'}} onClick={handleSearch}>Search</Button>
           </Col>
         </Row>
       </CardHeader>
@@ -601,7 +619,7 @@ const Dashboard = () => {
                       <Col sm={6} key={idx} className="d-flex" onClick={() => {
                         setFromCountry(itemProps.originCountry);
                         setToCountry(itemProps.destinationCountry);
-                        setDateRange(['04/26/2024', '05/02/2024']);
+                        setStartDate(moment('05/02/2024').format('yyyy/MM/DD'));
                       }}>
                         <OfferCard props={itemProps} className="flex-grow-1"/>
                       </Col>
