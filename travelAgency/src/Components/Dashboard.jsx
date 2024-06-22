@@ -112,7 +112,7 @@ const Dashboard = () => {
   }
 
   const [dateRange, setDateRange] = useState([null, null]);
-  const [startDate, endDate] = dateRange;
+  const [startDate, setStartDate] = useState(null);
   const [dropdownVal, setDropdownVal] = useState('Traveling with');
 
   const initialValues = [ // How the data should look like for Offers
@@ -463,8 +463,6 @@ const Dashboard = () => {
     })
       .then(res => {
         Swal.fire('Bus Trip Added Successfully', '', 'success');
-        setCreateFlight(false);
-        setFlight(initialData);
         setCreateBus(false);
         setBus(initialData);
       })
@@ -566,6 +564,14 @@ const Dashboard = () => {
           <Col>
             <DatePicker
               dateFormat="yyyy/MM/dd"
+              className='form-control digits'
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              isClearable
+              placeholderText="Select Date...."
+            />
+            {/* <DatePicker
+              dateFormat="yyyy/MM/dd"
               className="form-control digits"
               selectsRange={true}
               startDate={startDate}
@@ -574,7 +580,7 @@ const Dashboard = () => {
                 setDateRange(update);
               }}
               placeholderText='Select Date...'
-            />
+            /> */}
           </Col>
           <Col className='d-flex justify-content-end'>
             <Button className='w-100' onClick={handleSearch}>Search</Button>
