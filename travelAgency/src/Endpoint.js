@@ -12,11 +12,13 @@ export const getFlights = flightsApi + 'get_flights';
 export const filteredFlights = flightsApi + 'filtered_flights';
 export const purchaseFlight = flightsApi + 'purchase_flight';
 export const getPurchasedFlights = flightsApi + 'get_purchased_flights';
-
+export const removeExpiredFlights = flightsApi + 'flights_cleanup';
 
 const busesApi = '/api/buses/';
 export const createBuses = busesApi + 'add-bustrip';
 export const filteredTrips = busesApi + 'filtered_buses';
+export const removeExpiredBusTrips = busesApi + 'delete/bus/trips';
+
 
 //Endpoint krijohet per arsye te komunikimit te metodave te back-end me elementet e front-end
 const busCompanyApi = 'api/buscompany/';

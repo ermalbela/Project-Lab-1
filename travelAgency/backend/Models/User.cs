@@ -20,7 +20,13 @@ namespace SecureWebSite.Server.Models
                 public DateTime LastLogin { get; set; } = DateTime.Now;
 
                 public string? Role { get; set; }
+
+                public int? FlightTicketId { get; set; }  // Nullable FK
+                [ForeignKey("FlightTicketId")]
                 public FlightTicket? FlightTicket { get; set; }
+
+                public int? BusTicketId { get; set; }  // Nullable FK for BusTicket if similar
+                [ForeignKey("BusTicketId")]
                 public BusTicket? BusTicket { get; set; }
 
     }

@@ -33,9 +33,9 @@ const BusCompany = () => {
     })
     .then(res => {
       console.log(res.data);
-      Swal.fire('Trip Added Successfully', '', 'success');
+      Swal.fire('Bus Added Successfully', '', 'success');
       
-      setCurrentBus('');
+      setBusNumber('');
       setOpenBusModal(false);
       fetchBusData();
     })
@@ -55,7 +55,11 @@ const BusCompany = () => {
 
   const fetchBusData = async () => {
     try {
-      const response = await axios.get(getBusCopmanies); 
+      const response = await axios.get(getBusCopmanies , {
+        headers: {
+          'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+        }
+      }); 
       console.log(response.data);
       setBusData(response.data);
       setIsLoading(false);
@@ -85,7 +89,11 @@ const BusCompany = () => {
       setDeckerError('Deckers should be 2 or less');
     }else{ 
       setDeckerError('');
-      axios.put(editBus + id, {BusNumber: bus.busNumber, BusId: bus.busId, DeckersNr: bus.deckersNr})
+      axios.put(editBus + id, {BusNumber: bus.busNumber, BusId: bus.busId, DeckersNr: bus.deckersNr}, {
+        headers: {
+          'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+        }
+      })
       .then(res => {
         console.log(res)
         setOpenEditBus(false);
@@ -151,7 +159,11 @@ const BusCompany = () => {
 
   //Company Methods
   const handleAddCompany = () => {
-    axios.post(addBusCompany, {Name: busCompany})
+    axios.post(addBusCompany, {Name: busCompany}, {
+      headers: {
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
       .then(res => {
         console.log(res.data);
         Swal.fire('Company Added Successfully', '', 'success');

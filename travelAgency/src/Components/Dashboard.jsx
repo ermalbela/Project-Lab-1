@@ -9,7 +9,7 @@ import travel from '../assets/images/travel.webp';
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes, getPlanes, addBusCompany, getBuses } from '../Endpoint';
+import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes, getPlanes, addBusCompany, getBuses, removeExpiredFlights, removeExpiredBusTrips } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -225,19 +225,22 @@ const Dashboard = () => {
     if(vals.selectedPlane == undefined || vals.selectedPlane == 0 || vals.selectedPlane == 'Select Plane'){
       errors.selectedPlane = 'Please choose a Plane';
     }
+    return errors;
+  }
+
+  const validateSearch = (vals) => {
+    const errors = {};
     if(countries.includes(vals.toCountry['value']) == false){
       errors.toCountry = 'Please choose a valid country.';
     }
     if(countries.includes(vals.fromCountry['value']) == false){
       errors.fromCountry = 'Please choose a valid country.';
     }
-    if(moment(vals.startDate, 'yyyy/MM/DD').isValid()){
+    if(!moment(vals.startDate, 'yyyy/MM/DD').isValid()){
       errors.startDate = 'Please choose a valid date.';
     }
     return errors;
   }
-
-  
 
   // =============================POSTING DATA TO BACKEND============================= // 
   const handleClick = async (url, category) => {
@@ -254,7 +257,7 @@ const Dashboard = () => {
           }
         })
           .then(res => {
-            Swal.fire('Trip Added Successfully', '', 'success');
+            Swal.fire('Flight Added Successfully', '', 'success');
             setCreateFlight(false);
             setFlight(initialData);
             setCreateBus(false);
@@ -304,9 +307,9 @@ const Dashboard = () => {
 
   const handleSearch = () => {
     const vals = {toCountry, fromCountry, startDate};
-    setErrors(validate(vals));
+    setErrors(validateSearch(vals));
 
-    if(fromCountry['value'] !== '' && fromCountry['value'] !== undefined && toCountry['value'] !== '' && toCountry['value'] !== undefined && startDate !== null && countries.includes(fromCountry['value']) && countries.includes(toCountry['value']) && moment(startDate, 'yyyy/MM/DD', true).isValid()){
+    if(fromCountry['value'] !== '' && fromCountry['value'] !== undefined && toCountry['value'] !== '' && toCountry['value'] !== undefined && startDate !== null && countries.includes(fromCountry['value']) && countries.includes(toCountry['value']) && moment(startDate, 'yyyy/MM/DD').isValid()){
       const finalVals = {
         Reservation: moment(startDate).format('yyyy-MM-DD'),
         // Returning: moment(dateRange[1]).format('yyyy-MM-DD'),
@@ -318,29 +321,40 @@ const Dashboard = () => {
         // Children: passengerCounts['child'],
         // Infant: passengerCounts['infant']
       }
-      axios.post(dropdownVal == 'Bus' ? filteredTrips : filteredFlights, finalVals, {
+      axios.post(dropdownVal == 'Bus' ? removeExpiredBusTrips : removeExpiredFlights, null, {
         headers: {
           'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
         }
       })
-        .then(res => {
-          if(dropdownVal == 'Bus'){
-            setBusData(res.data?.filtered_buses);
-            history('/bus');
-          } else{
-            setData(res.data?.filtered_flights);
-            history('/flights');
+      .then(res => {
+        console.log(res);
+        axios.post(dropdownVal == 'Bus' ? filteredTrips : filteredFlights, finalVals, {
+          headers: {
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
           }
         })
-        .catch(err => {
-          if(!err.response){
-            Swal.fire('Error, No Server Response!', '', 'error');
-          } else if (err.response?.status === 401) {
-            Swal.fire('Unauthorized!!!', '', 'error');
-          } else{
-            Swal.fire(err.response?.data || 'Fetching filtered flights failed, please try again!', '', 'error');
-          }
-        })
+          .then(res => {
+            console.log(res);
+            if(dropdownVal == 'Bus'){
+              setBusData(res.data?.filtered_buses);
+              history('/bus');
+            } else{
+              setData(res.data?.filtered_flights);
+              history('/flights');
+            }
+          })
+          .catch(err => {
+            if(!err.response){
+              Swal.fire('Error, No Server Response!', '', 'error');
+            } else if (err.response?.status === 401) {
+              Swal.fire('Unauthorized!!!', '', 'error');
+            } else{
+              Swal.fire(err.response?.data || 'Fetching filtered flights failed, please try again!', '', 'error');
+            }
+          })
+      })
+      .catch(err => console.log(err));
+
     }
   }
 
@@ -359,15 +373,29 @@ const Dashboard = () => {
       destinationCountry = countries[Math.floor(Math.random() * countries.length)];
     } while (destinationCountry === originCountry);
     
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
     // Generate random hour and minute for Departure time
-    const departureHour = Math.floor(Math.random() * 4) + 20;
-    const departureMinute = Math.floor(Math.random() * 4) * 15;
+    let departureHour = Math.floor(Math.random() * 4) + 20;
+    let departureMinute = Math.floor(Math.random() * 4) * 15;
     
-    // Generate random hour for Arrival time, making sure it's 2 hours after Departure time
-    const arrivalHour = (departureHour + 2) % 24;
+    // Adjust Departure time if it's not later than the current time
+    if (departureHour <= currentHour && departureMinute <= currentMinute) {
+      departureHour = (currentHour + 1) % 24; // Ensure departure hour is at least 1 hour ahead
+      departureMinute = 0; // Reset minutes to zero or adjust as needed
+    }
     
-    // Generate random minute for Arrival time, making sure it's in intervals of 15
-    const arrivalMinute = Math.floor(Math.random() * 4) * 15;
+    // Generate random hour for Arrival time, ensuring it's at least 2 hours after Departure time
+    let arrivalHour = (departureHour + 2) % 24;
+    let arrivalMinute = Math.floor(Math.random() * 4) * 15;
+    
+    // Adjust Arrival time if it's not later than the current time
+    if (arrivalHour <= currentHour && arrivalMinute <= currentMinute) {
+      arrivalHour = (departureHour + 2 + 1) % 24; // Ensure arrival hour is at least 3 hours ahead
+      arrivalMinute = 0; // Reset minutes to zero or adjust as needed
+    }
 
     const departureTime = new Date();
     departureTime.setHours(departureHour);
@@ -380,9 +408,8 @@ const Dashboard = () => {
     // Choose a random planeId from the planeNum array
     const randomPlane = Math.floor(Math.random() * flight.planeNum.length);
 
-
     const finalData = {
-      PlaneId: flight.planeNum[randomPlane - 1].planeId,
+      PlaneId: flight.planeNum[randomPlane].planeId,
       OriginCountry: originCountry,
       DestinationCountry: destinationCountry,
       Reservation: new Date(),
@@ -392,6 +419,7 @@ const Dashboard = () => {
       TicketPrice: ticketPrice
     };
 
+    console.log(finalData);
 
     axios.post(createFlights, finalData, {
       headers: {
@@ -399,11 +427,9 @@ const Dashboard = () => {
       }
     })
       .then(res => {
-        Swal.fire('Trip Added Successfully', '', 'success');
+        Swal.fire('Flight Added Successfully', '', 'success');
         setCreateFlight(false);
         setFlight(initialData);
-        setCreateBus(false);
-        setBus(initialData);
         getPlaneData();
       })
       .catch(err => {
@@ -421,7 +447,6 @@ const Dashboard = () => {
     const addRandomBus = async () => {
       //Countries you wanna add in Origin Country and Destination Country
     const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
-    let names = ['FlixBus', 'MegaBus', 'HappyBus', 'GreenBus'];
     let  ticketPrice = (Math.random() * 200 + 20).toFixed(2);
 
 
@@ -452,9 +477,10 @@ const Dashboard = () => {
     
     const randomBus = Math.floor(Math.random() * bus.busNum.length);
 
+    console.log(randomBus);
 
     const finalData = {
-      BusId: bus.busNum[randomBus - 1].busId,
+      BusId: bus.busNum[randomBus].busId,
       Origin: originCountry,
       Destination: destinationCountry,
       Reservation: new Date(),
@@ -464,6 +490,7 @@ const Dashboard = () => {
       TicketPrice: ticketPrice
     };
 
+    console.log(finalData);
 
     
     axios.post(createBuses, finalData, {
@@ -474,7 +501,8 @@ const Dashboard = () => {
       .then(res => {
         Swal.fire('Bus Trip Added Successfully', '', 'success');
         setCreateBus(false);
-        setBus(initialData);
+        setBus(initialBusData);
+        getBusData();
       })
       .catch(err => {
         if(!err.response){
@@ -494,7 +522,8 @@ const Dashboard = () => {
     // HOW THE DATA SHOULD LOOK FOR REVIEWS
     { name: 'John Doe', review: 'Great service, very satisfied!', rating: 5, date: '2024-05-01', planeNumber: 'AirSafe' },
     { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02', planeNumber: 'AirLines' },
-    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02', planeNumber: 'AirSafe' }
+    { name: 'Jane Smith', review: 'Had an amazing experience!', rating: 4, date: '2024-05-02', planeNumber: 'AirSafe' },
+    { name: 'John Doe', review: 'Had an amazing experience!', rating: 4, date: '2024-01-02', planeNumber: 'QuickFlight' }
   ]);
 
   const renderStars = (rating) => {
@@ -579,7 +608,7 @@ const Dashboard = () => {
               className='form-control digits'
               selected={startDate}
               onChange={(date) => setStartDate(date)}
-              isClearablex  
+              isClearable
               minDate={new Date()}
               maxDate={moment().add(12, 'months').toDate()}
               placeholderText="Select Date...."
@@ -588,17 +617,6 @@ const Dashboard = () => {
               dataPlacement="bottom-start"
             />
             <p className='invalidFeedback'>{errors.startDate}</p>
-            {/* <DatePicker
-              dateFormat="yyyy/MM/dd"
-              className="form-control digits"
-              selectsRange={true}
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(update) => {
-                setDateRange(update);
-              }}
-              placeholderText='Select Date...'
-            /> */}
           </Col>
           <Col className='d-flex justify-content-end'>
             <Button className='w-100' style={{maxHeight: '42.6px'}} onClick={handleSearch}>Search</Button>
@@ -693,6 +711,8 @@ const Dashboard = () => {
                       selected={flight.departure}
                       onChange={(date) => setFlight({...flight, departure: date})}
                       showTimeSelect
+                      isClearable
+                      placeholderText="e.g. 12:00 AM"
                       showTimeSelectOnly
                       timeFormat="p"
                       timeIntervals={30}
@@ -709,6 +729,8 @@ const Dashboard = () => {
                       selected={flight.arrival}
                       onChange={(date) => setFlight({...flight, arrival: date})}
                       showTimeSelect
+                      isClearable
+                      placeholderText="e.g. 12:00 AM"
                       showTimeSelectOnly
                       timeFormat="p"
                       timeIntervals={15}
@@ -729,7 +751,15 @@ const Dashboard = () => {
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Departure Date</FormLabel>
                   <div className="input-group login-form-inputs">
-                    <DatePicker className='form-control modal-datepicker' selected={flight.date} onChange={(newDate) => setFlight({...flight, date : newDate})} />
+                    <DatePicker
+                      className='form-control modal-datepicker' 
+                      isClearable
+                      minDate={new Date()}
+                      maxDate={moment().add(12, 'months').toDate()}
+                      placeholderText="e.g. 06/25/2024" 
+                      selected={flight.date} 
+                      onChange={(newDate) => setFlight({...flight, date : newDate})} 
+                    />
                   </div>
                   <p className='invalidFeedback fullWidth'>{errors.date}</p>
                 </FormGroup>
@@ -803,6 +833,8 @@ const Dashboard = () => {
                       selected={bus.departure}
                       onChange={(date) => setBus({...bus, departure: date})}
                       showTimeSelect
+                      isClearable
+                      placeholderText="e.g. 12:00 AM" 
                       showTimeSelectOnly
                       timeFormat="p"
                       timeIntervals={30}
@@ -819,6 +851,8 @@ const Dashboard = () => {
                       selected={bus.arrival}
                       onChange={(date) => setBus({...bus, arrival: date})}
                       showTimeSelect
+                      isClearable
+                      placeholderText="e.g. 12:00 AM" 
                       showTimeSelectOnly
                       timeFormat="p"
                       timeIntervals={15}
@@ -839,7 +873,14 @@ const Dashboard = () => {
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Departure Date</FormLabel>
                   <div className="input-group login-form-inputs">
-                    <DatePicker className='form-control modal-datepicker' selected={bus.date} onChange={(newDate) => setBus({...bus, date : newDate})} />
+                    <DatePicker 
+                      isClearable
+                      minDate={new Date()}
+                      maxDate={moment().add(12, 'months').toDate()}
+                      placeholderText="e.g. 06/25/2024" 
+                      className='form-control modal-datepicker' 
+                      selected={bus.date} 
+                      onChange={(newDate) => setBus({...bus, date : newDate})} />
                   </div>
                   <p className='invalidFeedback fullWidth'>{errors.date}</p>
                 </FormGroup>

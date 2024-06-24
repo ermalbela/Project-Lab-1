@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useMemo } from 'react'
 import { Container, Row, Col, Button, Modal, Card, DropdownButton, DropdownItem, CardHeader, CardBody } from 'react-bootstrap';
 import planeIcon from '../assets/images/plane-icon.png';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import FlightContext from '../_helper/FlightContext';
 import checkCircle from '../assets/images/check-circle.png';
 import minusCircle from '../assets/images/minus-circle.png';
 import useQuicksort from '../_helper/useQuicksort';
+import CustomPagination from '../CommonElements/Pagination';
 
 const Flights = () => {
 
@@ -56,9 +57,21 @@ const Flights = () => {
     setSelectedFlight(flight);
   }
 
+
+
   const [sortKey, setSortKey] = useState('reservation');
   const sortedFlights = useQuicksort(data, sortKey);
   
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [flightsPerPage, setFlightsPerPage] = useState(12);
+
+  const lastVisitIndex = currentPage * flightsPerPage;
+  const firstVisitIndex = lastVisitIndex - flightsPerPage;
+
+  let filteredPaginationFlights = sortedFlights.slice(firstVisitIndex, lastVisitIndex);
+
+  console.log(filteredPaginationFlights);
 
   const handlePurchase = (flightId, category, reservation) => {
     console.log(selectedFlight);
@@ -173,7 +186,7 @@ const Flights = () => {
               </DropdownButton>
             </div>
             {/* ===============================MAPPING OVER THE DATA HERE=============================== */}
-            {sortedFlights.map((flight, idx) => {
+            {filteredPaginationFlights.length >= 1 ? filteredPaginationFlights.map((flight, idx) => {
               const date = new Date(flight.reservation);
               const options = { month: 'long', day: 'numeric'};
               const formattedDate = date.toLocaleDateString('en-US', options);
@@ -210,7 +223,7 @@ const Flights = () => {
                         <Col className="d-flex justify-content-end align-items-center">
                           <h5 style={{marginBottom: '0px'}}>{flight.ticketPrice.toFixed(2)}$<span style={{fontSize: '14px'}}>(per adult)</span> &nbsp;</h5>
                           <div className='d-flex flex-column align-items-center justify-content-center'>
-                            <h6 className='text-muted'>({flight.ticketsLeft} Tickets Left)</h6>
+                            <h6 className='text-muted customized-font-size'>({flight.ticketsLeft} Tickets Left)</h6>
                             <Button onClick={() => handleClick(flight)}>View Prices</Button>
                           </div>
                         </Col>
@@ -219,7 +232,9 @@ const Flights = () => {
                   </div>
                 </div>
               )
-            })}
+            })
+          : <h3 className="justify-content-center align-items-center d-flex">There is no flights in this date...</h3>}
+
             <Button onClick={() => getData()}>Click me</Button>
 
             {selectedFlight && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
@@ -359,6 +374,9 @@ const Flights = () => {
               <Modal.Footer className='custom-modal-footer'></Modal.Footer>
             </Modal>
             }
+          </Col>
+          <Col className='d-flex justify-content-end align-content-end'>
+            <CustomPagination totalUsers={data.length} usersPerPage={flightsPerPage} setTheCurrentPage={setCurrentPage} currentPage={currentPage}/>
           </Col>
         </Row>
       </CardBody>

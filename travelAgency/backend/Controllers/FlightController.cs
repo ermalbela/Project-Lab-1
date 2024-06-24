@@ -94,12 +94,67 @@ namespace SecureWebSite.Server.Controllers
             }
         }
 
+        [HttpPost("flights_cleanup")]
+        public async Task<ActionResult> RemoveExpiredFlights()
+        {
+
+            try
+            {
+                var now = DateTime.UtcNow; // Use UTC to avoid timezone issues
+                var nowDate = now.Date; // Get current date
+                var nowTime = TimeOnly.FromDateTime(now); // Get current time
+
+                var expiredFlights = await _context.Flights
+                    .Where(f => f.Reservation.Date < nowDate || (f.Reservation.Date == nowDate && f.Departure <= nowTime))
+                    .ToListAsync();
+
+                if (expiredFlights.Any())
+                {
+
+                    foreach (var flight in expiredFlights)
+                    {
+                        var relatedFlightTickets = await _context.FlightTickets
+                            .Where(ft => ft.Flight.FlightId == flight.FlightId)
+                            .ToListAsync();
+
+                        foreach (var flightTicket in relatedFlightTickets)
+                        {
+                            var relatedUsers = await _context.Users
+                                .Where(u => u.FlightTicketId == flightTicket.FlightTicketId)
+                                .ToListAsync();
+
+                            foreach (var user in relatedUsers)
+                            {
+                                user.FlightTicketId = null;
+                            }
+
+                            _context.Users.UpdateRange(relatedUsers);
+                            await _context.SaveChangesAsync();  // Save changes after updating users
+
+                            _context.FlightTickets.Remove(flightTicket);
+                        }
+
+                        await _context.SaveChangesAsync();  // Save changes after removing flight tickets
+
+                        _context.Flights.Remove(flight);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+                    return Ok(new { expiredFlights });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
         [HttpPost("filtered_flights")]
         public async Task<ActionResult<IEnumerable<Flight>>> FilteredFlights(Flight flight)
         {
             try
             {
-
                 var filtered_flights = await _context.Flights.Select(f => 
                     new { FlightCompany = f.Plane.FlightCompany.CompanyName, f.Plane, f.PlaneId, f.DestinationCountry, f.OriginCountry, f.Arrival, f.Departure, f.TicketPrice, f.TicketsLeft, f.FlightId, f.Reservation } )
                     .Where(f => f.DestinationCountry == flight.DestinationCountry && f.OriginCountry == flight.OriginCountry).ToListAsync();

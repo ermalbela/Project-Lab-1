@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SecureWebSite.Server.Data;
 
@@ -11,9 +12,11 @@ using SecureWebSite.Server.Data;
 namespace SecureWebSite.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240623232121_UserChangesAgain")]
+    partial class UserChangesAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,7 +181,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasIndex("BusCompanyId");
 
-                    b.ToTable("Buses", (string)null);
+                    b.ToTable("Buses");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.BusTicket", b =>
@@ -208,7 +211,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasIndex("BusTripsId");
 
-                    b.ToTable("BusTickets", (string)null);
+                    b.ToTable("BusTickets");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.BusTrips", b =>
@@ -251,7 +254,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasIndex("BusId");
 
-                    b.ToTable("BusTrips", (string)null);
+                    b.ToTable("BusTrips");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.Flight", b =>
@@ -292,7 +295,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasIndex("PlaneId");
 
-                    b.ToTable("Flights", (string)null);
+                    b.ToTable("Flights");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.FlightCompany", b =>
@@ -310,7 +313,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasKey("FlightCompanyId");
 
-                    b.ToTable("FlightCompanies", (string)null);
+                    b.ToTable("FlightCompanies");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.FlightTicket", b =>
@@ -344,7 +347,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("FlightTickets", (string)null);
+                    b.ToTable("FlightTickets");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.Plane", b =>
@@ -367,7 +370,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasIndex("FlightCompanyId");
 
-                    b.ToTable("Planes", (string)null);
+                    b.ToTable("Planes");
                 });
 
             modelBuilder.Entity("SecureWebSite.Server.Models.User", b =>
@@ -477,7 +480,7 @@ namespace SecureWebSite.Server.Data.Migrations
 
                     b.HasKey("BusCompanyId");
 
-                    b.ToTable("BusCompanies", (string)null);
+                    b.ToTable("BusCompanies");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

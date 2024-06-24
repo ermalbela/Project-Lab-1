@@ -9,6 +9,7 @@ import BusContext from '../_helper/BusContext';
 import checkCircle from '../assets/images/check-circle.png';
 import minusCircle from '../assets/images/minus-circle.png';
 import useQuicksort from '../_helper/useQuicksort';
+import CustomPagination from '../CommonElements/Pagination';
 
 
 const Bus = () => {
@@ -47,9 +48,18 @@ const Bus = () => {
   }
 
   const [sortKey, setSortKey] = useState('reservation');
-
-  const sortedbuss = useQuicksort(busData, sortKey);
+  const sortedBuses = useQuicksort(busData, sortKey);
   
+  const [currentPage, setCurrentPage] = useState(1);
+  const [busTripsPerPage, setBusTripsPerPage] = useState(12);
+
+  const lastVisitIndex = currentPage * busTripsPerPage;
+  const firstVisitIndex = lastVisitIndex - busTripsPerPage;
+
+  let filteredPaginationBusTrips = sortedBuses.slice(firstVisitIndex, lastVisitIndex);
+
+  console.log(filteredPaginationBusTrips);
+
 
   const handlePurchase = (busId, category, reservation) => {
     const Name = JSON.parse(localStorage.getItem('name'));
@@ -146,7 +156,7 @@ const Bus = () => {
             </DropdownButton>
           </div>
           {/* ===============================MAPPING OVER THE busData HERE=============================== */}
-          {sortedbuss.map((bus, idx) => {
+          {filteredPaginationBusTrips.length >= 1 ? filteredPaginationBusTrips.map((bus, idx) => {
             const date = new Date(bus.reservation);
             const options = { month: 'long', day: 'numeric'};
             const formattedDate = date.toLocaleDateString('en-US', options);
@@ -181,7 +191,7 @@ const Bus = () => {
                       <Col className="d-flex justify-content-end align-items-center">
                         <h5 style={{marginBottom: '0px'}}>{bus.ticketPrice.toFixed(2)}$<span style={{fontSize: '14px'}}>(per adult)</span> &nbsp;</h5>
                         <div className='d-flex flex-column align-items-center justify-content-center'>
-                          <h6 className='text-muted'>({bus.ticketsAvailable} Tickets Left)</h6>
+                          <h6 className='text-muted customized-font-size'>({bus.ticketsAvailable} Tickets Left)</h6>
                           <Button onClick={() => handleClick(bus)}>View Prices</Button>
                         </div>
                       </Col>
@@ -190,7 +200,8 @@ const Bus = () => {
                 </div>
               </div>
             )
-          })}
+          })
+          : <h3 className="h-100 justify-content-center align-items-end d-flex">There is no bus trips in this date...</h3>}
           {selectedBus && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
             <Modal.Header className='custom-modal-header justify-content-between align-items-center'>
               <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
@@ -328,6 +339,9 @@ const Bus = () => {
             <Modal.Footer className='custom-modal-footer'></Modal.Footer>
           </Modal>
           }
+        </Col>
+        <Col className='d-flex justify-content-end align-content-end'>
+          <CustomPagination totalUsers={busData.length} usersPerPage={busTripsPerPage} setTheCurrentPage={setCurrentPage} currentPage={currentPage}/>
         </Col>
       </Row>
     </Container>

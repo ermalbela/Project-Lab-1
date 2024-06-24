@@ -98,6 +98,61 @@ namespace SecureWebSite.Server.Controllers
             return CreatedAtAction(nameof(GetBus), new { id = _bus.BusTripsId }, _bus);
         }
 
+        [HttpPost("delete/bus/trips")]
+        public async Task<ActionResult> RemoveExpiredBusTrips()
+        {
+
+            try
+            {
+                var now = DateTime.UtcNow; // Use UTC to avoid timezone issues
+                var nowDate = now.Date; // Get current date
+                var nowTime = now.TimeOfDay; // Get current time
+
+                var expiredBusTrips = await _context.BusTrips
+                    .Where(f => f.Reservation.Date < nowDate || (f.Reservation.Date == nowDate && f.ArrivalTime <= nowTime))
+                    .ToListAsync();
+
+                if (expiredBusTrips.Any())
+                {
+
+                    foreach (var busTrip in expiredBusTrips)
+                    {
+                        var relatedBusTickets = await _context.BusTickets
+                            .Where(ft => ft.BusTrips.BusTripsId == busTrip.BusTripsId)
+                            .ToListAsync();
+
+                        foreach (var busTicket in relatedBusTickets)
+                        {
+                            var relatedUsers = await _context.Users
+                                .Where(u => u.BusTicketId == busTicket.BusTicketId)
+                                .ToListAsync();
+
+                            foreach (var user in relatedUsers)
+                            {
+                                user.BusTicketId = null;
+                            }
+
+                            _context.Users.UpdateRange(relatedUsers);
+                            await _context.SaveChangesAsync();  // Save changes after updating users
+
+                            _context.BusTickets.Remove(busTicket);
+                        }
+
+                        await _context.SaveChangesAsync();  // Save changes after removing flight tickets
+
+                        _context.BusTrips.Remove(busTrip);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+                return Ok(new { expiredBusTrips });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         // PUT: api/Buses/Edit/5
         [HttpPut("edit/{id}")]
         public async Task<IActionResult> EditBus(int id, BusTrips bus)

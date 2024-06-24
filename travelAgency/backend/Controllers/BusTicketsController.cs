@@ -88,8 +88,6 @@ namespace SecureWebSite.Server.Controllers
                     ReservationDate = request.Reservation,
                 };
 
-                existingUser.BusTicket = _busTicket;
-
                 if (_busTicket.Users == null)
                 {
                     _busTicket.Users = new List<User>(); // Initialize the list if null
