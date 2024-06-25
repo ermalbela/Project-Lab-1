@@ -49,7 +49,13 @@ const FlightCompanies = () => {
       setCreatePlane(false);
     })
     .catch(err => {
-      Swal.fire(err?.response?.data || 'An error occured. Please try again.', '', 'error');
+      if(err?.response?.status == 401){
+        Swal.fire('Unauthorized!!', '', 'error');
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+      }
+      Swal.fire('Error', err?.response?.data, 'error');
     })
     
   }
@@ -98,7 +104,13 @@ const FlightCompanies = () => {
       getData();
     })
     .catch(err => {
-      Swal.fire(err?.response?.data?.message || 'An error occured. Please try again.', '', 'error');
+      if(err?.response?.status == 401){
+        Swal.fire('Unauthorized!!', '', 'error');
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+      }
+      Swal.fire('Error', err?.response?.data?.message, 'error');
     })
   }
 
@@ -117,7 +129,13 @@ const FlightCompanies = () => {
       setCompany('');
     })
     .catch(err => {
-      Swal.fire(err?.response?.data || 'An error occured. Please try again.', '', 'error');
+      if(err?.response?.status == 401){
+        Swal.fire('Unauthorized!!', '', 'error');
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+      }
+      Swal.fire('Error', err?.response?.data, 'error');
     })
   }
 
@@ -137,7 +155,13 @@ const FlightCompanies = () => {
       getData();
     })
     .catch(err => {
-      Swal.fire(err?.response?.data?.message || 'An error occured. Please try again.', '', 'error');
+      if(err?.response?.status == 401){
+        Swal.fire('Unauthorized!!', '', 'error');
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+      }
+      Swal.fire('Error', err?.response?.data?.message, 'error');
     })
   }
 
@@ -166,7 +190,13 @@ const FlightCompanies = () => {
           })
         })
         .catch(err => {
-          Swal.fire(err?.response?.data || 'An error occured while trying to delete Flight Company.');
+          if(err?.response?.status == 401){
+            Swal.fire('Unauthorized!!', '', 'error');
+            localStorage.removeItem('token');
+            localStorage.removeItem('name');
+            localStorage.removeItem('userId');
+          }
+          Swal.fire('Error', err?.response?.data, 'error');
         })
       }
     });
@@ -216,17 +246,19 @@ const FlightCompanies = () => {
                       }}><img src={editIcon} alt="edit icon" /></Button>
                       <Button className='action-buttons' onClick={() => handleDeleteCompany(company.flightCompanyId)}><img src={deleteIcon} alt="delete icon" /></Button>
                     </Card.Title>}
-                    {company.planes.map(plane => (
-                      <div className="text-muted d-flex justify-content-between align-items-center plane" key={plane.planeId}>
-                        <h5 className='d-flex align-items-center p-0 m-0 flex-grow-1'>Plane Number: {plane.planeNumber}</h5>
-                        {role == 'Superadmin' && <Button className="action-buttons" onClick={() => {
-                          setEditPlane(true);
-                          setCurrentPlane(plane);
-                        }}><img src={editIcon} alt="edit icon" /></Button>
-                        }
-                        {role == 'Superadmin' && <Button className="action-buttons" onClick={() => handleDelete(plane.planeId)}><img src={deleteIcon} alt="delete icon" /></Button>}
-                      </div>
-                    ))}
+                    <div className="plane-container">
+                      {company.planes.map(plane => (
+                        <div className="text-muted d-flex justify-content-between align-items-center plane" key={plane.planeId}>
+                          <h5 className='d-flex align-items-center p-0 m-0 flex-grow-1'>Plane Number: {plane.planeNumber}</h5>
+                          {role == 'Superadmin' && <Button className="action-buttons" onClick={() => {
+                            setEditPlane(true);
+                            setCurrentPlane(plane);
+                          }}><img src={editIcon} alt="edit icon" /></Button>
+                          }
+                          {role == 'Superadmin' && <Button className="action-buttons" onClick={() => handleDelete(plane.planeId)}><img src={deleteIcon} alt="delete icon" /></Button>}
+                        </div>
+                      ))}
+                    </div>
                   </CardBody>
                 </Card>
               </Col>

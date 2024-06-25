@@ -78,8 +78,13 @@ const Bus = () => {
         Swal.fire(res.data.message, '', 'success');
       })
       .catch(err => {
-        console.log(err);
-          Swal.fire(err.response?.data?.message || 'Something went wrong', '', 'error');
+        if(err?.response?.status == 401){
+          Swal.fire('Unauthorized!!', '', 'error');
+          localStorage.removeItem('token');
+          localStorage.removeItem('name');
+          localStorage.removeItem('userId');
+        }
+        Swal.fire('Error', err.response?.data?.message, 'error');
       })
     
   }

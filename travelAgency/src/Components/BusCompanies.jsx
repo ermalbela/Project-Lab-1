@@ -39,7 +39,15 @@ const BusCompany = () => {
       setOpenBusModal(false);
       fetchBusData();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      if(err?.response?.status == 401){
+        Swal.fire('Unauthorized!!', '', 'error');
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+      }
+      Swal.fire('Error', 'Something went wrong.', 'error');
+    });
     
   }
 
@@ -100,7 +108,13 @@ const BusCompany = () => {
         fetchBusData();
       })
       .catch(err => {
-        Swal.fire(err?.response?.data?.message || 'An error occured. Please try again.', '', 'error');
+        if(err?.response?.status == 401){
+          Swal.fire('Unauthorized!!', '', 'error');
+          localStorage.removeItem('token');
+          localStorage.removeItem('name');
+          localStorage.removeItem('userId');
+        }
+        Swal.fire('Error', err?.response?.data?.message, 'error');
       })
     }
   }
@@ -134,29 +148,6 @@ const BusCompany = () => {
     
   }
 
-  // const handlePurchase = (tripId) => {
-  //   const Name = JSON.parse(localStorage.getItem('name'));
-  //   const Id = JSON.parse(localStorage.getItem('userId'));
-  //   axios.post('/api/purchase', { tripId, Name, Id }) // Replace with your actual endpoint
-  //     .then(res => {
-  //       Swal.fire(res.data.message, '', 'success');
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //       if (!err.response) {
-  //         Swal.fire('Error, No Server Response!', '', 'error');
-  //       } else if (err.response?.status === 401) {
-  //         Swal.fire('Unauthorized!!!', '', 'error');
-  //       } else if (err.response.data) {
-  //         Swal.fire(err.response.data, '', 'error');
-  //       } else {
-  //         Swal.fire('Something went wrong', '', 'error');
-  //       }
-  //     });
-  // };
-
-
-
   //Company Methods
   const handleAddCompany = () => {
     axios.post(addBusCompany, {Name: busCompany}, {
@@ -172,7 +163,15 @@ const BusCompany = () => {
         setOpenBusCompany(false);
         fetchBusData();
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        if(err?.response?.status == 401){
+          Swal.fire('Unauthorized!!', '', 'error');
+          localStorage.removeItem('token');
+          localStorage.removeItem('name');
+          localStorage.removeItem('userId');
+        }
+        Swal.fire('Error', 'Something went wrong.', 'error');
+      });
   }
 
   const handleEditCompany = comp => {
@@ -191,8 +190,13 @@ const BusCompany = () => {
       Swal.fire(res.data?.message || 'Edited Successfully.', '', 'success');
     })
     .catch(err => {
-      console.log(err);
-      Swal.fire(err?.response?.data?.message || 'An error occured. Please try again.', '', 'error');
+      if(err?.response?.status == 401){
+        Swal.fire('Unauthorized!!', '', 'error');
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+      }
+      Swal.fire('Error', err?.response?.data?.message, 'error');
     })
   }
 
@@ -221,7 +225,13 @@ const BusCompany = () => {
           })
         })
         .catch(err => {
-          Swal.fire(err?.response?.data || 'An error occured while trying to delete Bus Company.');
+          if(err?.response?.status == 401){
+            Swal.fire('Unauthorized!!', '', 'error');
+            localStorage.removeItem('token');
+            localStorage.removeItem('name');
+            localStorage.removeItem('userId');
+          }
+          Swal.fire('Error', err?.response?.data, 'error');
         })
       }
     });

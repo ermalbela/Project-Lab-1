@@ -7,6 +7,7 @@ export const getUsers = userApi + 'users';
 export const singleUser = userApi + 'get-user_';
 export const cancelFlight = userApi + 'cancel_flight_';
 export const cancelBusTrip = userApi + 'cancel_bus_trip_';
+export const removeExpiredTrips = userApi + 'trips_cleanup';
 
 const flightsApi = '/api/flights/';
 export const createFlights = flightsApi + 'create_flight';
@@ -14,13 +15,10 @@ export const getFlights = flightsApi + 'get_flights';
 export const filteredFlights = flightsApi + 'filtered_flights';
 export const purchaseFlight = flightsApi + 'purchase_flight';
 export const getPurchasedFlights = flightsApi + 'get_purchased_flights';
-export const removeExpiredFlights = flightsApi + 'flights_cleanup';
 
 const busesApi = '/api/buses/';
 export const createBuses = busesApi + 'add-bustrip';
 export const filteredTrips = busesApi + 'filtered_buses';
-export const removeExpiredBusTrips = busesApi + 'delete/bus/trips';
-
 
 //Endpoint krijohet per arsye te komunikimit te metodave te back-end me elementet e front-end
 const busCompanyApi = 'api/buscompany/';
@@ -37,7 +35,7 @@ export const getBusCopmanies = busCompanyApi + 'get-bus-companies';
 const planesApi = '/api/plane/';
 export const createPlanes = planesApi + 'create_plane';
 export const getPlanes = planesApi + 'get_planes';
-export const editPlanes = planesApi + 'edit_plane';
+export const editPlanes = planesApi + 'edit_plane_';
 export const deletePlane = planesApi + 'deleteplane';
 export const createFlightCompany = planesApi + 'create_company';
 export const getFlightCompanies = planesApi + 'get_companies';

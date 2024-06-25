@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { cancelBusTrip, cancelFlight, singleUser } from '../Endpoint'
+import { cancelBusTrip, cancelFlight, removeExpiredTrips, singleUser } from '../Endpoint'
 import {Card, CardBody, CardHeader, Row, Col, Button} from 'react-bootstrap';
 import deleteIcon from '../assets/images/delete.png';
 import Loader from '../Layout/Loader';
@@ -14,6 +14,21 @@ const MyStatus = () => {
 
   const getData = async () => {
     try {
+      axios.post(removeExpiredTrips, null, {
+        headers: {
+          'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+        }
+      })
+      .then(res => console.log(res.data))
+      .catch(err => {
+        if(err?.response?.status == 401){
+          Swal.fire('Unauthorized!!', '', 'error');
+          localStorage.removeItem('token');
+          localStorage.removeItem('name');
+          localStorage.removeItem('userId');
+        }
+        Swal.fire('Error', 'Something went wrong', 'error');
+      })
       const response = await axios.get(singleUser + JSON.parse(localStorage.getItem('userId')), {
         headers: {
           'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
@@ -27,7 +42,7 @@ const MyStatus = () => {
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      setIsLoading(false); // Set loading state to false when done
+      setIsLoading(false);
     }
   }
 
@@ -111,7 +126,7 @@ const MyStatus = () => {
               <Card className='h-100'>
                 <CardBody>
                   <div className="d-flex justify-content-between align-items-center">
-                    <Card.Title className='text-start mb-3'>Your Flight Ticket</Card.Title>
+                    <Card.Title className='text-start mb-3'>Flight Ticket</Card.Title>
                     {flightTicketData && <Card.Title>
                       <div className="d-flex justify-content-end">
                         <Button className="action-buttons" onClick={() => handleFlightCancel()}><img src={deleteIcon} alt="edit icon" /></Button>
@@ -144,7 +159,7 @@ const MyStatus = () => {
               <Card className='h-100'>
                 <CardBody>
                   <div className="d-flex justify-content-between align-items-center">
-                    <Card.Title className='text-start mb-3'>Your Bus Trip Ticket</Card.Title>
+                    <Card.Title className='text-start mb-3'>Bus Trip Ticket</Card.Title>
                     {busTripsTicketData && <Card.Title>
                       <div className="d-flex justify-content-end">
                         <Button className="action-buttons" onClick={() => handleBusTripCancel()}><img src={deleteIcon} alt="edit icon" /></Button>

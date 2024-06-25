@@ -79,7 +79,7 @@ const Login = () => {
         
       } catch (err) {
         if(!err.response){
-          Swal.fire('Error, No Server Response!', '', 'error');
+          Swal.fire('Error', 'No Server Response!', 'error');
         } else if (err.response?.status === 401) {
           Swal.fire('Unauthorized!', '', 'error');
         } else{

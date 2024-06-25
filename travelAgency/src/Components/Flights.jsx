@@ -90,13 +90,16 @@ const Flights = () => {
       .catch(err => {
         console.log(err);
         if(!err.response){
-          Swal.fire('Error, No Server Response!', '', 'error');
-        } else if (err.response?.status === 401) {
-          Swal.fire('Unauthorized!!!', '', 'error');
+          Swal.fire('Error', 'No Server Response!', 'error');
+        } else if(err?.response?.status == 401){
+          Swal.fire('Unauthorized!!', '', 'error');
+          localStorage.removeItem('token');
+          localStorage.removeItem('name');
+          localStorage.removeItem('userId');
         } else if(err.response.data){
-          Swal.fire(err.response.data, '', 'error');
+          Swal.fire('Error', err.response.data, 'error');
         } else{
-          Swal.fire('Something went wrong', '', 'error');
+          Swal.fire('Error','Something went wrong', 'error');
         }
       })
     

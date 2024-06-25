@@ -1,15 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import {Row, Col, DropdownButton, DropdownItem, Button, Modal, Form, FormGroup, FormControl, FormLabel, Card, CardBody, CardHeader, DropdownMenu} from 'react-bootstrap';
-import { countries } from '../Menu';
+import { countries, initialValues } from '../Menu';
 import MySelect from '../CommonElements/MySelect';
 import {components} from 'react-select';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import travel from '../assets/images/travel.webp';
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, createBuses, filteredTrips, createPlanes, getPlanes, addBusCompany, getBuses, removeExpiredFlights, removeExpiredBusTrips } from '../Endpoint';
+import { createFlights, filteredFlights, createBuses, filteredTrips, getPlanes, getBuses, removeExpiredTrips } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -17,9 +16,7 @@ import FlightContext from '../_helper/FlightContext';
 import AuthContext from '../_helper/AuthContext';
 import BusContext from '../_helper/BusContext';
 import Loader from '../Layout/Loader';
-import germany from '../assets/images/germany.jpg'
-import turkey from '../assets/images/turkey.jpg'
-import greece from '../assets/images/greece.jpg'
+
 
 const Dashboard = () => {
 
@@ -113,57 +110,6 @@ const Dashboard = () => {
 
   const [startDate, setStartDate] = useState(null);
   const [dropdownVal, setDropdownVal] = useState('Traveling with');
-
-  const initialValues = [ // How the data should look like for Offers
-    {
-      originCountry : {
-        value: 'Kosovo', 
-        label: 'Kosovo'
-      },
-      destinationCountry: {
-        value: 'Italy', 
-        label: 'Italy'
-      },
-      text: '49.99$',
-      img: travel
-    },
-    {
-      originCountry : {
-        value: 'Kosovo', 
-        label: 'Kosovo'
-      },
-      destinationCountry: {
-        value: 'Greece', 
-        label: 'Greece'
-      },
-      text: '79.99$',
-      img: greece
-    },
-    {
-      originCountry : {
-        value: 'Kosovo', 
-        label: 'Kosovo'
-      },
-      destinationCountry: {
-        value: 'Turkey', 
-        label: 'Turkey'
-      },
-      text: '99.99$',
-      img: turkey
-    },
-    {
-      originCountry : {
-        value: 'Kosovo', 
-        label: 'Kosovo'
-      },
-      destinationCountry: {
-        value: 'Germany', 
-        label: 'Germany'
-      },
-      text: '99.99$',
-      img: germany
-    }
-  ]
 
   const Option = props => {
     return (
@@ -264,7 +210,14 @@ const Dashboard = () => {
             setBus(initialData);
           })
           .catch(err => {
-            Swal.fire(err.response?.data?.message || 'Something went wrong', '', 'error');
+            if(err?.response?.status == 401){
+              Swal.fire('Unauthorized!!', '', 'error');
+              localStorage.removeItem('token');
+              localStorage.removeItem('name');
+              localStorage.removeItem('userId');
+              history('/login');
+            }
+            Swal.fire('Error', err.response?.data?.message , 'error');
           })
     }     
   }
@@ -290,12 +243,15 @@ const Dashboard = () => {
           })
           .catch(err => {
             if(!err.response){
-              Swal.fire('Error, No Server Response!', '', 'error');
-            } else if (err.response?.status === 401) {
-              Swal.fire('Unauthorized!!!', '', 'error');
+              Swal.fire('Error', 'No Server Response!', 'error');
+            } else if(err?.response?.status == 401){
+              Swal.fire('Unauthorized!!', '', 'error');
+              localStorage.removeItem('token');
+              localStorage.removeItem('name');
+              localStorage.removeItem('userId');
               history('/');
             } else{
-              Swal.fire(err.response?.data || 'Something Went Wrong!', '', 'error');
+              Swal.fire('Error', err.response?.data, 'error');
             }
           });
     }     
@@ -312,29 +268,23 @@ const Dashboard = () => {
     if(fromCountry['value'] !== '' && fromCountry['value'] !== undefined && toCountry['value'] !== '' && toCountry['value'] !== undefined && startDate !== null && countries.includes(fromCountry['value']) && countries.includes(toCountry['value']) && moment(startDate, 'yyyy/MM/DD').isValid()){
       const finalVals = {
         Reservation: moment(startDate).format('yyyy-MM-DD'),
-        // Returning: moment(dateRange[1]).format('yyyy-MM-DD'),
         OriginCountry: fromCountry['value'],
         Origin: fromCountry['value'],
         DestinationCountry: toCountry['value'],
         Destination: toCountry['value'],
-        // Adults: passengerCounts['adult'],
-        // Children: passengerCounts['child'],
-        // Infant: passengerCounts['infant']
       }
-      axios.post(dropdownVal == 'Bus' ? removeExpiredBusTrips : removeExpiredFlights, null, {
+      axios.post(removeExpiredTrips, null, {
         headers: {
           'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
         }
       })
       .then(res => {
-        console.log(res);
         axios.post(dropdownVal == 'Bus' ? filteredTrips : filteredFlights, finalVals, {
           headers: {
             'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
           }
         })
           .then(res => {
-            console.log(res);
             if(dropdownVal == 'Bus'){
               setBusData(res.data?.filtered_buses);
               history('/bus');
@@ -345,15 +295,21 @@ const Dashboard = () => {
           })
           .catch(err => {
             if(!err.response){
-              Swal.fire('Error, No Server Response!', '', 'error');
-            } else if (err.response?.status === 401) {
-              Swal.fire('Unauthorized!!!', '', 'error');
+              Swal.fire('Error', 'No Server Response!', 'error');
+            } else if(err?.response?.status == 401){
+              Swal.fire('Unauthorized!!', '', 'error');
+              localStorage.removeItem('token');
+              localStorage.removeItem('name');
+              localStorage.removeItem('userId');
+              history('/login');
             } else{
-              Swal.fire(err.response?.data || 'Fetching filtered flights failed, please try again!', '', 'error');
+              Swal.fire('Error', err.response?.data, 'error');
             }
           })
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      });
 
     }
   }
@@ -362,7 +318,7 @@ const Dashboard = () => {
   //=========================ADD RANDOM FLIGHT============================
   const addRandom = async () => {
     //Countries you wanna add in Origin Country and Destination Country
-    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
+    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania', 'Germany'];
     let ticketPrice = (Math.random() * 600 + 60).toFixed(2);
 
 
@@ -397,11 +353,11 @@ const Dashboard = () => {
       arrivalMinute = 0; // Reset minutes to zero or adjust as needed
     }
 
-    const departureTime = new Date();
+    const departureTime = moment().toDate();
     departureTime.setHours(departureHour);
     departureTime.setMinutes(departureMinute);
 
-    const arrivalTime = new Date();
+    const arrivalTime = moment().toDate();
     arrivalTime.setHours(arrivalHour);
     arrivalTime.setMinutes(arrivalMinute);
     
@@ -412,14 +368,12 @@ const Dashboard = () => {
       PlaneId: flight.planeNum[randomPlane].planeId,
       OriginCountry: originCountry,
       DestinationCountry: destinationCountry,
-      Reservation: new Date(),
+      Reservation: moment().add(1, 'days').toDate(),
       TicketsLeft: Math.floor(Math.random() * 60) + 60,
       Departure: departureTime.toLocaleTimeString('en-US', { hour12: false }),
       Arrival: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
       TicketPrice: ticketPrice
     };
-
-    console.log(finalData);
 
     axios.post(createFlights, finalData, {
       headers: {
@@ -434,19 +388,21 @@ const Dashboard = () => {
       })
       .catch(err => {
         if(!err.response){
-          Swal.fire('Error, No Server Response!', '', 'error');
-        } else if (err.response?.status === 401) {
-          Swal.fire('Unauthorized!!!', '', 'error');
+          Swal.fire('Error', 'No Server Response!', 'error');
+        } else if(err?.response?.status == 401){
+          Swal.fire('Unauthorized!!', '', 'error');
+          localStorage.removeItem('token');
+          localStorage.removeItem('name');
+          localStorage.removeItem('userId');
           history('/login');
         } else{
-          Swal.fire(err.response?.data || 'Something went wrong!', '', 'error');
+          Swal.fire('Error', err.response?.data, 'error');
         }
       })
   }
   //=========================ADD RANDOM Bus============================
     const addRandomBus = async () => {
-      //Countries you wanna add in Origin Country and Destination Country
-    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania'];
+    const countries = ['Italy', 'Greece', 'Kosovo', 'Albania', 'Germany'];
     let  ticketPrice = (Math.random() * 200 + 20).toFixed(2);
 
 
@@ -467,23 +423,21 @@ const Dashboard = () => {
     // Generate random minute for Arrival time, making sure it's in intervals of 15
     const arrivalMinute = Math.floor(Math.random() * 4) * 15;
 
-    const departureTime = new Date();
+    const departureTime = moment().toDate();
     departureTime.setHours(departureHour);
     departureTime.setMinutes(departureMinute);
 
-    const arrivalTime = new Date();
+    const arrivalTime = moment().toDate();
     arrivalTime.setHours(arrivalHour);
     arrivalTime.setMinutes(arrivalMinute);
     
     const randomBus = Math.floor(Math.random() * bus.busNum.length);
 
-    console.log(randomBus);
-
     const finalData = {
       BusId: bus.busNum[randomBus].busId,
       Origin: originCountry,
       Destination: destinationCountry,
-      Reservation: new Date(),
+      Reservation: moment().add(1, 'days').toDate(),
       TicketsAvailable: Math.floor(Math.random() * 60) + 60,
       DepartureTime: departureTime.toLocaleTimeString('en-US', { hour12: false }),
       ArrivalTime: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
@@ -492,7 +446,6 @@ const Dashboard = () => {
 
     console.log(finalData);
 
-    
     axios.post(createBuses, finalData, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
@@ -506,12 +459,15 @@ const Dashboard = () => {
       })
       .catch(err => {
         if(!err.response){
-          Swal.fire('Error, No Server Response!', '', 'error');
-        } else if (err.response?.status === 401) {
-          Swal.fire('Unauthorized!!!', '', 'error');
+          Swal.fire('Error', 'No Server Response!', 'error');
+        } else if(err?.response?.status == 401){
+          Swal.fire('Unauthorized!!', '', 'error');
+          localStorage.removeItem('token');
+          localStorage.removeItem('name');
+          localStorage.removeItem('userId');
           history('/login');
         } else{
-          Swal.fire('Something went wrong!', '', 'error');
+          Swal.fire('Error', 'Something went wrong!', 'error');
         }
       })
   }
@@ -637,7 +593,7 @@ const Dashboard = () => {
                       <Col sm={6} key={idx} className="d-flex" onClick={() => {
                         setFromCountry(itemProps.originCountry);
                         setToCountry(itemProps.destinationCountry);
-                        setStartDate(moment('05/02/2024').format('yyyy/MM/DD'));
+                        setStartDate(moment().add(1, 'days').toDate());
                       }}>
                         <OfferCard props={itemProps} className="flex-grow-1"/>
                       </Col>
@@ -792,7 +748,7 @@ const Dashboard = () => {
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
-                <Button className='' variant='danger' onClick={() => addRandom()}>ADD RANDOM</Button>
+                <Button className='admin-buttons' onClick={() => addRandom()}>ADD RANDOM</Button>
                 <Button className="admin-buttons" onClick={() => handleClick(createFlights, flight)}>Create Flight</Button>
               </FormGroup>
             </Form>
@@ -913,7 +869,7 @@ const Dashboard = () => {
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
-                <Button variant='danger' onClick={() => addRandomBus()}>ADD RANDOM</Button>
+                <Button className="admin-buttons" onClick={() => addRandomBus()}>ADD RANDOM</Button>
                 <Button className="admin-buttons" onClick={() => handleBusClick()}>Create BusTrip</Button>
               </FormGroup>
             </Form>

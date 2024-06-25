@@ -1,3 +1,8 @@
+import travel from './assets/images/travel.webp';
+import germany from './assets/images/germany.jpg'
+import turkey from './assets/images/turkey.jpg'
+import greece from './assets/images/greece.jpg'
+
 export const countries = [
   "Afghanistan",
   "Albania",
@@ -195,4 +200,55 @@ export const countries = [
   "Yemen",
   "Zambia",
   "Zimbabwe"
+];
+
+export const initialValues = [
+  {
+    originCountry : {
+      value: 'Kosovo', 
+      label: 'Kosovo'
+    },
+    destinationCountry: {
+      value: 'Italy', 
+      label: 'Italy'
+    },
+    text: '49.99$',
+    img: travel
+  },
+  {
+    originCountry : {
+      value: 'Kosovo', 
+      label: 'Kosovo'
+    },
+    destinationCountry: {
+      value: 'Greece', 
+      label: 'Greece'
+    },
+    text: '79.99$',
+    img: greece
+  },
+  {
+    originCountry : {
+      value: 'Kosovo', 
+      label: 'Kosovo'
+    },
+    destinationCountry: {
+      value: 'Turkey', 
+      label: 'Turkey'
+    },
+    text: '99.99$',
+    img: turkey
+  },
+  {
+    originCountry : {
+      value: 'Kosovo', 
+      label: 'Kosovo'
+    },
+    destinationCountry: {
+      value: 'Germany', 
+      label: 'Germany'
+    },
+    text: '99.99$',
+    img: germany
+  }
 ];
