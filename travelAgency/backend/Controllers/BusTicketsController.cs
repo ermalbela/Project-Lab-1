@@ -28,19 +28,18 @@ namespace SecureWebSite.Server.Controllers
 
         public class PurchaseBusRequest
         {
-            public List<int> BusId { get; set; }
+            public List<int> BusTripsId { get; set; }
             public User User { get; set; }
             public int Adults { get; set; }
             public int Children { get; set; }
             public int Infant { get; set; }
-            public string Category { get; set; }
             public DateTime Reservation { get; set; }
         }
 
         [HttpPost("purchase_bus_trip")]
         public async Task<ActionResult> PurchaseBusTrip(PurchaseBusRequest request)
         {
-            int _busId = request.BusId[0];
+            int _busId = request.BusTripsId[0];
             try
             {
 
@@ -54,7 +53,7 @@ namespace SecureWebSite.Server.Controllers
 
                 if (bus == null)
                 {
-                    return NotFound(bus);
+                    return NotFound("BusTrips not found");
                 }
 
                 // Check if there are available tickets
@@ -68,12 +67,12 @@ namespace SecureWebSite.Server.Controllers
                     return BadRequest("There Should Be An Adult In The Bus Trip.");
                 }
 
-                var userHasTicket = await _context.BusTickets.AnyAsync(bt =>  bt.BusTrips.BusId == _busId && bt.Users.Any(u => u.Id == request.User.Id));
+                /*var userHasTicket = await _context.BusTickets.AnyAsync(bt =>  bt.BusTrips.BusId == _busId && bt.Users.Any(u => u.Id == request.User.Id));
 
                 if (userHasTicket)
                 {
                     return BadRequest("User has already purchased a ticket for this bus trip.");
-                }
+                }*/
 
                 int totalTicketsSold = request.Adults + request.Children + request.Infant;
                 bus.TicketsAvailable -= totalTicketsSold;
@@ -93,11 +92,28 @@ namespace SecureWebSite.Server.Controllers
                     _busTicket.Users = new List<User>(); // Initialize the list if null
                 }
 
+                if (existingUser.BusTicketId != null)
+                {
+                    return BadRequest("User has already purchased a bus trip ticket which is pending.");
+                }
+                else
+                {
+                    existingUser.BusTicketId = _busTicket.BusTicketId;
+                    existingUser.BusTicket = _busTicket;
+
+                }
+
                 _busTicket.Users.Add(existingUser);
 
                 _context.BusTickets.Add(_busTicket);
 
                 await _context.SaveChangesAsync();
+
+                var result = await _userManager.UpdateAsync(existingUser);
+                if (!result.Succeeded)
+                {
+                    return StatusCode(500, "Failed to update user.");
+                }
 
                 return Ok(new { message = "Bus Trip ticket purchased successfully.", _busTicket });
             }

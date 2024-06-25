@@ -105,7 +105,7 @@ namespace SecureWebSite.Server.Controllers
                 var nowTime = TimeOnly.FromDateTime(now); // Get current time
 
                 var expiredFlights = await _context.Flights
-                    .Where(f => f.Reservation.Date < nowDate || (f.Reservation.Date == nowDate && f.Departure <= nowTime))
+                    .Where(f => f.Reservation.Date < nowDate || (f.Reservation.Date == nowDate && f.Arrival <= nowTime))
                     .ToListAsync();
 
                 if (expiredFlights.Any())
@@ -230,12 +230,13 @@ namespace SecureWebSite.Server.Controllers
                     return BadRequest("There Should Be An Adult In The Flight.");
                 }
 
-                var userHasTicket = await _context.FlightTickets.AnyAsync(ft => ft.Flight.FlightId == _flightId && ft.Users.Any(u => u.Id == request.User.Id));
+
+                /*var userHasTicket = await _context.FlightTickets.AnyAsync(ft => ft.Flight.FlightId == _flightId && ft.Users.Any(u => u.Id == request.User.Id));
 
                 if (userHasTicket)
                 {
                     return BadRequest("User has already purchased a ticket for this flight.");
-                }
+                }*/
 
                 // Decrease ticketsLeft count
                 int totalTicketsSold = request.Adults + request.Children + request.Infant;
@@ -253,11 +254,20 @@ namespace SecureWebSite.Server.Controllers
                     Reservation = request.Reservation,
                 };
 
-                existingUser.FlightTicket = _flightTicket;
-
                 if (_flightTicket.Users == null)
                 {
                     _flightTicket.Users = new List<User>(); // Initialize the list if null
+                }
+
+                if (existingUser.FlightTicketId != null)
+                {
+                    return BadRequest("User has already purchased a flight ticket which is pending.");
+                }
+                else
+                {
+                    existingUser.FlightTicketId = _flightTicket.FlightTicketId;
+                    existingUser.FlightTicket = _flightTicket;
+
                 }
 
                 _flightTicket.Users.Add(existingUser);
@@ -267,8 +277,14 @@ namespace SecureWebSite.Server.Controllers
 
                 // Save changes to the database
                 await _context.SaveChangesAsync();
+                
+                var result = await _userManager.UpdateAsync(existingUser);
+                if (!result.Succeeded)
+                {
+                    return StatusCode(500, "Failed to update user.");
+                }
 
-                return Ok(new { message = "Flight ticket purchased successfully.", _flightTicket });
+                return Ok(new { message = "Flight ticket purchased successfully.", _flightTicket, existingUser });
             }
             catch (Exception ex)
             {

@@ -4,7 +4,9 @@ export const registerUser = userApi + 'register';
 export const loginUser = userApi + 'login';
 export const logoutUser = userApi + 'logout';
 export const getUsers = userApi + 'users';
-export const singleUser = userApi + 'get-user';
+export const singleUser = userApi + 'get-user_';
+export const cancelFlight = userApi + 'cancel_flight_';
+export const cancelBusTrip = userApi + 'cancel_bus_trip_';
 
 const flightsApi = '/api/flights/';
 export const createFlights = flightsApi + 'create_flight';

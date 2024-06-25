@@ -114,7 +114,7 @@ const FlightCompanies = () => {
       Swal.fire('Flight Company Added Successfully.', '', 'success');
       getData();
       setCreateCompany(false);
-      setCompany(false);
+      setCompany('');
     })
     .catch(err => {
       Swal.fire(err?.response?.data || 'An error occured. Please try again.', '', 'error');

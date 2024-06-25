@@ -61,14 +61,15 @@ const Bus = () => {
   console.log(filteredPaginationBusTrips);
 
 
-  const handlePurchase = (busId, category, reservation) => {
+  const handlePurchase = (busId, reservation) => {
     const Name = JSON.parse(localStorage.getItem('name'));
     const Id = JSON.parse(localStorage.getItem('userId'));
     const validNum = [busId];
     const passengerCountsArr = Object.values(passengerCounts);
     
+    console.log(validNum);
 
-    axios.post(purchaseBus, {busId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation}, {
+    axios.post(purchaseBus, {BusTripsId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation}, {
       headers: {
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
@@ -77,6 +78,7 @@ const Bus = () => {
         Swal.fire(res.data.message, '', 'success');
       })
       .catch(err => {
+        console.log(err);
           Swal.fire(err.response?.data?.message || 'Something went wrong', '', 'error');
       })
     
@@ -241,7 +243,7 @@ const Bus = () => {
                       <img src={minusCircle} className="category-icons"/>Chargeable Meals
                     </Card.Text>
                     <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
-                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busId, 'Standard', selectedBus.reservation)}>Purchase</Button>
+                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busTripsId, selectedBus.reservation)}>Purchase</Button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -279,7 +281,7 @@ const Bus = () => {
                       <img src={minusCircle} style={{width: '17px'}}/>Chargeable Meals
                     </Card.Text>
                     <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
-                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busId, 'Standard+', selectedBus.reservation)}>Purchase</Button>
+                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busTripsId, selectedBus.reservation)}>Purchase</Button>
                     </div>
                   </Card.Body>
                 </Card>
@@ -330,7 +332,7 @@ const Bus = () => {
                       <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Delayed & lost Baggage Protection Service
                     </Card.Text>
                     <div className="d-flex fullWidth justify-content-end align-items-end">
-                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busId, 'VIP', selectedBus.reservation)}>Purchase</Button>
+                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busTripsId, selectedBus.reservation)}>Purchase</Button>
                     </div>
                   </Card.Body>
                 </Card>

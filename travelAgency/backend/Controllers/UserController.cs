@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SecureWebSite.Server.Data;
 using SecureWebSite.Server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,13 +14,14 @@ namespace SecureWebSite.Server.Controllers
 {
 		[Route("api/users")]
 		[ApiController]
-		public class UserController(SignInManager<User> sm, UserManager<User> um, IConfiguration config) : ControllerBase
+		public class UserController(SignInManager<User> sm, UserManager<User> um, IConfiguration config, ApplicationDbContext context) : ControllerBase
 		{
 				private readonly SignInManager<User> signInManager = sm;
 				private readonly UserManager<User> userManager = um;
 				private readonly IConfiguration _config = config;
+				private readonly ApplicationDbContext _context = context;
 
-				[HttpPost("register")]
+        [HttpPost("register")]
 				public async Task<ActionResult> RegisterUser(User user)
 				{
 
@@ -141,27 +143,114 @@ namespace SecureWebSite.Server.Controllers
 					try
 					{
 						// Retrieve the user from the database by ID
-						var user = await userManager.FindByIdAsync(id);
+						var user = await _context.Users.Where(u => u.Id == id).Select(u => new { u.FlightTicket, u.BusTicket, u.UserName, u.FlightTicket.Flight, u.BusTicket.BusTrips }).FirstOrDefaultAsync();
 						if (user == null)
 						{
 							return NotFound(new { message = "User not found." });
 						}
 
-						// Create an anonymous object to return
-						var result = new
-						{
-							userName = user.UserName,
-							email = user.Email,
-							user.FlightTicket,
-							user.BusTicket,
-							user.Role,
-						};
-
-						return Ok(result);
+						return Ok(user);
 					}
 					catch (Exception ex)
 					{
 						return BadRequest(new { message = "Something went wrong while fetching the user. " + ex.Message });
+					}
+				}
+
+				[HttpDelete("cancel_flight_{userId}")]
+				public async Task<ActionResult> CancelFlight(string userId)
+				{
+					try
+					{
+						var existingUser = await userManager.FindByIdAsync(userId);
+						if (existingUser == null)
+						{
+							return NotFound("User not found.");
+						}
+
+						// Check if user has a flight ticket
+						if (existingUser.FlightTicketId == null)
+						{
+							return BadRequest("User does not have a flight ticket to cancel.");
+						}
+
+						// Find the associated FlightTicket
+						var flightTicket = await _context.FlightTickets.FindAsync(existingUser.FlightTicketId);
+						if (flightTicket == null)
+						{
+							return NotFound("Flight ticket not found.");
+						}
+
+						// Remove the user from the FlightTicket
+						flightTicket.Users.Remove(existingUser);
+
+						// If no more users associated with the FlightTicket, delete it
+						if (flightTicket.Users.Count == 0)
+						{
+							_context.FlightTickets.Remove(flightTicket);
+						}
+
+						// Reset user's FlightTicketId and FlightTicket reference
+						existingUser.FlightTicketId = null;
+						existingUser.FlightTicket = null;
+
+						// Save changes to the database
+						await _context.SaveChangesAsync();
+
+						// Update the user record
+						await userManager.UpdateAsync(existingUser);
+
+						return Ok(new { message = "Flight ticket cancelled successfully." });
+					}
+					catch (Exception ex)
+					{
+						return StatusCode(500, $"An error occurred: {ex.Message}");
+					}
+				}
+
+				[HttpDelete("cancel_bus_trip_{userId}")]
+				public async Task<ActionResult> CancelBusTrip(string userId)
+				{
+					try
+					{
+						var existingUser = await userManager.FindByIdAsync(userId);
+						if (existingUser == null)
+						{
+							return NotFound("User not found.");
+						}
+
+						if (existingUser.BusTicketId == null)
+						{
+							return BadRequest("User does not have a bus trip ticket to cancel.");
+						}
+
+						var busTicket = await _context.BusTickets.FindAsync(existingUser.BusTicketId);
+						if (busTicket == null)
+						{
+							return NotFound("Bus ticket not found.");
+						}
+
+						busTicket.Users.Remove(existingUser);
+
+						if (busTicket.Users.Count == 0)
+						{
+							_context.BusTickets.Remove(busTicket);
+						}
+
+						existingUser.BusTicketId = null;
+						existingUser.BusTicket = null;
+
+						// Save changes to the database
+						await _context.SaveChangesAsync();
+
+						// Update the user record
+						await userManager.UpdateAsync(existingUser);
+
+						return Ok(new { message = "Bus trip ticket cancelled successfully." });
+					}
+					catch (Exception ex)
+					{
+						return StatusCode(500, $"An error occurred: {ex.Message}");
 					}
 				}
 

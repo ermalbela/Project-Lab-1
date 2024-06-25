@@ -71,11 +71,7 @@ const Flights = () => {
 
   let filteredPaginationFlights = sortedFlights.slice(firstVisitIndex, lastVisitIndex);
 
-  console.log(filteredPaginationFlights);
-
   const handlePurchase = (flightId, category, reservation) => {
-    console.log(selectedFlight);
-    console.log(flightId);
     const Name = JSON.parse(localStorage.getItem('name'));
     const Id = JSON.parse(localStorage.getItem('userId'));
     const validNum = [flightId];
@@ -92,6 +88,7 @@ const Flights = () => {
         console.log(res)
       })
       .catch(err => {
+        console.log(err);
         if(!err.response){
           Swal.fire('Error, No Server Response!', '', 'error');
         } else if (err.response?.status === 401) {
