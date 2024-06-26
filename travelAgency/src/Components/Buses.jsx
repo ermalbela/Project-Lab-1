@@ -209,18 +209,18 @@ const Bus = () => {
             )
           })
           : <h3 className="h-100 justify-content-center align-items-end d-flex">There is no bus trips in this date...</h3>}
-          {selectedBus && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
+          {selectedBus && <Modal size="md" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
             <Modal.Header className='custom-modal-header justify-content-between align-items-center'>
-              <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
+              <Modal.Title><span className="vip-category-text">1 FARE OPTION</span> Avaliable For Your Trip</Modal.Title>
               <h5>Price calculated for: (Adults: {passengerCounts['adult']} Children: {passengerCounts['child']} Infant: {passengerCounts['infant']})</h5>
             </Modal.Header>
             <Modal.Body className='row'>
               <Col>
                 <Card className='h-100'>
-                  <Card.Header>
+                  <Card.Header className=" d-flex justify-content-center">
                     <p className='custom-price'>{totalPrice().toFixed(2)}$</p> Standard Category 
                   </Card.Header>
-                  <Card.Body>
+                  <Card.Body className=' d-flex justify-content-center flex-column align-items-center'>
                     <Card.Text className='bus-category-title'>
                       Baggage
                     </Card.Text>
@@ -235,7 +235,7 @@ const Bus = () => {
                       Flexibility
                     </Card.Text>
                     <Card.Text className='bus-category-text'>
-                      <img src={minusCircle} className="category-icons"/>Cancellation fee starts at 50$ (up to 3 hours before departure)
+                      <img src={minusCircle} className="category-icons"/>Cancellation fee starts at 50$
                     </Card.Text>
 
                     <Card.Text className='bus-category-title'>
@@ -246,95 +246,6 @@ const Bus = () => {
                     </Card.Text>
                     <Card.Text className='bus-category-text'>
                       <img src={minusCircle} className="category-icons"/>Chargeable Meals
-                    </Card.Text>
-                    <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
-                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busTripsId, selectedBus.reservation)}>Purchase</Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
-                <Card  className='h-100'>
-                  <Card.Header>
-                    <p className='custom-price'>{(totalPrice() * 1.5).toFixed(2)}$</p> Standard+ Category 
-                  </Card.Header>
-                  <Card.Body>
-                    <Card.Text className='bus-category-title'>
-                      Baggage
-                    </Card.Text>
-                    <Card.Text className='d-flex align-items-center bus-category-text first-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/>7kgs Cabin Baggage
-                    </Card.Text>
-                    <Card.Text className='d-flex align-items-center bus-category-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/>20kgs Check-in Baggage
-                    </Card.Text>
-
-                    <Card.Text className='bus-category-title'>
-                      Flexibility
-                    </Card.Text>
-                    <Card.Text className='bus-category-text'>
-                      <img src={minusCircle} style={{width: '17px'}}/>Cancellation fee starts at 50$ (up to 3 hours before departure)
-                    </Card.Text>
-
-                    <Card.Text className='bus-category-title'>
-                      Seats, Meals & More
-                    </Card.Text>
-                    <Card.Text className='bus-category-text first-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Seats
-                    </Card.Text>
-                    <Card.Text className='bus-category-text'>
-                      <img src={minusCircle} style={{width: '17px'}}/>Chargeable Meals
-                    </Card.Text>
-                    <div className="d-flex fullWidth justify-content-end align-items-end" style={{height: '36.5%'}}>
-                      <Button variant="primary" onClick={() => handlePurchase(selectedBus.busTripsId, selectedBus.reservation)}>Purchase</Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
-                <Card className='h-100'>
-                  <Card.Header className='vip-header'>
-                    <p className='custom-price'>{(totalPrice() * 2).toFixed(2)}$</p> VIP Category
-                  </Card.Header>
-                  <Card.Body>
-                    <Card.Text className='bus-category-title'>
-                      Baggage
-                    </Card.Text>
-                    <Card.Text className='d-flex align-items-center bus-category-text first-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/>7kgs Cabin Baggage
-                    </Card.Text>
-                    <Card.Text className='d-flex align-items-center bus-category-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/>25kgs Check-in Baggage
-                    </Card.Text>
-
-                    <Card.Text className='bus-category-title'>
-                      Flexibility
-                    </Card.Text>
-                    <Card.Text className='bus-category-text'>
-                      <img src={minusCircle} style={{width: '17px'}}/>Lower Cancellation fee 20$ (up to 3 hours before departure)
-                    </Card.Text>
-
-                    <Card.Text className='bus-category-title'>
-                      Seats, Meals & More
-                    </Card.Text>
-                    <Card.Text className='bus-category-text first-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Seats
-                    </Card.Text>
-                    <Card.Text className='bus-category-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Complimentary</span> Meals
-                    </Card.Text>
-
-                    <Card.Text className='bus-category-title'>
-                      Exclusive Benefits
-                    </Card.Text>
-                    <Card.Text className='bus-category-text first-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Express Check-in
-                    </Card.Text>
-                    <Card.Text className='bus-category-text first-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Priority Boarding
-                    </Card.Text>
-                    <Card.Text className='bus-category-text'>
-                      <img src={checkCircle} style={{width: '17px'}}/><span className='vip-category-text'>Free</span> Delayed & lost Baggage Protection Service
                     </Card.Text>
                     <div className="d-flex fullWidth justify-content-end align-items-end">
                       <Button variant="primary" onClick={() => handlePurchase(selectedBus.busTripsId, selectedBus.reservation)}>Purchase</Button>
