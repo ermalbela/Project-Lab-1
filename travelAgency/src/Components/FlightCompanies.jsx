@@ -266,7 +266,7 @@ const FlightCompanies = () => {
           </Row>
         </div>
 
-        <Button onClick={async () => {
+        {/* <Button onClick={async () => {
           const response = await axios.get(getPlanes, {
             headers: {
               'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
@@ -275,7 +275,7 @@ const FlightCompanies = () => {
 
           console.log(response.data);
           
-        }}>Click me</Button>
+        }}>Click me</Button> */}
         
         {/* COMPANY MODAL */}
         <Modal size="md" show={createCompany} onHide={() => setCreateCompany(false)} aria-labelledby="example-modal-sizes-title-sm">

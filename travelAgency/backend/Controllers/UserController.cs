@@ -33,7 +33,7 @@ namespace SecureWebSite.Server.Controllers
 									Name = user.Name,
 									Email = user.Email,
 									UserName = user.UserName,
-									Role = "Superadmin"
+									Role = "User"
 								};
 
 								result = await userManager.CreateAsync(user_, user.PasswordHash);

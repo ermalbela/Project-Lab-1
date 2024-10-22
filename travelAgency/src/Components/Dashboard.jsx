@@ -368,7 +368,7 @@ const Dashboard = () => {
       PlaneId: flight.planeNum[randomPlane].planeId,
       OriginCountry: originCountry,
       DestinationCountry: destinationCountry,
-      Reservation: moment().add(1, 'days').toDate(),
+      Reservation: moment().add(20, 'days').toDate(),
       TicketsLeft: Math.floor(Math.random() * 60) + 60,
       Departure: departureTime.toLocaleTimeString('en-US', { hour12: false }),
       Arrival: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
@@ -381,8 +381,8 @@ const Dashboard = () => {
       }
     })
       .then(res => {
-        Swal.fire('Flight Added Successfully', '', 'success');
-        setCreateFlight(false);
+        // Swal.fire('Flight Added Successfully', '', 'success');
+        // setCreateFlight(false);
         setFlight(initialData);
         getPlaneData();
       })

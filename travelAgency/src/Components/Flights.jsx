@@ -76,7 +76,6 @@ const Flights = () => {
     const Id = JSON.parse(localStorage.getItem('userId'));
     const validNum = [flightId];
     const passengerCountsArr = Object.values(passengerCounts);
-    console.log(passengerCountsArr);
 
     axios.post(purchaseFlight, {FlightId: validNum, User: {Name, Id}, Adults: passengerCounts['adult'], Category: category, Children: passengerCounts['child'], Infant: passengerCounts['infant'], Reservation: reservation}, {
       headers: {
@@ -235,9 +234,9 @@ const Flights = () => {
             })
           : <h3 className="justify-content-center align-items-center d-flex">There is no flights in this date...</h3>}
 
-            <Button onClick={() => getData()}>Click me</Button>
+            {/* <Button onClick={() => getData()}>Click me</Button> */}
 
-            {selectedFlight && <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
+            {selectedFlight ? <Modal size="xl" show={show} onHide={() => setShow(false)} aria-labelledby="example-modal-sizes-title-lg" scrollable>
               <Modal.Header className='custom-modal-header justify-content-between align-items-center'>
                 <Modal.Title><span className="vip-category-text">3 FARE OPTIONS</span> Avaliable For Your Trip</Modal.Title>
                 <h5>Price calculated for: (Adults: {passengerCounts['adult']} Children: {passengerCounts['child']} Infant: {passengerCounts['infant']})</h5>
@@ -372,7 +371,7 @@ const Flights = () => {
                 </Col>
               </Modal.Body>
               <Modal.Footer className='custom-modal-footer'></Modal.Footer>
-            </Modal>
+            </Modal> : ''
             }
           </Col>
           <Col className='d-flex justify-content-end align-content-end'>
