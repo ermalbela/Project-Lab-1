@@ -45,3 +45,6 @@ export const deleteCompany = planesApi + 'delete_company_';
 const busTicketsApi = 'api/bus_tickets/';
 export const purchaseBus = busTicketsApi + 'purchase_bus_trip';
 export const getPurchasedTrips = busTicketsApi + 'get_purchased_bus_trips';
+
+const offersApi = '/api/offers/';
+export const createOffers = offersApi + 'create_offer';

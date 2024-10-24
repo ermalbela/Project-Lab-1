@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, createBuses, filteredTrips, getPlanes, getBuses, removeExpiredTrips } from '../Endpoint';
+import { createFlights, filteredFlights, createBuses, filteredTrips, getPlanes, getBuses, removeExpiredTrips, createOffers } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +27,7 @@ const Dashboard = () => {
   const [errors, setErrors] = useState({});
   const [createFlight, setCreateFlight] = useState(false);
   const [createBus, setCreateBus] = useState(false);
+  const [createOffer, setCreateOffer] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlane, setSelectedPlane] = useState('Select Plane');
   const [selectedBus, setSelectedBus] = useState('Select Bus');
@@ -51,6 +52,15 @@ const Dashboard = () => {
     date: '',
     busNum: []
   }
+  const initialOfferData = {
+    originCountry: '',
+    destinationCountry: '',
+    ticketPrice: 0,
+    reservation: '',
+    image: '',
+    imageFile: null,
+    imageName: ''
+  }
 
   useEffect(() => {
     if(role !== '' && role !== undefined && role){
@@ -65,6 +75,7 @@ const Dashboard = () => {
   
   const [flight, setFlight] = useState(initialData);
   const [bus, setBus] = useState(initialBusData);
+  const [offer, setOffer] = useState(initialOfferData);
   
   const getPlaneData = async () => {
     const response = await axios.get(getPlanes, {
@@ -106,6 +117,11 @@ const Dashboard = () => {
   const handleBusChange = (e) => {
     const {name, value} = e.target;
     setBus({...bus, [name]: value});
+  }
+
+  const handleOfferChange = e => {
+    const {name, value} = e.target;
+    setOffer({...offer, [name]: value});
   }
 
   const [startDate, setStartDate] = useState(null);
@@ -257,6 +273,49 @@ const Dashboard = () => {
     }     
   }
 
+  const handleOfferClick = () => {
+    console.log(offer);
+
+    
+    
+    if(offer.destinationCountry !== '' && offer.image !== '' && offer.originCountry !== '' && offer.reservation !== '' && offer.ticketPrice !== 0){
+      
+      const formData = new FormData();
+
+      // Add the textual data to FormData
+      formData.append('Price', offer.ticketPrice);
+      formData.append('OriginCountry', offer.originCountry);
+      formData.append('DestinationCountry', offer.destinationCountry);
+      formData.append('Reservation', new Date(offer.reservation).toISOString());   
+      formData.append('ImageFile', offer.imageFile);
+      formData.append('ImageName', offer.imageName);
+      
+      axios.post(createOffers, formData, {
+        headers: {
+          'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+        }
+      })
+      .then(res => {
+        console.log(res);
+      })
+    }
+  }
+
+  const showPreview = e => {
+    if(e.target.files && e.target.files[0]){
+      let imageFile = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = x => {
+        setOffer({...offer, image: x.target.result, imageFile, imageName: imageFile.name});
+      }
+      reader.readAsDataURL(imageFile);
+    } else{
+      setOffer({...offer, image: ''})
+    }
+  }
+
+  // {Price: offer.ticketPrice, OriginCountry: offer.originCountry, DestinationCountry: offer.destinationCountry, Reservation: offer.reservation, ImageData: offer.image}
+
   const countriesWithLabels = countries.map(country => { //Updating the data so we can use React-Select properly
     return { value: country, label: country };
   });
@@ -381,8 +440,8 @@ const Dashboard = () => {
       }
     })
       .then(res => {
-        // Swal.fire('Flight Added Successfully', '', 'success');
-        // setCreateFlight(false);
+        Swal.fire('Flight Added Successfully', '', 'success');
+        setCreateFlight(false);
         setFlight(initialData);
         getPlaneData();
       })
@@ -497,6 +556,8 @@ const Dashboard = () => {
     return stars;
   };
 
+  // axios.post(createOffers, {Price: 49.99, OriginCountry: 'Kosovo', DestinationCountry: 'Greece', ImageData: imgValue})
+
   return isLoading ? (
     <Loader />
   ) : (
@@ -558,6 +619,7 @@ const Dashboard = () => {
             />
             <p className='invalidFeedback'>{errors.toCountry}</p>
           </Col>
+          
           <Col>
             <DatePicker
               dateFormat="yyyy/MM/dd"
@@ -583,8 +645,9 @@ const Dashboard = () => {
         <Row>
           <Col sm={12} xl={6} className="d-flex flex-column">
             <Card className="flex-grow-1 d-flex flex-column">
-              <CardHeader>
+              <CardHeader className='d-flex justify-content-between'>
                 <h4>Cheap Flight Offers</h4>
+                {role === 'Superadmin' ? <Button onClick={() => setCreateOffer(true)}>Create Offer</Button> : ''}
               </CardHeader>
               <CardBody className="d-flex flex-column">
                 <div className='offers flex-grow-1'>
@@ -871,6 +934,77 @@ const Dashboard = () => {
               <FormGroup className='formGroup d-flex justify-content-between'>
                 <Button className="admin-buttons" onClick={() => addRandomBus()}>ADD RANDOM</Button>
                 <Button className="admin-buttons" onClick={() => handleBusClick()}>Create BusTrip</Button>
+              </FormGroup>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
+        {/* Offers Modal */}
+        <Modal size="lg" show={createOffer} onHide={() => setCreateOffer(false)} aria-labelledby="example-modal-sizes-title-lg">
+          <Modal.Header>
+            <Modal.Title id="example-modal-sizes-title-lg">
+              Create Offer
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+          <Form className="d-flex justify-content-center flex-column">
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Origin Country</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={offer.originCountry} onChange={handleOfferChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Destination Country</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={offer.destinationCountry} onChange={handleOfferChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
+                </FormGroup>
+              </Col>
+              <Col className='d-flex justify-content-between'>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Ticket Price</FormLabel>
+                  <div className="input-group login-form-inputs">
+                      <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 50" value={offer.ticketPrice} onChange={handleOfferChange} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+                </FormGroup>
+                <FormGroup className='formGroup modal-inputs'>
+                  <FormLabel>Reservation Date</FormLabel>
+                  <div className="input-group login-form-inputs">
+                    <DatePicker 
+                      isClearable
+                      minDate={new Date()}
+                      maxDate={moment().add(12, 'months').toDate()}
+                      placeholderText="e.g. 06/25/2024" 
+                      className='form-control modal-datepicker' 
+                      selected={offer.reservation} 
+                      onChange={(newDate) => setOffer({...offer, reservation : newDate})} />
+                  </div>
+                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
+                </FormGroup>
+              </Col>
+              <Col className='d-flex flex-column formGroup'>
+                <FormLabel>Image of Place</FormLabel>
+                <div className="selected-image" style={{backgroundImage: `url(${offer.image})`}}></div>
+              </Col>
+              <FormGroup className='formGroup d-flex justify-content-between'>
+                <label className='btn btn-primary m-0 admin-buttons' htmlFor="input">Select Image
+                  <input id='input' style={{display: 'none'}} type="file" accept='image/*' onChange={showPreview}
+                  // => {
+                  //   const input = document.getElementById('input');
+                  //   if(input.files[0].type.indexOf('image/') > -1){
+                  //     let profileImg = document.querySelector('.selected-image');
+                  //     profileImg.style.backgroundImage = `url(${window.URL.createObjectURL(input.files[0])})`;
+                  //     setOffer({...offer, image: window.URL.createObjectURL(input.files[0])})
+                  //   }
+                  // }}
+                  />
+                </label>
+                <Button className="admin-buttons" onClick={() => handleOfferClick()}>Create Offer</Button>
               </FormGroup>
             </Form>
           </Modal.Body>

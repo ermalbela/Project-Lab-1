@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using api.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SecureWebSite.Server.Models;
 using YourNamespace.Models;
@@ -19,6 +20,9 @@ namespace SecureWebSite.Server.Data
 			public DbSet<BusTrips> BusTrips { get; set; }
 			public DbSet<BusCompany> BusCompanies { get; set; }
 			public DbSet<BusTicket> BusTickets { get; set; }
+
+		//Offers
+			public DbSet<Offer> Offers { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 		}
 }
