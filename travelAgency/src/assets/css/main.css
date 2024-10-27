@@ -240,7 +240,7 @@ body > * {
 }
 
 .admin-buttons{
-  background-color: #0a4439!important;
+  /* background-color: #0a4439!important; */
   color: #fff;
 }
 
@@ -533,14 +533,14 @@ body > * {
     display: none!important;
   }
   h5, h6 {
-    font-size: 13px!important; /* Adjust font size */
-    line-height: 0; /* Adjust line height for better spacing */
+    font-size: 13px!important; 
+    line-height: 0; 
   }
   .text-center{
     white-space: nowrap;
   }
   .text-muted {
-    font-size: 12px; /* Smaller font for muted text */
+    font-size: 12px; 
   }
   .flight-top-container{
     justify-content: space-between;

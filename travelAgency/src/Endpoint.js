@@ -49,3 +49,4 @@ export const getPurchasedTrips = busTicketsApi + 'get_purchased_bus_trips';
 const offersApi = '/api/offers/';
 export const createOffers = offersApi + 'create_offer';
 export const getOffers = offersApi + 'get_offers';
+export const deleteOffer = offersApi + 'delete_offer_';

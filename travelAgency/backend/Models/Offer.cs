@@ -7,6 +7,7 @@ namespace api.Models
     public class Offer
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OfferId { get; set; }
         public float Price { get; set; }
         public string OriginCountry { get; set; }

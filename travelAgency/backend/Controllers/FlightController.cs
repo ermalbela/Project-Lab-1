@@ -102,7 +102,7 @@ namespace SecureWebSite.Server.Controllers
             {
                 var filtered_flights = await _context.Flights.Select(f => 
                     new { FlightCompany = f.Plane.FlightCompany.CompanyName, f.Plane, f.PlaneId, f.DestinationCountry, f.OriginCountry, f.Arrival, f.Departure, f.TicketPrice, f.TicketsLeft, f.FlightId, f.Reservation } )
-                    .Where(f => f.DestinationCountry == flight.DestinationCountry && f.OriginCountry == flight.OriginCountry).ToListAsync();
+                    .Where(f => f.DestinationCountry == flight.DestinationCountry && f.OriginCountry == flight.OriginCountry && f.Reservation == flight.Reservation).ToListAsync();
 
 
 
@@ -217,7 +217,6 @@ namespace SecureWebSite.Server.Controllers
 
                 _flightTicket.Users.Add(existingUser);
 
-                // Add UserTicket to database
                 _context.FlightTickets.Add(_flightTicket);
 
                 // Save changes to the database

@@ -16,7 +16,7 @@ import FlightContext from '../_helper/FlightContext';
 import AuthContext from '../_helper/AuthContext';
 import BusContext from '../_helper/BusContext';
 import Loader from '../Layout/Loader';
-
+import OfferContext from '../_helper/OfferContext';
 
 const Dashboard = () => {
 
@@ -31,7 +31,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlane, setSelectedPlane] = useState('Select Plane');
   const [selectedBus, setSelectedBus] = useState('Select Bus');
-  const [offerData, setOfferData] = useState(null);
+  const {offerData, setOfferData} = useContext(OfferContext);
 
   const initialData = {
     originCountry: '',
@@ -106,9 +106,7 @@ const Dashboard = () => {
       }
     })
 
-    console.log(response.data);
     setOfferData(response.data);
-    console.log(offerData);
   }
 
   useEffect(() => {
@@ -202,6 +200,25 @@ const Dashboard = () => {
     if(vals.selectedPlane == undefined || vals.selectedPlane == 0 || vals.selectedPlane == 'Select Plane'){
       errors.selectedPlane = 'Please choose a Plane';
     }
+  }
+
+  const validateOffers = vals => {
+    const errors = {};
+    if(!patterns.name.test(vals.originCountry) || !countries.includes(vals.originCountry)){
+      errors.offer_originCountry = 'Enter a valid Origin Country!';
+    }
+    if(!patterns.name.test(vals.destinationCountry) || !countries.includes(vals.destinationCountry)){
+      errors.offer_destinationCountry = 'Enter a valid Destination Country!';
+    }
+    if(vals.ticketPrice < 40){
+      errors.offer_ticketPrice = 'Ticket price should be bigger than 40!';
+    }
+    if(vals.image == ''){
+      errors.offer_image = 'Please select an image!';
+    }
+    if(vals.reservation == '' || vals.reservation == undefined){
+      errors.offer_date = 'Please choose a date';
+    }
     return errors;
   }
 
@@ -290,11 +307,45 @@ const Dashboard = () => {
 
   const handleOfferClick = () => {
     
-    if(offer.destinationCountry !== '' && offer.image !== '' && offer.originCountry !== '' && offer.reservation !== '' && offer.ticketPrice !== 0){
+    setErrors(validateOffers(offer));
+
+    if(countries.includes(offer.destinationCountry) && countries.includes(offer.originCountry) && offer.image !== '' && offer.originCountry !== '' && offer.reservation !== '' && offer.ticketPrice !== 0){
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
       
+      // Generate random hour and minute for Departure time
+      let departureHour = Math.floor(Math.random() * 4) + 20;
+      let departureMinute = Math.floor(Math.random() * 4) * 15;
+      
+      // Adjust Departure time if it's not later than the current time
+      if (departureHour <= currentHour && departureMinute <= currentMinute) {
+        departureHour = (currentHour + 1) % 24; // Ensure departure hour is at least 1 hour ahead
+        departureMinute = 0; // Reset minutes to zero or adjust as needed
+      }
+      
+      // Generate random hour for Arrival time, ensuring it's at least 2 hours after Departure time
+      let arrivalHour = (departureHour + 2) % 24;
+      let arrivalMinute = Math.floor(Math.random() * 4) * 15;
+      
+      // Adjust Arrival time if it's not later than the current time
+      if (arrivalHour <= currentHour && arrivalMinute <= currentMinute) {
+        arrivalHour = (departureHour + 2 + 1) % 24; // Ensure arrival hour is at least 3 hours ahead
+        arrivalMinute = 0; // Reset minutes to zero or adjust as needed
+      }
+      
+      const departureTime = moment().toDate();
+      departureTime.setHours(departureHour);
+      departureTime.setMinutes(departureMinute);
+
+      const arrivalTime = moment().toDate();
+      arrivalTime.setHours(arrivalHour);
+      arrivalTime.setMinutes(arrivalMinute);
+      const randomPlane = Math.floor(Math.random() * flight.planeNum.length);
+
+
       const formData = new FormData();
 
-      // Add the textual data to FormData
       formData.append('Price', offer.ticketPrice);
       formData.append('OriginCountry', offer.originCountry);
       formData.append('DestinationCountry', offer.destinationCountry);
@@ -310,8 +361,27 @@ const Dashboard = () => {
       })
       .then(res => {
         console.log(res);
-        Swal.fire('Success', 'Offer added successfully!', 'success');
         setCreateOffer(false);
+        setOffer(initialOfferData);
+        axios.post(createFlights, {
+          PlaneId: flight.planeNum[randomPlane].planeId,
+          OriginCountry: offer.originCountry,
+          DestinationCountry: offer.destinationCountry,
+          Reservation: offer.reservation,
+          TicketsLeft: Math.floor(Math.random() * 60) + 30,
+          Departure: departureTime.toLocaleTimeString('en-US', { hour12: false }),
+          Arrival: arrivalTime.toLocaleTimeString('en-US', { hour12: false }),
+          TicketPrice: offer.ticketPrice
+        }, {
+          headers: {
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+          }
+        })
+        .then(resp => {
+          console.log(resp.data);
+          Swal.fire('Success', 'Offer added successfully!', 'success');
+          getOfferData();
+        })
       })
     }
   }
@@ -339,7 +409,7 @@ const Dashboard = () => {
 
     if(fromCountry['value'] !== '' && fromCountry['value'] !== undefined && toCountry['value'] !== '' && toCountry['value'] !== undefined && startDate !== null && countries.includes(fromCountry['value']) && countries.includes(toCountry['value']) && moment(startDate, 'yyyy/MM/DD').isValid()){
       const finalVals = {
-        Reservation: moment(startDate).format('yyyy-MM-DD'),
+        Reservation: startDate,
         OriginCountry: fromCountry['value'],
         Origin: fromCountry['value'],
         DestinationCountry: toCountry['value'],
@@ -351,12 +421,14 @@ const Dashboard = () => {
         }
       })
       .then(res => {
+        console.log(res);
         axios.post(dropdownVal == 'Bus' ? filteredTrips : filteredFlights, finalVals, {
           headers: {
             'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
           }
         })
           .then(res => {
+            console.log(res);
             if(dropdownVal == 'Bus'){
               setBusData(res.data?.filtered_buses);
               history('/bus');
@@ -610,7 +682,7 @@ const Dashboard = () => {
               placeholder="From..."
               isClearable
             />
-            <p className='invalidFeedback'>{errors.fromCountry}</p>
+            <p className='invalidFeedback'>{errors?.fromCountry}</p>
           </Col>
           <Col>
             <MySelect
@@ -629,7 +701,7 @@ const Dashboard = () => {
               placeholder="To..."
               isClearable
             />
-            <p className='invalidFeedback'>{errors.toCountry}</p>
+            <p className='invalidFeedback'>{errors?.toCountry}</p>
           </Col>
           
           <Col>
@@ -646,7 +718,7 @@ const Dashboard = () => {
               popperPlacement="bottom-start"
               dataPlacement="bottom-start"
             />
-            <p className='invalidFeedback'>{errors.startDate}</p>
+            <p className='invalidFeedback'>{errors?.startDate}</p>
           </Col>
           <Col className='d-flex justify-content-end'>
             <Button className='w-100' style={{maxHeight: '42.6px'}} onClick={handleSearch}>Search</Button>
@@ -666,9 +738,10 @@ const Dashboard = () => {
                   <Row className="g-4">
                     {offerData && offerData.map((itemProps, idx) => (
                       <Col sm={6} key={idx} className="d-flex" onClick={() => {
-                        setFromCountry(itemProps.originCountry);
-                        setToCountry(itemProps.destinationCountry);
-                        setStartDate(moment().add(1, 'days').toDate());
+                        setFromCountry({...fromCountry, value: itemProps.originCountry, label: itemProps.originCountry});
+                        setToCountry({...fromCountry, value: itemProps.destinationCountry, label: itemProps.destinationCountry});
+                        setStartDate(itemProps.reservation.toString());
+                        console.log(startDate);
                       }}>
                         <OfferCard props={itemProps} className="flex-grow-1"/>
                       </Col>
@@ -687,7 +760,7 @@ const Dashboard = () => {
                 <div className="offers flex-grow-1">
                   <Row className="g-4">
                     {reviews.map((review, idx) => (
-                      <Col sm={6} key={idx} className="d-flex">
+                      <Col sm={6} key={idx} className="d-flex" style={{height: '364.4px'}}>
                         <Card className="flex-grow-1 review-card d-flex flex-column">
                           <CardBody className="d-flex flex-column">
                             <Card.Title className='text-start mb-3'>{review.name}</Card.Title>
@@ -723,14 +796,14 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                     <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={flight.originCountry} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.originCountry}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Destination Country</FormLabel>
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={flight.destinationCountry} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.destinationCountry}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -750,7 +823,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.departure}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.departure}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Arrival</FormLabel>
@@ -768,7 +841,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.arrival}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -777,7 +850,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={flight.tickets} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.tickets}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Departure Date</FormLabel>
@@ -792,7 +865,7 @@ const Dashboard = () => {
                       onChange={(newDate) => setFlight({...flight, date : newDate})} 
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.date}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -801,7 +874,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={flight.ticketPrice} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.ticketPrice}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Plane </FormLabel>
@@ -819,7 +892,7 @@ const Dashboard = () => {
                           </DropdownButton>
                         </FormGroup>
                       </div>  
-                  <p className='invalidFeedback fullWidth'>{errors.name}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.name}</p>
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
@@ -845,14 +918,14 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                     <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={bus.originCountry} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.originCountry}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Destination Country</FormLabel>
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={bus.destinationCountry} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.destinationCountry}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -872,7 +945,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.departure}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.departure}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Arrival</FormLabel>
@@ -890,7 +963,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.arrival}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -899,7 +972,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={bus.tickets} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.tickets}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Departure Date</FormLabel>
@@ -913,7 +986,7 @@ const Dashboard = () => {
                       selected={bus.date} 
                       onChange={(newDate) => setBus({...bus, date : newDate})} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.date}</p>
                 </FormGroup>
               </Col>
               <Col className="d-flex justify-content-between">
@@ -922,7 +995,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={bus.ticketPrice} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.ticketPrice}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Plane </FormLabel>
@@ -940,7 +1013,7 @@ const Dashboard = () => {
                           </DropdownButton>
                         </FormGroup>
                       </div>  
-                  <p className='invalidFeedback fullWidth'>{errors.name}</p>
+                  <p className='invalidFeedback fullWidth'>{errors?.name}</p>
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
@@ -966,14 +1039,14 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                     <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={offer.originCountry} onChange={handleOfferChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.offer_originCountry}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Destination Country</FormLabel>
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={offer.destinationCountry} onChange={handleOfferChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.offer_destinationCountry}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -982,7 +1055,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 50" value={offer.ticketPrice} onChange={handleOfferChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.offer_ticketPrice}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Reservation Date</FormLabel>
@@ -996,25 +1069,17 @@ const Dashboard = () => {
                       selected={offer.reservation} 
                       onChange={(newDate) => setOffer({...offer, reservation : newDate})} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.offer_date}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex flex-column formGroup'>
                 <FormLabel>Image of Place</FormLabel>
                 <div className="selected-image" style={{backgroundImage: `url(${offer.image})`}}></div>
+                <p className='invalidFeedback fullWidth'>{errors.offer_image}</p>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
                 <label className='btn btn-primary m-0 admin-buttons' htmlFor="input">Select Image
-                  <input id='input' style={{display: 'none'}} type="file" accept='image/*' onChange={showPreview}
-                  // => {
-                  //   const input = document.getElementById('input');
-                  //   if(input.files[0].type.indexOf('image/') > -1){
-                  //     let profileImg = document.querySelector('.selected-image');
-                  //     profileImg.style.backgroundImage = `url(${window.URL.createObjectURL(input.files[0])})`;
-                  //     setOffer({...offer, image: window.URL.createObjectURL(input.files[0])})
-                  //   }
-                  // }}
-                  />
+                  <input id='input' style={{display: 'none'}} type="file" accept='image/*' onChange={showPreview} />
                 </label>
                 <Button className="admin-buttons" onClick={() => handleOfferClick()}>Create Offer</Button>
               </FormGroup>

@@ -31,6 +31,7 @@ namespace api.Controllers
         {
             return await _context.Offers.Select(o => new Offer()
             {
+                OfferId = o.OfferId,
                 Price = o.Price,
                 OriginCountry = o.OriginCountry,
                 DestinationCountry = o.DestinationCountry,
@@ -72,7 +73,6 @@ namespace api.Controllers
                     ReferenceHandler = ReferenceHandler.Preserve
                 };
 
-                // Serialize the flightCompany object with configured options
                 var json = JsonSerializer.Serialize(_offer, options);
 
                 await _context.SaveChangesAsync();
@@ -86,6 +86,22 @@ namespace api.Controllers
             }
         }
 
+        [HttpDelete("delete_offer_{id}")]
+        public async Task<IActionResult> DeleteOffer(int id)
+        {
+            var offer = _context.Offers.FirstOrDefault(o => o.OfferId == id);
+            if(offer == null)
+            {
+                return NotFound();
+            }
+
+            DeleteImage(offer.ImageName);
+            _context.Offers.Remove(offer);
+            await _context.SaveChangesAsync();
+
+            return Ok(new {message = "Offer deleted successfully"});
+        }
+
         [NonAction]
         public async Task<string> SaveImage(IFormFile imageFile)
         {
@@ -97,6 +113,16 @@ namespace api.Controllers
                 await imageFile.CopyToAsync(fileStream);
             }
             return imageName;
+        }
+
+        [NonAction]
+        public void DeleteImage(string imageName) 
+        {
+            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+            if(System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
         }
     }
 }

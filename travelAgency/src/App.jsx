@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import FlightContext from './_helper/FlightContext';
 import AuthContext from './_helper/AuthContext';
 import BusContext from './_helper/BusContext';
+import OfferContext from './_helper/OfferContext';
 
 function App() {
 
@@ -16,12 +17,17 @@ function App() {
   const [role, setRole] = useState([]);
   const roleValue = useMemo(() => ({role, setRole}), [role, setRole]);
 
+  const [offerData, setOfferData] = useState([]);
+  const offerDataValue = useMemo(() => ({offerData, setOfferData}), [offerData, setOfferData]);
+
   return (
     <div className='App'>
       <AuthContext.Provider value={roleValue}>
         <FlightContext.Provider value={dataValue}>
           <BusContext.Provider value={busDataValue}>
-            <Routers />
+            <OfferContext.Provider value={offerDataValue}>
+              <Routers />
+            </OfferContext.Provider>
           </BusContext.Provider>
         </FlightContext.Provider>
       </AuthContext.Provider>

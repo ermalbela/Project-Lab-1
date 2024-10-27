@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Row, Col, Card, Button, Modal, FormGroup, FormLabel, FormControl, CardBody} from 'react-bootstrap'; //importet qe behen nga Reacti
+import { Row, Col, Card, Button, Modal, FormGroup, FormLabel, FormControl, CardBody} from 'react-bootstrap';
 import Loader from '../Layout/Loader';
 import BusContext from '../_helper/BusContext';
 import axios from 'axios';
@@ -7,20 +7,24 @@ import Swal from 'sweetalert2';
 import { addBusCompany, addBuses, editBusCopmany, getBusCopmanies, deleteBusCompany, editBus, deleteBus } from '../Endpoint';
 import deleteIcon from '../assets/images/delete.png';
 import editIcon from '../assets/images/edit.png';
+import AuthContext from '../_helper/AuthContext';
+
 
 const BusCompany = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { busData, setBusData } = useContext(BusContext);
   const [openBusModal, setOpenBusModal] = useState(false);
-  const [busNumber,setBusNumber] = useState(""); //UseState per vendosjen e emrit te busit
+  const [busNumber,setBusNumber] = useState("");
   const [deckerNumber,setDeckerNumber] = useState(1);
-  const [currentBus,setCurrentBus] = useState(null); //UseState
+  const [currentBus,setCurrentBus] = useState(null);
   const [openBusCompany, setOpenBusCompany] = useState(false);
   const [busCompany, setBusCompany] = useState('');
   const [openEditCompany, setOpenEditCompany] = useState(false);
   const [currentCompany, setCurrentCompany] = useState([]);
   const [openEditBus, setOpenEditBus] = useState(false);
   const [deckerError, setDeckerError] = useState('');
+
+  const {role} = useContext(AuthContext);
 
   //metod per shtimin e autobusve
   const handleBus = (id) => {
@@ -243,7 +247,7 @@ const BusCompany = () => {
             <Col md={12}>
               <div className="d-flex justify-content-between title">
                 <h2 className='customized-text'>Bus Companies</h2>
-                <Button onClick={() => setOpenBusCompany(true)}>Add Company</Button> 
+                {role == 'Superadmin' ? <Button onClick={() => setOpenBusCompany(true)}>Add Company</Button> : ''}
               </div>
               <Row>
                 {busData && busData.map((bus, idx) => (
@@ -252,11 +256,11 @@ const BusCompany = () => {
                       <Card.Body>
                         <div className="d-flex justify-content-between align-items-center mb-3">
                         <Card.Title>{bus.busCompany}</Card.Title> 
-                          <Button className='action-buttons' onClick={() => {
+                        {role == 'Superadmin' ? <Button className='action-buttons' onClick={() => {
                             setOpenEditCompany(true);
                             setCurrentCompany(bus);
-                          }}><img src={editIcon} alt="edit icon" /></Button>
-                          <Button className='action-buttons' onClick={() => handleDeleteCompany(bus.busCompanyId)}><img src={deleteIcon} alt="delete icon" /></Button>
+                          }}><img src={editIcon} alt="edit icon" /></Button> : ''}
+                          {role == 'Superadmin' ? <Button className='action-buttons' onClick={() => handleDeleteCompany(bus.busCompanyId)}><img src={deleteIcon} alt="delete icon" /></Button> : ''}
                           <Button onClick={() => toggleBuses(idx)}>
                             {visibleBuses[idx] ? 'Hide Buses' : 'Show Buses'}<span>⏷</span>
                           </Button>
@@ -272,18 +276,18 @@ const BusCompany = () => {
                                       Number of deckers : {item.deckersNr}
                                     </Card.Text>
                                     <Card.Text>
-                                      <Button className='action-buttons' onClick={() => {
+                                    {role == 'Superadmin' ? <Button className='action-buttons' onClick={() => {
                                         setOpenEditBus(true);
                                         setCurrentBus(item);
-                                      }}><img src={editIcon} alt="edit icon" /></Button>
-                                      <Button className='action-buttons' onClick={() => handleDeleteBus(bus.busCompanyId)}><img src={deleteIcon} alt="delete icon" /></Button>
+                                      }}><img src={editIcon} alt="edit icon" /></Button> : ''}
+                                      {role == 'Superadmin' ? <Button className='action-buttons' onClick={() => handleDeleteBus(bus.busCompanyId)}><img src={deleteIcon} alt="delete icon" /></Button> : ''}
                                     </Card.Text>
                                   </CardBody>
                                 </Card>
                               ))}
                           </div>
                           </div>
-                        <Button variant="primary" onClick={()=> addBus(bus)}>Add Bus</Button>
+                          {role == 'Superadmin' ? <Button variant="primary" onClick={()=> addBus(bus)}>Add Bus</Button> : ''}
                       </Card.Body>
                     </Card>
                   </Col>
