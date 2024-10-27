@@ -35,11 +35,11 @@ const Header = () => {
                 <Link className="nav-link" to={path}>{name}</Link>
               </NavLink>
             ))}
-            <Link className="nav-link" to='/'>
-              <NavLink as='button' className="ms-5 btn btn-primary logout-button" onClick={handleLogout}>
+            <NavLink as="div" to='/'>
+              <Link as='button' className=" nav-link btn btn-primary logout-button" onClick={handleLogout}>
                 Log Out
-              </NavLink>
-            </Link>
+              </Link>
+            </NavLink>
           </Nav>
         </NavbarCollapse>
       </Container>

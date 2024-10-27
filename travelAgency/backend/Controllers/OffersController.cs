@@ -6,6 +6,7 @@ using SecureWebSite.Server.Data;
 using SecureWebSite.Server.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -23,6 +24,21 @@ namespace api.Controllers
             _context = context;
             _userManager = userManager;
             this._hostEnvironment = hostEnvironment;
+        }
+
+        [HttpGet("get_offers")]
+        public async Task<ActionResult<IEnumerable<Offer>>> GetOffers()
+        {
+            return await _context.Offers.Select(o => new Offer()
+            {
+                Price = o.Price,
+                OriginCountry = o.OriginCountry,
+                DestinationCountry = o.DestinationCountry,
+                Reservation = o.Reservation,
+                ImageName = o.ImageName,
+                ImageFile = o.ImageFile,
+                ImageSource = String.Format("http://localhost:5003/Images/{0}", o.ImageName)
+            }).ToListAsync();
         }
 
         [HttpPost("create_offer")]

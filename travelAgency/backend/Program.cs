@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using SecureWebSite.Server.Data;
 using SecureWebSite.Server.Models;
@@ -12,7 +13,7 @@ namespace SecureWebSite.Server
 				public static void Main(string[] args)
 				{
 						var builder = WebApplication.CreateBuilder(args);
-
+						
 						// Add services to the container.
 
 						builder.Services.AddControllers();
@@ -59,9 +60,14 @@ namespace SecureWebSite.Server
                         };
 						});
 						var app = builder.Build();
+						var env = app.Environment;
 
 						app.UseDefaultFiles();
-						app.UseStaticFiles();
+						app.UseStaticFiles(new StaticFileOptions
+						{
+							FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath,"Images")),
+							RequestPath = "/Images"
+						});
 
 						// Configure the HTTP request pipeline.
 

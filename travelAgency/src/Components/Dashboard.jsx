@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import OfferCard from '../CommonElements/OfferCard';
 import { patterns } from '../Validation';
-import { createFlights, filteredFlights, createBuses, filteredTrips, getPlanes, getBuses, removeExpiredTrips, createOffers } from '../Endpoint';
+import { createFlights, filteredFlights, createBuses, filteredTrips, getPlanes, getBuses, removeExpiredTrips, createOffers, getOffers } from '../Endpoint';
 import moment from 'moment/moment';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPlane, setSelectedPlane] = useState('Select Plane');
   const [selectedBus, setSelectedBus] = useState('Select Bus');
+  const [offerData, setOfferData] = useState(null);
 
   const initialData = {
     originCountry: '',
@@ -72,6 +73,7 @@ const Dashboard = () => {
       localStorage.removeItem('userId');
     }
   }, [role, setRole]);
+
   
   const [flight, setFlight] = useState(initialData);
   const [bus, setBus] = useState(initialBusData);
@@ -97,9 +99,22 @@ const Dashboard = () => {
     setBus(prev => ({...prev, busNum: response.data}));
   }
 
+  const getOfferData = async () => {
+    const response = await axios.get(getOffers, {
+      headers: {
+        'Authorization' : 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+      }
+    })
+
+    console.log(response.data);
+    setOfferData(response.data);
+    console.log(offerData);
+  }
+
   useEffect(() => {
     getPlaneData();
     getBusData();
+    getOfferData();
   }, []);
 
  
@@ -274,9 +289,6 @@ const Dashboard = () => {
   }
 
   const handleOfferClick = () => {
-    console.log(offer);
-
-    
     
     if(offer.destinationCountry !== '' && offer.image !== '' && offer.originCountry !== '' && offer.reservation !== '' && offer.ticketPrice !== 0){
       
@@ -289,7 +301,8 @@ const Dashboard = () => {
       formData.append('Reservation', new Date(offer.reservation).toISOString());   
       formData.append('ImageFile', offer.imageFile);
       formData.append('ImageName', offer.imageName);
-      
+      formData.append('ImageSource', 'http://localhost:5003/' + offer.imageName);
+
       axios.post(createOffers, formData, {
         headers: {
           'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
@@ -297,6 +310,8 @@ const Dashboard = () => {
       })
       .then(res => {
         console.log(res);
+        Swal.fire('Success', 'Offer added successfully!', 'success');
+        setCreateOffer(false);
       })
     }
   }
@@ -313,8 +328,6 @@ const Dashboard = () => {
       setOffer({...offer, image: ''})
     }
   }
-
-  // {Price: offer.ticketPrice, OriginCountry: offer.originCountry, DestinationCountry: offer.destinationCountry, Reservation: offer.reservation, ImageData: offer.image}
 
   const countriesWithLabels = countries.map(country => { //Updating the data so we can use React-Select properly
     return { value: country, label: country };
@@ -556,7 +569,6 @@ const Dashboard = () => {
     return stars;
   };
 
-  // axios.post(createOffers, {Price: 49.99, OriginCountry: 'Kosovo', DestinationCountry: 'Greece', ImageData: imgValue})
 
   return isLoading ? (
     <Loader />
@@ -573,14 +585,14 @@ const Dashboard = () => {
               {['Bus', 'Airplane'].map((item, idx) => <DropdownItem key={idx} onClick={() => setDropdownVal(item)}>{item}</DropdownItem>)}
             </DropdownButton>
           </Col>
-          <Col className='d-flex justify-content-end'>
+          <Col className='d-flex create-buttons-dashboard'>
             {role === 'Admin' || role === 'Superadmin' ? <>
               <Button onClick={() => setCreateFlight(true)} className='top-button admin-buttons' style={{height: '39px', marginRight: '2%'}}>Create Flight</Button>
               <Button onClick={() => setCreateBus(true)} className='top-button admin-buttons' style={{height: '39px'}}>Create Bus Trip</Button>
             </> : ''}
           </Col>
         </Row>
-        <Row className="justify-content-center">
+        <Row className="justify-content-center select-container-dashboard">
           <Col>
             <MySelect
               options={countriesWithLabels || []}
@@ -652,7 +664,7 @@ const Dashboard = () => {
               <CardBody className="d-flex flex-column">
                 <div className='offers flex-grow-1'>
                   <Row className="g-4">
-                    {initialValues.map((itemProps, idx) => (
+                    {offerData && offerData.map((itemProps, idx) => (
                       <Col sm={6} key={idx} className="d-flex" onClick={() => {
                         setFromCountry(itemProps.originCountry);
                         setToCountry(itemProps.destinationCountry);

@@ -11,7 +11,6 @@ import editIcon from '../assets/images/edit.png';
 const BusCompany = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { busData, setBusData } = useContext(BusContext);
-  const [selectedBus, setSelectedBus] = useState(null);
   const [openBusModal, setOpenBusModal] = useState(false);
   const [busNumber,setBusNumber] = useState(""); //UseState per vendosjen e emrit te busit
   const [deckerNumber,setDeckerNumber] = useState(1);
@@ -81,9 +80,6 @@ const BusCompany = () => {
     fetchBusData();
   }, [setBusData]);
 
-  const handleBusClick = (bus) => {
-    setSelectedBus(bus);
-  };
   const addBus = (bus) => {
     setOpenBusModal(true);
     setCurrentBus(bus);
@@ -287,36 +283,12 @@ const BusCompany = () => {
                               ))}
                           </div>
                           </div>
-                        <Button variant="primary" onClick={() => handleBusClick(bus)}>View Trips</Button>
-                        <Button variant="primary" style={{marginLeft:"5px" }} onClick={()=> addBus(bus)}>Add Bus</Button>
-                        
+                        <Button variant="primary" onClick={()=> addBus(bus)}>Add Bus</Button>
                       </Card.Body>
                     </Card>
                   </Col>
                 ))}
               </Row>
-              {selectedBus && (
-                <div>
-                  <h3>Trips for {selectedBus.busCompany}</h3>
-                  <Row>
-                    {selectedBus.trips && selectedBus.trips.map((trip, idx) => (
-                      <Col md={4} key={idx}>
-                        <Card className='mb-4'>
-                          <Card.Body>
-                            <Card.Title>Trip ID: {trip.tripId}</Card.Title>
-                            <Card.Text>
-                              <strong>Departure:</strong> {trip.departure} <br />
-                              <strong>Arrival:</strong> {trip.arrival} <br />
-                              <strong>Price:</strong> ${trip.price.toFixed(2)}
-                            </Card.Text>
-                            <Button variant="primary" onClick={() => handlePurchase(trip.tripId)}>Purchase</Button>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    ))}
-                  </Row>
-                </div>
-              )}
             </Col>
           </Row>
         )}

@@ -436,6 +436,10 @@ body > * {
   z-index: 0!important;
 }
 
+.custom-pagination{
+  justify-content: end;
+}
+
 .custom-pagination > .active{
   --bs-pagination-active-bg: #24695c!important;
   --bs-pagination-active-border-color: #24695c!important;
@@ -460,4 +464,104 @@ body > * {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.flight-bot-container{
+  justify-content: end;
+  align-items: center;
+}
+
+.create-buttons-dashboard{
+  justify-content: end;
+}
+
+@media screen and (width < 800px) {
+  .page-wrapper{
+    margin: 5rem 1.5rem 3rem 1.5rem;
+  }
+  .modal-tickets{
+    height: auto!important;
+  }
+  .modal-ticket-col{
+    width: 100%!important;
+    flex: 0 0 100%!important;
+    max-width: 100%;
+  }
+  .admin-buttons{
+    height: auto!important;
+  }
+  .timeline-container {
+    padding: 10px;
+  }
+  .timeline-content {
+    flex-direction: column; 
+  }
+  .flight-company {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .flight-info {
+    margin-left: 10px; 
+  }
+  .flight-details {
+    flex-direction: column; 
+    width: 100%;
+    text-align: center; 
+    margin: 10px 0;
+  }
+  .separator {
+    margin: 5px 0;
+  }
+  .ticket-info {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .ticket-info h5 {
+    margin-bottom: 5px;
+  }
+  .date-container{
+    width: 100%!important;
+    margin-bottom: 10px;
+  }
+  .prices-btn{
+    width: max-content;
+  }
+  .none-responsive-text{
+    display: none!important;
+  }
+  h5, h6 {
+    font-size: 13px!important; /* Adjust font size */
+    line-height: 0; /* Adjust line height for better spacing */
+  }
+  .text-center{
+    white-space: nowrap;
+  }
+  .text-muted {
+    font-size: 12px; /* Smaller font for muted text */
+  }
+  .flight-top-container{
+    justify-content: space-between;
+    margin-bottom: 20px!important;
+    padding-bottom: 5px;
+    border-bottom: 1px solid grey;
+  }
+  .flight-bot-container{
+    justify-content: space-between;
+    margin-top: 15px!important;
+  }
+  .top-flight-dropdown{
+    width: 50%!important;
+  }
+  button{
+    width: max-content!important;
+  }
+  .create-buttons-dashboard{
+    justify-content: space-between;
+  }
+  .select-container-dashboard > .col{
+    margin-top: 7px;
+  }
 }
