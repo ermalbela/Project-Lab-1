@@ -195,11 +195,18 @@ const Dashboard = () => {
       errors.ticketPrice = 'Ticket price should be bigger than 40!';
     }
     if(vals.date == '' || vals.date == undefined){
-      errors.date = 'Please choose a date';
+      errors.date = 'Please choose a date!';
     }
-    if(vals.selectedPlane == undefined || vals.selectedPlane == 0 || vals.selectedPlane == 'Select Plane'){
-      errors.selectedPlane = 'Please choose a Plane';
+    if(vals.arrival == '' || vals.arrival == undefined){
+      errors.arrival = 'Please choose a valid Arrival!';
     }
+    if(vals.departure == '' || vals.departure == undefined){
+      errors.departure = 'Please choose a valid Departure!';
+    }
+    if(vals.selectedPlane == null || vals.selectedPlane == '' || vals.selectedPlane == 'Select Plane'){
+      errors.selectedPlane = 'Please choose a Plane!';
+    }
+    return errors;
   }
 
   const validateOffers = vals => {
@@ -682,7 +689,7 @@ const Dashboard = () => {
               placeholder="From..."
               isClearable
             />
-            <p className='invalidFeedback'>{errors?.fromCountry}</p>
+            <p className='invalidFeedback'>{errors.fromCountry}</p>
           </Col>
           <Col>
             <MySelect
@@ -701,7 +708,7 @@ const Dashboard = () => {
               placeholder="To..."
               isClearable
             />
-            <p className='invalidFeedback'>{errors?.toCountry}</p>
+            <p className='invalidFeedback'>{errors.toCountry}</p>
           </Col>
           
           <Col>
@@ -718,7 +725,7 @@ const Dashboard = () => {
               popperPlacement="bottom-start"
               dataPlacement="bottom-start"
             />
-            <p className='invalidFeedback'>{errors?.startDate}</p>
+            <p className='invalidFeedback'>{errors.startDate}</p>
           </Col>
           <Col className='d-flex justify-content-end'>
             <Button className='w-100' style={{maxHeight: '42.6px'}} onClick={handleSearch}>Search</Button>
@@ -796,14 +803,14 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                     <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={flight.originCountry} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.originCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Destination Country</FormLabel>
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={flight.destinationCountry} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.destinationCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -823,7 +830,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.departure}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.departure}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Arrival</FormLabel>
@@ -841,7 +848,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.arrival}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -850,7 +857,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={flight.tickets} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.tickets}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Departure Date</FormLabel>
@@ -865,7 +872,7 @@ const Dashboard = () => {
                       onChange={(newDate) => setFlight({...flight, date : newDate})} 
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.date}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -874,7 +881,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={flight.ticketPrice} onChange={handleChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.ticketPrice}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Plane </FormLabel>
@@ -892,7 +899,7 @@ const Dashboard = () => {
                           </DropdownButton>
                         </FormGroup>
                       </div>  
-                  <p className='invalidFeedback fullWidth'>{errors?.name}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.selectedPlane}</p>
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
@@ -918,14 +925,14 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                     <FormControl className="form-control" type="text" name='originCountry' placeholder="e.g. Kosovo" value={bus.originCountry} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.originCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.originCountry}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Destination Country</FormLabel>
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="text" name="destinationCountry" placeholder="e.g. Albania" value={bus.destinationCountry} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.destinationCountry}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.destinationCountry}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -945,7 +952,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.departure}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.departure}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Arrival</FormLabel>
@@ -963,7 +970,7 @@ const Dashboard = () => {
                       dateFormat="p"
                     />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.arrival}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.arrival}</p>
                 </FormGroup>
               </Col>
               <Col className='d-flex justify-content-between'>
@@ -972,7 +979,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="tickets" placeholder="e.g. 50" value={bus.tickets} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.tickets}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.tickets}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Departure Date</FormLabel>
@@ -986,7 +993,7 @@ const Dashboard = () => {
                       selected={bus.date} 
                       onChange={(newDate) => setBus({...bus, date : newDate})} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.date}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.date}</p>
                 </FormGroup>
               </Col>
               <Col className="d-flex justify-content-between">
@@ -995,7 +1002,7 @@ const Dashboard = () => {
                   <div className="input-group login-form-inputs">
                       <FormControl className="form-control" type="number" name="ticketPrice" placeholder="e.g. 49.99" value={bus.ticketPrice} onChange={handleBusChange} />
                   </div>
-                  <p className='invalidFeedback fullWidth'>{errors?.ticketPrice}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.ticketPrice}</p>
                 </FormGroup>
                 <FormGroup className='formGroup modal-inputs'>
                   <FormLabel>Plane </FormLabel>
@@ -1013,7 +1020,7 @@ const Dashboard = () => {
                           </DropdownButton>
                         </FormGroup>
                       </div>  
-                  <p className='invalidFeedback fullWidth'>{errors?.name}</p>
+                  <p className='invalidFeedback fullWidth'>{errors.name}</p>
                 </FormGroup>
               </Col>
               <FormGroup className='formGroup d-flex justify-content-between'>
